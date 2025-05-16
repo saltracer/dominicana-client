@@ -61,7 +61,7 @@ const saintsData = [
     isDominican: true,
     attributes: ['Mystic', 'Ascetic', 'Tertiary'],
     imageUrl: '',
-    description: 'St. Rose was a member of the Third Order of St. Dominic. She took the habit of a Dominican tertiary and lived in a small hut in her parents' garden, devoting herself to prayer and penance.'
+    description: "St. Rose was a member of the Third Order of St. Dominic. She took the habit of a Dominican tertiary and lived in a small hut in her parents' garden, devoting herself to prayer and penance."
   },
   {
     id: 6,
