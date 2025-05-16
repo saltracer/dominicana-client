@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Dominican theme colors
+				dominican: {
+					'burgundy': '#8C1515',
+					'gold': '#B8A369',
+					'black': '#222222',
+					'white': '#F9F7F1',
+					'light-gray': '#E5E3DD',
+				},
+				// Liturgical colors
+				liturgical: {
+					'green': '#1D8A4C',
+					'purple': '#5A2D81',
+					'white': '#F9F7F1',
+					'red': '#B42025',
+					'rose': '#F48FB1',
+					'gold': '#B8A369',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +102,33 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0'
+					},
+					'100%': {
+						opacity: '1'
+					}
+				},
+				'fade-out': {
+					'0%': {
+						opacity: '1'
+					},
+					'100%': {
+						opacity: '0'
+					}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-in-out',
+				'fade-out': 'fade-out 0.3s ease-in-out',
+			},
+			fontFamily: {
+				'garamond': ['"EB Garamond"', 'serif'],
+				'inter': ['Inter', 'sans-serif'],
 			}
 		}
 	},
