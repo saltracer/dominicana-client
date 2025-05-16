@@ -38,7 +38,7 @@ const liturgicalEvents = [
   },
   {
     date: '2024-05-25',
-    name: 'St. Mary Magdalene de\' Pazzi',
+    name: 'St. Mary Magdalene de Pazzi',
     type: 'Optional Memorial',
     color: 'white',
     isDominican: false
