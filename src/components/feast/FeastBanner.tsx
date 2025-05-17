@@ -63,10 +63,25 @@ const FeastBanner: React.FC = () => {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            
-            <h2 className="text-lg font-garamond font-semibold">
-              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-            </h2>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1 border-dominican-light-gray">
+                  <Calendar className="h-4 w-4" />
+                  <h2 className="text-lg font-garamond font-semibold">
+                    {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                  </h2>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             
             <Button 
               variant="ghost" 
@@ -78,25 +93,7 @@ const FeastBanner: React.FC = () => {
             </Button>
           </div>
         
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1 border-dominican-light-gray">
-                <Calendar className="h-4 w-4" />
-                <span className="hidden sm:inline">Select Date</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateChange}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        
-        {currentEvent && (
+          {currentEvent && (
           <div className="mt-2 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className={cn(
@@ -141,6 +138,9 @@ const FeastBanner: React.FC = () => {
             </Popover>
           </div>
         )}
+
+        </div>
+        
       </div>
     </div>
   );
