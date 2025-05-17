@@ -1,8 +1,7 @@
 import { addDays, format, getYear, isEqual, isSunday, parseISO } from "date-fns"
-import { type Celebration } from "./celebrations/celebrations-types"
-import { CelebrationRank } from "./celebrations/celebrations-types"
+import { type Celebration, CelebrationRank } from "./celebrations/celebrations-types"
 import { getLiturgicalSeason, getLiturgicalWeek } from "./liturgical-seasons"
-import { getAllCelebrations, getAllMoveableCelebrations } from "./celebrations"
+import { getAllCelebrations } from "./celebrations"
 import { getSaintsForDate } from "./saints"
 
 export interface CalendarDay {
@@ -24,21 +23,28 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
     // Get moveable celebrations (Easter, Pentecost, etc.)
     const allCelebrations = getAllCelebrations(year)
 
-    //console.log("moveableCelebrations celebrations:"+JSON.stringify(moveableCelebrations))
     // Find if there's a moveable celebration on this date
     const moveable = allCelebrations.filter((celebration) => {
       try {
         // Convert celebration date to ISO format
         const celebrationDate = parseISO(`${year}-${celebration.date}`)
-        //console.log("celebrationDate="+JSON.stringify(celebrationDate)
-        //console.log("comparisonDate="+JSON.stringify(date.toDateString())
         return isEqual(celebrationDate, date)
       } catch (error) {
         console.error("Error parsing celebration date:", error)
         return false
       }
-    })
-    //console.log("moveable celebrations:"+JSON.stringify(moveable))
+    }).map(celebration => ({
+      id: celebration.id,
+      name: celebration.name,
+      rank: celebration.rank,
+      color: celebration.color.toLowerCase(),
+      date: celebration.date,
+      isDominican: celebration.type === "dominican" || celebration.type === "both",
+      description: Array.isArray(celebration.description) 
+        ? celebration.description.join(" ") 
+        : celebration.description || celebration.short_desc || ""
+    }));
+
     // Combine all celebrations
     let celebrations = [...saints, ...moveable]
 
@@ -46,23 +52,21 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
     if (celebrations.length === 0) {
       const season = getLiturgicalSeason(date)
       const weekInfo = getLiturgicalWeek(date, season)
-      const isoDate = format(date, "yyyy-MM-dd")
+      const currentIsoDate = format(date, "yyyy-MM-dd")
 
       celebrations = [
         {
-          id: `Ferial-${isoDate}`,
+          id: `Ferial-${currentIsoDate}`,
           name: `${season.name} Weekday`,
           rank: CelebrationRank.FERIAL,
           color: season.color.toLowerCase(),
-          date: isoDate,
+          date: currentIsoDate,
           isDominican: false,
           description: `Ferial day in ${season.name}, ${weekInfo}`,
         },
       ]
     }
 
-
-    // Sort celebrations by importance
     // Helper function to safely parse and format dates for comparison
     const safeFormatDate = (dateStr: string): string => {
       try {
@@ -77,23 +81,13 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
           return dateStr; // Already in MM-DD format
         }
         
-        //console.warn(`Unexpected date format: ${dateStr}`);
         return '12-31'; // Default to end of year for invalid dates
       } catch (error) {
-        //console.error(`Error parsing date '${dateStr}':`, error);
         return '12-31'; // Default to end of year for invalid dates
       }
     };
 
-    //console.log('Sorting celebrations:', 
-    celebrations.map(c => ({
-      name: c.name,
-      date: c.date,
-      rank: c.rank,
-      formattedDate: safeFormatDate(c.date)
-    }));
-  //);
-
+    // Sort celebrations by importance
     celebrations.sort((a, b) => {
       const typeOrder: Record<string, number> = {
         [CelebrationRank.SOLEMNITY]: 1,
@@ -107,29 +101,24 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
       const rankA = a.rank in typeOrder ? typeOrder[a.rank] : 5;
       const rankB = b.rank in typeOrder ? typeOrder[b.rank] : 5;
 
-      //console.log(`Comparing ${a.name} (${a.rank}, ${a.date}) vs ${b.name} (${b.rank}, ${b.date})`);
-
       // If ranks are equal, sort by date
       if (rankA === rankB) {
         const dateA = safeFormatDate(a.date);
         const dateB = safeFormatDate(b.date);
-        //console.log(`  Same rank (${a.rank}), comparing dates: ${dateA} vs ${dateB}`);
         return dateA < dateB ? -1 : 1;
       }
 
-
-      //console.log(`  Different ranks: ${rankA} vs ${rankB}`);
       return rankA - rankB;
     });
 
-    //console.log("the celebrations:"+JSON.stringify(celebrations))
     return celebrations
   } catch (error) {
     console.error("Error in getCelebrationsForDate:", error)
     // Return a default ferial day instead of empty array
+    const currentIsoDate = format(date, "yyyy-MM-dd")
     return [
       {
-        id: `Ferial-${isoDate}`,
+        id: `Ferial-${currentIsoDate}`,
         name: "Ordinary Time Weekday",
         rank: CelebrationRank.FERIAL,
         color: "green",

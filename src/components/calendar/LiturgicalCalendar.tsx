@@ -1,14 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, parseISO, addDays } from 'date-fns';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, addDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
-import { liturgicalEvents } from '@/data/liturgicalEvents';
+import { getCelebrationsForDate, getSpecialSeasonClass } from '@/lib/liturgical/calendar-data';
 
 const LiturgicalCalendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { selectedDate, setSelectedDate, currentEvent, setCurrentEvent } = useLiturgicalDay();
+  const { selectedDate, setSelectedDate, setCurrentEvent } = useLiturgicalDay();
 
   // Sync calendar month with selected date when it changes to a different month
   useEffect(() => {
@@ -20,13 +21,12 @@ const LiturgicalCalendar: React.FC = () => {
   const onDateClick = (day: Date) => {
     setSelectedDate(day);
     
-    // Find any events for this day
-    const events = liturgicalEvents.filter(event => 
-      isSameDay(parseISO(event.date), day)
-    );
+    // Get celebrations for this day from the liturgical library
+    const celebrations = getCelebrationsForDate(day);
     
-    if (events.length > 0) {
-      setCurrentEvent(events[0]);
+    if (celebrations.length > 0) {
+      // Set the highest ranking celebration as the current event
+      setCurrentEvent(celebrations[0]);
     } else {
       setCurrentEvent(null);
     }
@@ -81,27 +81,23 @@ const LiturgicalCalendar: React.FC = () => {
   };
 
   const getLiturgicalColor = (day: Date) => {
-    const event = liturgicalEvents.find(event => 
-      isSameDay(parseISO(event.date), day)
-    );
-    
-    return event?.color || '';
+    const celebrations = getCelebrationsForDate(day);
+    return celebrations.length > 0 ? celebrations[0].color : '';
   };
 
   const getEventType = (day: Date) => {
-    const event = liturgicalEvents.find(event => 
-      isSameDay(parseISO(event.date), day)
-    );
-    
-    return event?.type || '';
+    const celebrations = getCelebrationsForDate(day);
+    return celebrations.length > 0 ? celebrations[0].rank : '';
   };
 
   const isDominicanFeast = (day: Date) => {
-    const event = liturgicalEvents.find(event => 
-      isSameDay(parseISO(event.date), day) && event.isDominican
-    );
-    
-    return !!event;
+    const celebrations = getCelebrationsForDate(day);
+    return celebrations.length > 0 ? celebrations[0].isDominican : false;
+  };
+
+  const getEventName = (day: Date) => {
+    const celebrations = getCelebrationsForDate(day);
+    return celebrations.length > 0 ? celebrations[0].name : '';
   };
 
   const renderCells = () => {
@@ -122,6 +118,8 @@ const LiturgicalCalendar: React.FC = () => {
         const liturgicalColor = getLiturgicalColor(day);
         const eventType = getEventType(day);
         const isDominican = isDominicanFeast(day);
+        const eventName = getEventName(day);
+        const seasonClass = getSpecialSeasonClass(day);
         
         // Map liturgical colors to Tailwind classes
         const colorClasses: {[key: string]: string} = {
@@ -131,13 +129,15 @@ const LiturgicalCalendar: React.FC = () => {
           'red': 'bg-liturgical-red text-white',
           'rose': 'bg-liturgical-rose text-dominican-black',
           'gold': 'bg-liturgical-gold text-dominican-black',
+          'violet': 'bg-liturgical-purple text-white', // Map violet to purple
         };
         
         days.push(
           <div
             className={cn(
               "h-24 border border-dominican-light-gray p-1 relative",
-              !isSameMonth(day, monthStart) && "bg-gray-100 text-gray-400"
+              !isSameMonth(day, monthStart) && "bg-gray-100 text-gray-400",
+              seasonClass && `${seasonClass}-bg`
             )}
             key={day.toString()}
             onClick={() => onDateClick(cloneDay)}
@@ -155,16 +155,16 @@ const LiturgicalCalendar: React.FC = () => {
             {liturgicalColor && (
               <div className={cn(
                 "text-xs p-1 mt-1 rounded",
-                colorClasses[liturgicalColor] || ''
+                colorClasses[liturgicalColor.toLowerCase()] || ''
               )}>
                 {eventType}
               </div>
             )}
             
             {/* Event name - show if there's an event */}
-            {liturgicalColor && (
+            {eventName && (
               <div className="text-xs mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                {liturgicalEvents.find(event => isSameDay(parseISO(event.date), day))?.name}
+                {eventName}
               </div>
             )}
           </div>
@@ -220,37 +220,37 @@ const LiturgicalCalendar: React.FC = () => {
       
       <div className="bg-white rounded-lg shadow-md p-4">
         <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
-          {currentEvent ? currentEvent.name : "Selected Day"}
+          {getEventName(selectedDate) || "Selected Day"}
         </h3>
         <div className="mb-4">
           <p className="text-gray-600">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
         </div>
         
-        {currentEvent ? (
+        {getCelebrationsForDate(selectedDate).length > 0 ? (
           <div className="space-y-4">
             <div className={cn(
               "p-2 rounded",
-              currentEvent.color === 'green' && "bg-liturgical-green text-white",
-              currentEvent.color === 'purple' && "bg-liturgical-purple text-white",
-              currentEvent.color === 'white' && "bg-liturgical-white text-dominican-black",
-              currentEvent.color === 'red' && "bg-liturgical-red text-white",
-              currentEvent.color === 'rose' && "bg-liturgical-rose text-dominican-black",
-              currentEvent.color === 'gold' && "bg-liturgical-gold text-dominican-black"
+              getLiturgicalColor(selectedDate) === 'green' && "bg-liturgical-green text-white",
+              getLiturgicalColor(selectedDate) === 'purple' && "bg-liturgical-purple text-white",
+              getLiturgicalColor(selectedDate) === 'white' && "bg-liturgical-white text-dominican-black",
+              getLiturgicalColor(selectedDate) === 'red' && "bg-liturgical-red text-white",
+              getLiturgicalColor(selectedDate) === 'rose' && "bg-liturgical-rose text-dominican-black",
+              getLiturgicalColor(selectedDate) === 'gold' && "bg-liturgical-gold text-dominican-black",
+              getLiturgicalColor(selectedDate) === 'violet' && "bg-liturgical-purple text-white"
             )}>
-              {currentEvent.type}
+              {getEventType(selectedDate)}
             </div>
             
-            {currentEvent.isDominican && (
+            {isDominicanFeast(selectedDate) && (
               <div className="bg-dominican-burgundy/10 text-dominican-burgundy p-2 rounded">
                 Dominican Feast
               </div>
             )}
             
             <p className="text-gray-700">
-              {currentEvent.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras porta condimentum urna, vel elementum erat maximus at."}
+              {getCelebrationsForDate(selectedDate)[0]?.description || "No additional information available for this celebration."}
             </p>
             
-            {/* Additional information could be shown here */}
             <Button variant="outline" className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10 mt-2">
               View Full Details
             </Button>

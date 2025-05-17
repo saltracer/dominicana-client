@@ -7,8 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
-import { parseISO } from 'date-fns';
-import { liturgicalEvents } from '@/data/liturgicalEvents';
+import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 
 const FeastBanner: React.FC = () => {
   const { selectedDate, setSelectedDate, currentEvent, setCurrentEvent } = useLiturgicalDay();
@@ -18,17 +17,10 @@ const FeastBanner: React.FC = () => {
     
     setSelectedDate(date);
     
-    const dateEvents = liturgicalEvents.filter(event => {
-      const eventDate = parseISO(event.date);
-      return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      );
-    });
+    const celebrations = getCelebrationsForDate(date);
     
-    if (dateEvents.length > 0) {
-      setCurrentEvent(dateEvents[0]);
+    if (celebrations.length > 0) {
+      setCurrentEvent(celebrations[0]);
     } else {
       setCurrentEvent(null);
     }
@@ -45,9 +37,10 @@ const FeastBanner: React.FC = () => {
       'red': 'bg-liturgical-red text-white',
       'rose': 'bg-liturgical-rose text-dominican-black',
       'gold': 'bg-liturgical-gold text-dominican-black',
+      'violet': 'bg-liturgical-purple text-white', // Map violet to purple
     };
     
-    return colorClasses[color] || '';
+    return colorClasses[color.toLowerCase()] || '';
   };
 
   return (
@@ -60,7 +53,7 @@ const FeastBanner: React.FC = () => {
                 "px-3 py-1.5 rounded text-sm font-medium",
                 getColorClasses(currentEvent.color)
               )}>
-                {currentEvent.type}
+                {currentEvent.rank}
               </div>
               
               <h2 className="text-lg font-garamond font-semibold">
