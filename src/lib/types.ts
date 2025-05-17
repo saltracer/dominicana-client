@@ -18,9 +18,12 @@ export interface Province {
   coordinates: [number, number] // [longitude, latitude]
   boundaries: {
     type: string
-    coordinates: any
+    coordinates?: any
     properties?: any
-    geometry?: any
+    geometry?: {
+      type: string
+      coordinates?: any
+    }
   }
   color: string
   notable_dominicans?: {
