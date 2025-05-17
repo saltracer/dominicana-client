@@ -1,5 +1,5 @@
 import { Celebration, FixedCelebration, CelebrationRank } from "./celebrations-types"
-export type { CelebrationRank }
+export { CelebrationRank }
 export type { Celebration, FixedCelebration }
 
 import { fixedGeneralCelebrations } from "./celebrations-fixed-general"
