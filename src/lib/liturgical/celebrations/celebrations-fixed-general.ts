@@ -1,4 +1,4 @@
-import { LiturgicalColor, LiturgicalRank } from "../liturgical-types"
+import { LiturgicalColor } from "../liturgical-types"
 import { CelebrationRank, type FixedCelebration } from "./celebrations-types"
 
 // Define the fixed solemnities of the liturgical year
