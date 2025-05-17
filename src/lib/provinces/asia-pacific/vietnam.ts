@@ -8,7 +8,7 @@ export const vietnamProvince: Province = {
   region: "Vietnam",
   region_expanded: "Vietnam",
   countries: ["Vietnam"],
-  website: "https://daminhvn.net/",
+  website: "https://daminhvn.net",
   description_array: [
     "The Dominican Province of Vietnam was established in 1975.",
     "It evolved from the Province of the Holy Rosary's mission, which had been present in Vietnam since the 17th century.",

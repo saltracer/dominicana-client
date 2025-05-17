@@ -39,4 +39,5 @@ export interface Province {
     description?: string
     isProvincialHouse?: boolean
   }[]
+  apostolates?: string[]
 }
