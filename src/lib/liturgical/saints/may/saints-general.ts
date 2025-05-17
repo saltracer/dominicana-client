@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // May saints
 export const mayGeneralSaints: Saint[] = [
@@ -22,7 +23,7 @@ export const mayGeneralSaints: Saint[] = [
     prayers:
       "O God, who taught Adam the simple art of tilling the soil, and through Jesus Christ, the true vine, revealed yourself the husbandman of our souls, deign, we pray, through the merits of blessed Isidore, to instill into our hearts a horror of sin and a love of prayer, so that, working the soil in accord with your will, we may enjoy the fruit of eternal life. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -46,7 +47,7 @@ export const mayGeneralSaints: Saint[] = [
     prayers:
       "O God, who assigned Saint Matthias a place in the college of Apostles, grant us, through his intercession, that, rejoicing at how your love has been allotted to us, we may merit to be numbered among the elect. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
   },
@@ -70,7 +71,7 @@ export const mayGeneralSaints: Saint[] = [
     prayers:
       "O God, who gave to Saint Damien a selfless love for his brothers and sisters who were sick, grant, we pray, that, strengthened by his example, we may show our love for Christ in our brothers and sisters who suffer. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

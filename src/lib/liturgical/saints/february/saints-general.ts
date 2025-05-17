@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // February saints
 export const februaryGeneralSaints: Saint[] = [
@@ -24,7 +25,7 @@ export const februaryGeneralSaints: Saint[] = [
     prayers:
       "O God, who, to show us the way of innocence, caused the soul of your virgin Saint Scholastica to soar to heaven in the likeness of a dove, grant, through her merits and intercession, that we may so live in innocence as to attain to joys everlasting. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

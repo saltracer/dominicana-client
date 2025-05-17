@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // November saints
 export const novemberGeneralSaints: Saint[] = [
@@ -25,7 +26,7 @@ export const novemberGeneralSaints: Saint[] = [
     prayers:
       "O God, who gladden us with the yearly feast of blessed Cecilia, grant, we pray, that what we venerate in her may be imitated in our lives. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
   },

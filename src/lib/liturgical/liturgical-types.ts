@@ -1,9 +1,9 @@
-export enum LiturgicalRank {
+/*export enum LiturgicalRank {
   SOLEMNITY = "Solemnity",
   FEAST = "Feast",
   MEMORIAL = "Memorial",
   OPTIONAL_MEMORIAL = "Optional Memorial",
-}
+}*/
 
 export enum LiturgicalColor {
   WHITE = "White",

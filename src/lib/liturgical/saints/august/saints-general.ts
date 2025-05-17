@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // August saints
 export const augustGeneralSaints: Saint[] = []

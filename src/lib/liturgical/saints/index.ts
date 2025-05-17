@@ -62,6 +62,7 @@ export function getSaintsForDate(date: Date): Celebration[] {
 
     // Convert saints to celebrations with more detailed information
     const saintCelebrations = saintsForDate.map((saint) => ({
+      id: saint.id,
       name: saint.name,
       rank: (saint.rank as CelebrationRank) || CelebrationRank.OPTIONAL_MEMORIAL,
       color: saint.color?.toLowerCase() || "white",

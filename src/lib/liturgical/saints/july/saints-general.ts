@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // July saints
 export const julyGeneralSaints: Saint[] = [
@@ -23,7 +24,7 @@ export const julyGeneralSaints: Saint[] = [
     prayers:
       "O God, whose Only Begotten Son entrusted Mary Magdalene before all others with announcing the great joy of the Resurrection, grant, we pray, that through her intercession and example we may proclaim the living Christ and come to see him reigning in your glory. Who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

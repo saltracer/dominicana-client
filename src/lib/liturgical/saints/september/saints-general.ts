@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // September saints
 export const septemberGeneralSaints: Saint[] = [
@@ -25,7 +26,7 @@ export const septemberGeneralSaints: Saint[] = [
     prayers:
       "Saint Teresa of Calcutta, you allowed the thirsting love of Jesus on the Cross to become a living flame within you, and so became the light of His love to all. Teach me to allow Jesus to penetrate and possess my whole being so completely that my life, too, may radiate His light and love to others. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

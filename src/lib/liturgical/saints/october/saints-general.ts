@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // October saints
 export const octoberGeneralSaints: Saint[] = [
@@ -24,7 +25,7 @@ export const octoberGeneralSaints: Saint[] = [
     prayers:
       "Lord, make me an instrument of your peace. Where there is hatred, let me sow love; where there is injury, pardon; where there is doubt, faith; where there is despair, hope; where there is darkness, light; and where there is sadness, joy. O Divine Master, grant that I may not so much seek to be consoled as to console; to be understood as to understand; to be loved as to love. For it is in giving that we receive; it is in pardoning that we are pardoned; and it is in dying that we are born to eternal life. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -51,7 +52,7 @@ export const octoberGeneralSaints: Saint[] = [
     prayers:
       "O Jesus, Eternal Truth, our Life, I call upon You and I beg Your mercy for poor sinners. O sweetest Heart of my Lord, full of pity and unfathomable mercy, I plead with You for poor sinners. O Most Sacred Heart, Fount of Mercy from which gush forth rays of inconceivable graces upon the entire human race, I beg of You light for poor sinners. O Jesus, be mindful of Your own bitter Passion and do not permit the loss of souls redeemed at so dear a price of Your most precious Blood. Through the intercession of St. Faustina, apostle of Your mercy, grant us the grace to trust in Your mercy all the days of our life. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -76,7 +77,7 @@ export const octoberGeneralSaints: Saint[] = [
     prayers:
       "O God, who are rich in mercy and who willed that Saint John Paul II should preside as Pope over your universal Church, grant, we pray, that instructed by his teaching, we may open our hearts to the saving grace of Christ, the sole Redeemer of mankind. Who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

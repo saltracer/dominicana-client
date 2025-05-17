@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // December saints
 export const decemberGeneralSaints: Saint[] = [
@@ -23,7 +24,7 @@ export const decemberGeneralSaints: Saint[] = [
     prayers:
       "Grant, Lord, we pray, that we may imitate what we worship, and so learn to love even our enemies, for we celebrate the heavenly birthday of a man who knew how to pray even for his persecutors. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
   },
@@ -47,7 +48,7 @@ export const decemberGeneralSaints: Saint[] = [
     prayers:
       "O God, who through the blessed Apostle John have unlocked for us the secrets of your Word, grant, we pray, that we may grasp with proper understanding what he has so marvelously brought to our ears. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

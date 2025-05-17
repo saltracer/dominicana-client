@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // March saints
 export const marchGeneralSaints: Saint[] = [
@@ -24,7 +25,7 @@ export const marchGeneralSaints: Saint[] = [
     prayers:
       "Ever loving God, you called Saint Katherine Drexel to teach the message of the Gospel and to bring the life of the Eucharist to the African American and Native American peoples. By her prayers and example, enable us to work for justice among the poor and oppressed. Draw us all into the Eucharistic community of your Church, that we may be one in you. Grant this through our Lord Jesus Christ, your Son, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -48,7 +49,7 @@ export const marchGeneralSaints: Saint[] = [
     prayers:
       "O God, who called Saint Euphrasia to seek you before all else in a life of perfect obedience, grant that, following her example, we may deny ourselves and devote our lives entirely to your service. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -72,7 +73,7 @@ export const marchGeneralSaints: Saint[] = [
     prayers:
       "O God, who chose the Bishop Saint Patrick to preach your glory to the peoples of Ireland, grant, through his merits and intercession, that those who glory in the name of Christian may never cease to proclaim your wondrous deeds to all. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },

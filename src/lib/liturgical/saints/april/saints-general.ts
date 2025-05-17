@@ -1,5 +1,6 @@
 import type { Saint } from "../saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../../liturgical-types"
+import { LiturgicalColor } from "../../liturgical-types"
+import { CelebrationRank } from "../../celebrations/celebrations-types"
 
 // April saints
 export const aprilGeneralSaints: Saint[] = [
@@ -24,7 +25,7 @@ export const aprilGeneralSaints: Saint[] = [
     prayers:
       "O God, the exaltation of the lowly, who raised Saint Francis of Paola to the glory of your Saints, grant, we pray, that by his merits and example we may happily attain the rewards promised to the humble. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -51,7 +52,7 @@ export const aprilGeneralSaints: Saint[] = [
     prayers:
       "O God, who chose Saint John Baptist de La Salle to educate young Christians, raise up, we pray, teachers in your Church ready to devote themselves wholeheartedly to the human and Christian formation of the young. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
@@ -75,7 +76,7 @@ export const aprilGeneralSaints: Saint[] = [
     prayers:
       "O God, for whose glory Bishop Saint Stanislaus fell beneath the sword of an impious ruler, grant, we beseech you, that we, persevering in thanksgiving for his triumph, may constantly imitate his courage. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
   },
@@ -102,7 +103,7 @@ export const aprilGeneralSaints: Saint[] = [
     prayers:
       "O God, who for the spreading of your Church crowned Saint Peter Chanel with martyrdom, grant that, in these days of paschal joy, we may so celebrate the mysteries of Christ's Death and Resurrection as to bear worthy witness to newness of life. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: false,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
   },
