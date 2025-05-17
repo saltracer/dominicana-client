@@ -87,8 +87,8 @@ const FeastBanner: React.FC = () => {
             {!isToday && (
               <Button 
                 variant="outline" 
-                size="sm" 
-                className="w-full"
+                size="icon" 
+                className=""
                 onClick={() => handleDateChange(new Date())}
               >
                 <RotateCcw className="h-4 w-4" />
