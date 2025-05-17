@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { format, addDays, subDays } from 'date-fns';
+import { format, addDays, subDays, isEqual, startOfDay } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,6 +11,7 @@ import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 
 const FeastBanner: React.FC = () => {
   const { selectedDate, setSelectedDate, currentEvent, setCurrentEvent } = useLiturgicalDay();
+  const isToday = format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
 
   const handleDateChange = (date: Date | undefined) => {
     if (!date) return;
@@ -82,7 +83,18 @@ const FeastBanner: React.FC = () => {
                 />
               </PopoverContent>
             </Popover>
-            
+
+            {!isToday && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+                onClick={() => handleDateChange(new Date())}
+              >
+                Today
+              </Button>
+            )}
+
             <Button 
               variant="ghost" 
               size="icon" 
