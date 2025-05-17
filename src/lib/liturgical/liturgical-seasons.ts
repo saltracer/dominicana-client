@@ -32,6 +32,7 @@ export function getLiturgicalSeason(date: Date): LiturgicalSeason {
       color: "green",
       description:
         "Ordinary Time is the period in the liturgical year outside of the distinct seasons (Advent, Christmas, Lent, and Easter). During Ordinary Time, the Church celebrates the mystery of Christ in all its aspects.",
+      rank: "Season",
     }
 
     // Calculate Easter for the given year

@@ -10,7 +10,7 @@ export interface Saint {
   death_year?: number
   prayers?: string
   is_dominican: boolean
-  rank?: LiturgicalRank
+  rank?: CelebrationRank
   color?: LiturgicalColor
   proper?: string
   celebration_name?: string
@@ -18,4 +18,5 @@ export interface Saint {
   books?: any[]
 }
 
-import { LiturgicalRank, LiturgicalColor } from "../liturgical-types"
+import { CelebrationRank } from "../celebrations/celebrations-types"
+import { LiturgicalColor } from "../liturgical-types"
