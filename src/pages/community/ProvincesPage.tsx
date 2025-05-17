@@ -1,5 +1,6 @@
 
 import React from 'react';
+import ProvincesMap from '@/components/map/ProvincesMap';
 
 const ProvincesPage: React.FC = () => {
   return (
@@ -17,15 +18,7 @@ const ProvincesPage: React.FC = () => {
       </p>
       
       <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="text-center py-20">
-          <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
-            Map Coming Soon
-          </h3>
-          <p className="text-gray-600 max-w-md mx-auto">
-            An interactive map of Dominican provinces around the world will be available soon.
-            Check back later for this feature.
-          </p>
-        </div>
+        <ProvincesMap />
       </div>
     </div>
   );
