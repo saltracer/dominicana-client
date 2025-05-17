@@ -1,6 +1,6 @@
-import { LiturgicalColor, LiturgicalRank } from "../liturgical-types"
+import { LiturgicalColor } from "../liturgical-types"
 import { calculateEaster, calculateFirstAdventSunday } from "../liturgical-seasons"
-import type { FixedCelebration } from "./celebrations-types"
+import { FixedCelebration, CelebrationRank } from "./celebrations-types"
 
 // Define the moveable feasts and solemnities (those that depend on the date of Easter)
 export function moveableGeneralCelebrations(year: number): FixedCelebration[] {

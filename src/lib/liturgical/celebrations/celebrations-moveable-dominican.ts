@@ -1,6 +1,6 @@
 import { calculateEaster } from "../liturgical-seasons"
-import type { FixedCelebration } from "./celebrations-types"
-import { LiturgicalRank, LiturgicalColor } from "../liturgical-types"
+import { FixedCelebration, CelebrationRank } from "./celebrations-types"
+import { LiturgicalColor } from "../liturgical-types"
 
 // Define the moveable Dominican feasts and celebrations
 export function moveableDominicanCelebrations(year: number): FixedCelebration[] {
@@ -19,7 +19,7 @@ export function moveableDominicanCelebrations(year: number): FixedCelebration[] 
       id: "our-lady-of-rosary-eastertide",
       name: "Our Lady of the Rosary in Eastertide",
       date: tuesdayString,
-      rank: LiturgicalRank.MEMORIAL,
+      rank: CelebrationRank.MEMORIAL,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Dominican Saints",
       type: "dominican",

@@ -1,5 +1,5 @@
-import { LiturgicalColor, LiturgicalRank } from "../liturgical-types"
-import type { FixedCelebration } from "./celebrations-types"
+import { LiturgicalColor } from "../liturgical-types"
+import { FixedCelebration, CelebrationRank } from "./celebrations-types"
 
 // Define the fixed Dominican celebrations of the liturgical year
 export function fixedDominicanCelebrations(): FixedCelebration[] {
@@ -8,7 +8,7 @@ export function fixedDominicanCelebrations(): FixedCelebration[] {
       id: "all-saints-of-the-order",
       name: "All Saints of the Order of Preachers",
       date: "11-07",
-      rank: LiturgicalRank.FEAST,
+      rank: CelebrationRank.FEAST,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Dominican Saints",
       type: "dominican",
@@ -27,7 +27,7 @@ export function fixedDominicanCelebrations(): FixedCelebration[] {
       id: "anniversary-of-deceased-dominicans",
       name: "Anniversary of All Deceased Brothers and Sisters of the Order",
       date: "11-08",
-      rank: LiturgicalRank.MEMORIAL,
+      rank: CelebrationRank.MEMORIAL,
       color: LiturgicalColor.VIOLET,
       proper: "Proper of Dominican Saints",
       type: "dominican",
@@ -46,7 +46,7 @@ export function fixedDominicanCelebrations(): FixedCelebration[] {
       id: "patronage-of-the-blessed-virgin-mary",
       name: "Patronage of the Blessed Virgin Mary over the Order of Preachers",
       date: "12-22",
-      rank: LiturgicalRank.MEMORIAL,
+      rank: CelebrationRank.MEMORIAL,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Dominican Saints",
       type: "dominican",
@@ -65,7 +65,7 @@ export function fixedDominicanCelebrations(): FixedCelebration[] {
       id: "translation-of-st-dominic",
       name: "Translation of Our Holy Father Dominic",
       date: "05-24",
-      rank: LiturgicalRank.MEMORIAL,
+      rank: CelebrationRank.MEMORIAL,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Dominican Saints",
       type: "dominican",
