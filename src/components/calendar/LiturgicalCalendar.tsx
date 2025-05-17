@@ -1,141 +1,21 @@
-
-import React, { useState } from 'react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, parseISO, addDays, getDay } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, parseISO, addDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Temporary data for liturgical feasts and celebrations
-// In a production app, this would come from an API or database
-const liturgicalEvents = [
-  {
-    date: '2024-05-16',
-    name: 'St. Andrew Bobola',
-    type: 'Optional Memorial',
-    color: 'red',
-    isDominican: false
-  },
-  {
-    date: '2024-05-20',
-    name: 'St. Bernardine of Siena',
-    type: 'Optional Memorial',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-05-21',
-    name: 'Bl. Hyacinth Mary Cormier',
-    type: 'Optional Memorial',
-    color: 'white',
-    isDominican: true
-  },
-  {
-    date: '2024-05-24',
-    name: 'Translation of Our Holy Father Dominic',
-    type: 'Feast',
-    color: 'white',
-    isDominican: true
-  },
-  {
-    date: '2024-05-25',
-    name: 'St. Mary Magdalene de Pazzi',
-    type: 'Optional Memorial',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-05-26',
-    name: 'Solemnity of the Most Holy Trinity',
-    type: 'Solemnity',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-05-27',
-    name: 'St. Augustine of Canterbury',
-    type: 'Memorial',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-05-29',
-    name: 'Bl. William and Companions',
-    type: 'Optional Memorial',
-    color: 'red',
-    isDominican: true
-  },
-  {
-    date: '2024-05-31',
-    name: 'Visitation of the Blessed Virgin Mary',
-    type: 'Feast',
-    color: 'white',
-    isDominican: false
-  },
-  // June events
-  {
-    date: '2024-06-01',
-    name: 'St. Justin Martyr',
-    type: 'Memorial',
-    color: 'red',
-    isDominican: false
-  },
-  {
-    date: '2024-06-03',
-    name: 'St. Charles Lwanga and Companions',
-    type: 'Memorial',
-    color: 'red',
-    isDominican: false
-  },
-  {
-    date: '2024-06-05',
-    name: 'St. Boniface',
-    type: 'Memorial',
-    color: 'red',
-    isDominican: false
-  },
-  {
-    date: '2024-06-06',
-    name: 'Corpus Christi',
-    type: 'Solemnity',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-06-08',
-    name: 'Bl. Diana and Blessed Cecilia',
-    type: 'Memorial',
-    color: 'white',
-    isDominican: true
-  },
-  {
-    date: '2024-06-09',
-    name: 'St. Ephrem',
-    type: 'Optional Memorial',
-    color: 'white',
-    isDominican: false
-  },
-  {
-    date: '2024-06-10',
-    name: 'Blessed John Dominici',
-    type: 'Optional Memorial',
-    color: 'white',
-    isDominican: true
-  },
-];
-
-interface CalendarEvent {
-  date: string;
-  name: string;
-  type: string;
-  color: string;
-  isDominican: boolean;
-  description?: string;
-}
+import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
+import { liturgicalEvents } from '@/data/liturgicalEvents';
 
 const LiturgicalCalendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const { selectedDate, setSelectedDate, currentEvent, setCurrentEvent } = useLiturgicalDay();
+
+  // Sync calendar month with selected date when it changes to a different month
+  useEffect(() => {
+    if (!isSameMonth(selectedDate, currentMonth)) {
+      setCurrentMonth(selectedDate);
+    }
+  }, [selectedDate, currentMonth]);
 
   const onDateClick = (day: Date) => {
     setSelectedDate(day);
@@ -146,9 +26,9 @@ const LiturgicalCalendar: React.FC = () => {
     );
     
     if (events.length > 0) {
-      setSelectedEvent(events[0]);
+      setCurrentEvent(events[0]);
     } else {
-      setSelectedEvent(null);
+      setCurrentEvent(null);
     }
   };
 
@@ -340,34 +220,34 @@ const LiturgicalCalendar: React.FC = () => {
       
       <div className="bg-white rounded-lg shadow-md p-4">
         <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
-          {selectedEvent ? selectedEvent.name : "Selected Day"}
+          {currentEvent ? currentEvent.name : "Selected Day"}
         </h3>
         <div className="mb-4">
           <p className="text-gray-600">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
         </div>
         
-        {selectedEvent ? (
+        {currentEvent ? (
           <div className="space-y-4">
             <div className={cn(
               "p-2 rounded",
-              selectedEvent.color === 'green' && "bg-liturgical-green text-white",
-              selectedEvent.color === 'purple' && "bg-liturgical-purple text-white",
-              selectedEvent.color === 'white' && "bg-liturgical-white text-dominican-black",
-              selectedEvent.color === 'red' && "bg-liturgical-red text-white",
-              selectedEvent.color === 'rose' && "bg-liturgical-rose text-dominican-black",
-              selectedEvent.color === 'gold' && "bg-liturgical-gold text-dominican-black"
+              currentEvent.color === 'green' && "bg-liturgical-green text-white",
+              currentEvent.color === 'purple' && "bg-liturgical-purple text-white",
+              currentEvent.color === 'white' && "bg-liturgical-white text-dominican-black",
+              currentEvent.color === 'red' && "bg-liturgical-red text-white",
+              currentEvent.color === 'rose' && "bg-liturgical-rose text-dominican-black",
+              currentEvent.color === 'gold' && "bg-liturgical-gold text-dominican-black"
             )}>
-              {selectedEvent.type}
+              {currentEvent.type}
             </div>
             
-            {selectedEvent.isDominican && (
+            {currentEvent.isDominican && (
               <div className="bg-dominican-burgundy/10 text-dominican-burgundy p-2 rounded">
                 Dominican Feast
               </div>
             )}
             
             <p className="text-gray-700">
-              {selectedEvent.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras porta condimentum urna, vel elementum erat maximus at."}
+              {currentEvent.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras porta condimentum urna, vel elementum erat maximus at."}
             </p>
             
             {/* Additional information could be shown here */}
