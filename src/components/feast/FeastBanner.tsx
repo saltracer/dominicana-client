@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { format } from 'date-fns';
-import { Calendar } from 'lucide-react';
+import { format, addDays, subDays } from 'date-fns';
+import { Calendar, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -26,6 +26,13 @@ const FeastBanner: React.FC = () => {
     }
   };
 
+  const navigateDay = (direction: 'prev' | 'next') => {
+    const newDate = direction === 'prev' 
+      ? subDays(selectedDate, 1) 
+      : addDays(selectedDate, 1);
+    handleDateChange(newDate);
+  };
+
   // Map liturgical colors to Tailwind classes
   const getColorClasses = (color: string | undefined) => {
     if (!color) return '';
@@ -44,11 +51,54 @@ const FeastBanner: React.FC = () => {
   };
 
   return (
-    <div className="bg-dominican-light-gray/20 border-b border-dominican-light-gray w-full py-2">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {currentEvent ? (
-            <>
+    <div className="bg-dominican-light-gray/20 border-b border-dominican-light-gray w-full py-3">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigateDay('prev')}
+              className="hover:bg-dominican-light-gray/30"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            
+            <h2 className="text-lg font-garamond font-semibold">
+              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+            </h2>
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigateDay('next')}
+              className="hover:bg-dominican-light-gray/30"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+        
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1 border-dominican-light-gray">
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Select Date</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <CalendarComponent
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateChange}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        
+        {currentEvent && (
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
               <div className={cn(
                 "px-3 py-1.5 rounded text-sm font-medium",
                 getColorClasses(currentEvent.color)
@@ -56,39 +106,41 @@ const FeastBanner: React.FC = () => {
                 {currentEvent.rank}
               </div>
               
-              <h2 className="text-lg font-garamond font-semibold">
+              <h3 className="text-lg font-garamond font-semibold">
                 {currentEvent.name}
-              </h2>
+              </h3>
               
               {currentEvent.isDominican && (
                 <span className="bg-dominican-burgundy/10 text-dominican-burgundy text-xs px-2 py-0.5 rounded">
                   Dominican Feast
                 </span>
               )}
-            </>
-          ) : (
-            <h2 className="text-lg font-garamond font-semibold">
-              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-            </h2>
-          )}
-        </div>
-        
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1 border-dominican-light-gray">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Select Date</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="end">
-            <CalendarComponent
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+            </div>
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Info className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">{currentEvent.name}</h4>
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      getColorClasses(currentEvent.color)
+                    )}></div>
+                    <span className="text-sm">{currentEvent.rank}</span>
+                  </div>
+                  {currentEvent.description && (
+                    <p className="text-sm text-gray-600">{currentEvent.description}</p>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </div>
     </div>
   );

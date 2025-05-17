@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, addDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -11,17 +10,11 @@ const LiturgicalCalendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const { selectedDate, setSelectedDate, setCurrentEvent } = useLiturgicalDay();
 
-  // Sync calendar month with selected date when it changes to a different month
-  useEffect(() => {
-    if (!isSameMonth(selectedDate, currentMonth)) {
-      setCurrentMonth(selectedDate);
-    }
-  }, [selectedDate, currentMonth]);
-
+  // Update selected date when clicking on a day
   const onDateClick = (day: Date) => {
     setSelectedDate(day);
     
-    // Get celebrations for this day from the liturgical library
+    // Get celebrations for this day
     const celebrations = getCelebrationsForDate(day);
     
     if (celebrations.length > 0) {
@@ -32,6 +25,7 @@ const LiturgicalCalendar: React.FC = () => {
     }
   };
 
+  // Navigation functions - now properly manage the month view
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
@@ -137,14 +131,14 @@ const LiturgicalCalendar: React.FC = () => {
             className={cn(
               "h-24 border border-dominican-light-gray p-1 relative",
               !isSameMonth(day, monthStart) && "bg-gray-100 text-gray-400",
-              seasonClass && `${seasonClass}-bg`
+              seasonClass && `${seasonClass}-bg`,
+              isSameDay(day, selectedDate) && "ring-2 ring-dominican-burgundy ring-inset"
             )}
             key={day.toString()}
             onClick={() => onDateClick(cloneDay)}
           >
             <div className={cn(
-              "flex justify-between",
-              isSameDay(day, selectedDate) && "bg-dominican-burgundy/10 rounded"
+              "flex justify-between"
             )}>
               <span className="text-sm p-1">{formattedDate}</span>
               {isDominican && (
