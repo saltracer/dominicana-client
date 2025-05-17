@@ -1,7 +1,7 @@
 import { format } from "date-fns"
 
 import type { Saint } from "./saint-types"
-import type { CelebrationRank } from "../celebrations"
+import { CelebrationRank } from "../celebrations"
 import type { Celebration } from "../celebrations"
 
 import { dominicanSaints } from "./saint-dominicans"
