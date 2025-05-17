@@ -4,7 +4,7 @@ import { philippinesProvinceBoundaries } from "./philippines-boundaries"
 export const philippinesProvince: Province = {
   id: "philippines",
   name: "Province of the Philippines",
-  formationDate: "1971",
+  formation_date: "1971",
   region: "Philippines",
   region_expanded: "Philippines (All states and provinces)",
   countries: ["Philippines"],

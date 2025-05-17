@@ -7,6 +7,8 @@ export interface Province {
   formation_date: string | number
   region: string
   region_expanded?: string
+  province_saint?: string
+  province_saint_feast_day?: string
   countries: string[]
   website: string
   lay_website?: string
@@ -21,11 +23,17 @@ export interface Province {
     geometry?: any
   }
   color: string
+  notable_dominicans?: {
+    name: string
+    dates: string
+    description: string
+  }[]
   priories?: {
     name: string
     location: string
-    coordinates: [number, number]
-    foundedYear: number
+    coordinates?: [number, number]
+    founded?: number
+    description?: string
     isProvincialHouse?: boolean
   }[]
 }

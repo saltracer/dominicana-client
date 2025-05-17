@@ -29,20 +29,20 @@ export const croatiaProvince: Province = {
       name: "Convent of St. Dominic",
       location: "Zagreb",
       coordinates: [45.815, 15.9819],
-      foundedYear: 1479,
+      founded: 1479,
       isProvincialHouse: true,
     },
     {
       name: "Convent of St. Nicholas",
       location: "Dubrovnik",
       coordinates: [42.6507, 18.0944],
-      foundedYear: 1225,
+      founded: 1225,
     },
     {
       name: "Convent of St. Catherine",
       location: "Split",
       coordinates: [43.5081, 16.4402],
-      foundedYear: 1345,
+      founded: 1345,
     },
   ],
 }

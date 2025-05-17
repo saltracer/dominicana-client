@@ -4,7 +4,7 @@ import { pakistanProvinceBoundaries } from "./pakistan-boundaries"
 export const pakistanProvince: Province = {
   id: "pakistan",
   name: "Vice-Province of Pakistan",
-  formationDate: "1982",
+  formation_date: "1982",
   region: "Pakistan",
   region_expanded: "Pakistan (All states and provinces)",
   countries: ["Pakistan"],

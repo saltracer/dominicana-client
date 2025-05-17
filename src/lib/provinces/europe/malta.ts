@@ -29,20 +29,20 @@ export const maltaProvince: Province = {
       name: "Convent of St. Mary of the Grotto",
       location: "Rabat",
       coordinates: [35.8815, 14.3989],
-      foundedYear: 1450,
+      founded: 1450,
       isProvincialHouse: true,
     },
     {
       name: "Convent of the Annunciation",
       location: "Valletta",
       coordinates: [35.8989, 14.5146],
-      foundedYear: 1571,
+      founded: 1571,
     },
     {
       name: "Convent of St. Dominic",
       location: "Vittoriosa",
       coordinates: [35.8886, 14.5236],
-      foundedYear: 1528,
+      founded: 1528,
     },
   ],
 }

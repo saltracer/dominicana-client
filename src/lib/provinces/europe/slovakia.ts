@@ -29,20 +29,20 @@ export const slovakiaProvince: Province = {
       name: "Convent of St. Dominic",
       location: "Bratislava",
       coordinates: [48.1486, 17.1077],
-      foundedYear: 1935,
+      founded: 1935,
       isProvincialHouse: true,
     },
     {
       name: "Convent of the Holy Trinity",
       location: "Košice",
       coordinates: [48.7164, 21.2611],
-      foundedYear: 1945,
+      founded: 1945,
     },
     {
       name: "Convent of St. Thomas Aquinas",
       location: "Žilina",
       coordinates: [49.2231, 18.7394],
-      foundedYear: 1992,
+      founded: 1992,
     },
   ],
 }

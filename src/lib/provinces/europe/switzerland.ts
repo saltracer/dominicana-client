@@ -29,20 +29,20 @@ export const switzerlandProvince: Province = {
       name: "Albertinum",
       location: "Fribourg",
       coordinates: [46.8064, 7.1621],
-      foundedYear: 1890,
+      founded: 1890,
       isProvincialHouse: true,
     },
     {
       name: "Convent of St. Hyacinth",
       location: "Zürich",
       coordinates: [47.3769, 8.5417],
-      foundedYear: 1935,
+      founded: 1935,
     },
     {
       name: "Convent of St. Albert",
       location: "Geneva",
       coordinates: [46.2044, 6.1432],
-      foundedYear: 1941,
+      founded: 1941,
     },
   ],
 }

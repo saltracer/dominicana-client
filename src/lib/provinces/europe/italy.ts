@@ -4,7 +4,7 @@ import { italyProvinceBoundaries } from "./italy-boundaries"
 export const italyProvince: Province = {
   id: "italy",
   name: "Province of St. Dominic in Italy",
-  formationDate: "1302",
+  formation_date: "1302",
   region: "Europe",
   countries: ["Italy", "Malta"],
   website: "https://www.domenicani.it",

@@ -29,20 +29,20 @@ export const belgiumProvince: Province = {
       name: "Convent of La Sarte",
       location: "Brussels",
       coordinates: [50.8503, 4.3517],
-      foundedYear: 1901,
+      founded: 1901,
       isProvincialHouse: true,
     },
     {
       name: "Convent of St. Thomas Aquinas",
       location: "Leuven",
       coordinates: [50.8798, 4.7005],
-      foundedYear: 1923,
+      founded: 1923,
     },
     {
       name: "Convent of St. Dominic",
       location: "Antwerp",
       coordinates: [51.2194, 4.4025],
-      foundedYear: 1571,
+      founded: 1571,
     },
   ],
 }

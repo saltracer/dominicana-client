@@ -1,4 +1,4 @@
-import type { Province } from "../../types"
+import type { Province } from "@/lib/types"
 import { boliviaBoundaries } from "./bolivia-boundaries"
 
 export const boliviaProvince: Province = {

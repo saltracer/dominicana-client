@@ -29,20 +29,20 @@ export const czechRepublicProvince: Province = {
       name: "Convent of St. Giles",
       location: "Prague",
       coordinates: [50.0875, 14.4189],
-      foundedYear: 1348,
+      founded: 1348,
       isProvincialHouse: true,
     },
     {
       name: "Convent of St. Thomas",
       location: "Brno",
       coordinates: [49.1951, 16.6068],
-      foundedYear: 1350,
+      founded: 1350,
     },
     {
       name: "Convent of the Holy Cross",
       location: "Olomouc",
       coordinates: [49.5938, 17.2509],
-      foundedYear: 1468,
+      founded: 1468,
     },
   ],
 }

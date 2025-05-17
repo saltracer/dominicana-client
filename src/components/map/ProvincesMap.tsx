@@ -188,7 +188,7 @@ const ProvincesMap: React.FC = () => {
                       )}
                     </h4>
                     <p className="text-sm text-gray-600">{priory.location}</p>
-                    <p className="text-xs text-gray-500">Founded: {priory.foundedYear}</p>
+                    <p className="text-xs text-gray-500">Founded: {priory.founded}</p>
                   </div>
                 ))}
               </div>

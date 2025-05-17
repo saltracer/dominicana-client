@@ -29,20 +29,20 @@ export const portugalProvince: Province = {
       name: "Convent of São Domingos",
       location: "Lisbon",
       coordinates: [38.7223, -9.1393],
-      foundedYear: 1241,
+      founded: 1241,
       isProvincialHouse: true,
     },
     {
       name: "Convent of Santa Cruz",
       location: "Porto",
       coordinates: [41.1579, -8.6291],
-      foundedYear: 1237,
+      founded: 1237,
     },
     {
       name: "Convent of Nossa Senhora da Misericórdia",
       location: "Coimbra",
       coordinates: [40.2033, -8.4103],
-      foundedYear: 1227,
+      founded: 1227,
     },
   ],
 }

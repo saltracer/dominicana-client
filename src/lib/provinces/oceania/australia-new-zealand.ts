@@ -25,13 +25,6 @@ export const australiaNewZealandProvince: Province = {
   color: "#00843D", // Green representing the Australian landscape
   province_saint: "Our Lady of the Assumption",
   province_saint_feast_day: "August 15",
-  apostolates: [
-    "Parish Ministry",
-    "University and School Chaplaincy",
-    "Social Justice Advocacy",
-    "Theology and Philosophy",
-    "Youth Ministry",
-  ],
   notable_dominicans: [
     {
       name: "Fr. Thomas Lawrason",

@@ -29,20 +29,20 @@ export const irelandProvince: Province = {
       name: "St. Saviour's Priory",
       location: "Dublin",
       coordinates: [53.3498, -6.2603],
-      foundedYear: 1224,
+      founded: 1224,
       isProvincialHouse: true,
     },
     {
       name: "Holy Cross Priory",
       location: "Cork",
       coordinates: [51.8979, -8.4706],
-      foundedYear: 1229,
+      founded: 1229,
     },
     {
       name: "St. Mary's Priory",
       location: "Galway",
       coordinates: [53.2707, -9.0568],
-      foundedYear: 1488,
+      founded: 1488,
     },
   ],
 }
