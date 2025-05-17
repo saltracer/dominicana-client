@@ -80,7 +80,7 @@ const ProvincesMap: React.FC = () => {
         {allProvinces.map((province) => (
           <Marker 
             key={province.id}
-            position={[province.coordinates[1], province.coordinates[0]]} 
+            position={[province.coordinates[0], province.coordinates[1]]} 
             icon={createCustomIcon(province.color)}
             eventHandlers={{
               click: () => setSelectedProvince(province)
