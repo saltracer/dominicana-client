@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format, addDays, subDays, isEqual, startOfDay } from 'date-fns';
-import { Calendar, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Info, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -91,7 +91,7 @@ const FeastBanner: React.FC = () => {
                 className="w-full"
                 onClick={() => handleDateChange(new Date())}
               >
-                Today
+                <RotateCcw className="h-4 w-4" />
               </Button>
             )}
 
