@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
 import { DivIcon } from 'leaflet';
@@ -88,6 +87,7 @@ const ProvincesMap: React.FC = () => {
           >
             <Tooltip direction="top" offset={[0, -10]} opacity={1}>
               <div className="font-medium">{province.name}</div>
+              <div>Region: {province.region}</div>
               <div>Founded: {province.formation_date}</div>
             </Tooltip>
           </Marker>
