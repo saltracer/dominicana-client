@@ -1,5 +1,6 @@
 import type { Saint } from "./saint-types"
-import { LiturgicalRank, LiturgicalColor } from "../liturgical-types"
+import { LiturgicalColor } from "../liturgical-types"
+import { CelebrationRank } from "../celebrations/celebrations-types"
 
 
 // Dominican saints (excluding those who are also Doctors of the Church)
@@ -24,7 +25,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "Almighty ever-living God, who chose what is weak in the world to confound the strong, mercifully grant that we, who celebrate the heavenly birthday of your handmaid Saint Agnes, may follow her constancy in the Christian faith. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -49,7 +50,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made the Bishop Saint Antoninus outstanding in his observance of religious life and his compassion for the poor, grant that, through his merits, we may abound in riches of your grace and be ever fervent in our love for you and for our neighbor. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -74,7 +75,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed Bartholomew an outstanding minister of peace and concord, grant that, through his intercession, we may always be of one heart and one mind in your Church. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -99,7 +100,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who adorned Saint Catherine de' Ricci with a marvelous contemplation of your Son's Passion, grant, through her intercession, that, meditating devoutly on the mysteries of our redemption, we may merit to reap its fruits. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -124,7 +125,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who gave the Priest Saint Ceslaus the grace to preach the Gospel and to confirm his preaching by signs and wonders, grant, through his intercession, that we may grow in knowledge of your truth and advance in virtue. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -149,7 +150,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who called Blessed Diana to seek your kingdom in this world through the pursuit of perfect charity, grant that, strengthened by her prayers, we may advance with joyful spirit in the way of love. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -174,7 +175,7 @@ export const dominicanSaints: Saint[] = [
       "O God, who have enlightened your Church by the merits and teaching of Saint Dominic your Confessor, grant that through his intercession it may never be deprived of temporal help, and may always grow in spiritual progress. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     books: ["history-of-order-of-preachers", "life-of-st-dominic"],
     is_dominican: true,
-    rank: LiturgicalRank.SOLEMNITY,
+    rank: CelebrationRank.SOLEMNITY,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     celebration_name: "Our Holy Father Dominic, Priest and Founder of the Order of Preachers",
@@ -200,7 +201,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who filled the heart of Blessed Henry with burning love for the Holy Name of Jesus and for the mystery of the Cross, grant, through his intercession, that, contemplating with him the mystery of your love, we may merit to share in the eternal vision of your glory. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -225,7 +226,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who gave the Priest Saint Hyacinth the grace to preach the Gospel, to confirm his preaching by signs and wonders, and to bring the light of faith to the nations, grant, through his intercession, that we may grow in knowledge of your truth and advance in virtue. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -250,7 +251,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed James outstanding in the preaching of your word and in the promotion of regular observance, grant that your Church may be constantly strengthened by excellent preachers and faithful ministers. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -275,7 +276,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who called Saint John Macias to seek your kingdom in this world through the pursuit of perfect charity, grant that, strengthened by his prayers, we may advance with joyful spirit in the way of love. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -300,7 +301,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who crowned with the palm of martyrdom Saint John and his companions for their true faith in the Eucharist and their fidelity to the Roman Pontiff, grant, we pray, through their intercession, that we may ever strive for the unity of your Church. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
     type: "dominican",
@@ -325,7 +326,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed Jordan wonderful in extending the kingdom of your Church and in leading souls to the light of your wisdom, grant us, through his intercession, that we may always be strengthened by the same wisdom and share in the eternal glory of your saints. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -350,7 +351,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Saint Louis Bertrand outstanding in his ardent zeal for souls and in his apostolic ministry, grant, through his intercession, that we may know your holy will and run in the way of your commandments. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -375,7 +376,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who by your grace made Saint Margaret of Castello a model of patience and charity, grant us, through her intercession, that, bearing our crosses with Christ, we may respond with love to every suffering we encounter. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -400,7 +401,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who called your handmaid Margaret to seek you before all else, grant that, serving you through the perfect observance of her monastic consecration, we may set our hearts on the surpassing gift of your love. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -425,7 +426,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "Most glorious Martin de Porres, whose burning charity embraced not only the needy brethren, but also the very animals of the field, splendid example of charity, we hail and invoke thee! From that high throne which thou dost occupy, deign to listen to the supplications of thy needy brethren that, by imitating thy virtues, we may live contented in that state in which God has placed us and carrying with strength and courage our cross, we may follow in the footsteps of Our Blessed Redeemer and His most afflicted Mother, that at last we may reach the Kingdom of Heaven through the merits of Our Lord Jesus Christ. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.FEAST,
+    rank: CelebrationRank.FEAST,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -450,7 +451,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "Grant, we pray, almighty God, that we may follow with due devotion the faith of blessed Peter, your Martyr, who, for the spreading of that same faith, was made worthy to obtain the palm of martyrdom. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.RED,
     proper: "Proper of Saints",
     type: "dominican",
@@ -475,7 +476,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who in your providence raised up Pope Saint Pius the Fifth in your Church that the faith might be safeguarded and more fitting worship be offered to you, grant, through his intercession, that we may participate in your mysteries with lively faith and fruitful charity. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -500,7 +501,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who adorned the Priest Saint Raymond with the virtue of outstanding mercy and compassion for sinners and for captives, grant us, through his intercession, that, released from slavery to sin, we may carry out in freedom of spirit what is pleasing to you. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -525,7 +526,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed Reginald outstanding in the preaching of your word and in the promotion of regular observance, grant that your Church may be constantly strengthened by excellent preachers and faithful ministers. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -550,7 +551,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "Admirable Saint Rose, you were truly a sweet flower blooming on a rugged soil; you were indeed a rose among thorns, bearing the wounds of your Savior and giving forth the fragrance of a life of penance and mortification. Your love for Jesus was so ardent that you could not rest at the thought of how much he had done for our salvation. You were consumed with a desire to sacrifice yourself for the conversion of sinners. Grant, we beseech you, that we may follow your example and that the good odor of our virtues may be a source of edification to our neighbor. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -575,7 +576,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who called the Priest Saint Vincent Ferrer to minister to the Christian people by the preaching of the Gospel of Christ, grant, we pray, that we may be found worthy to see in heaven him whose message of salvation we have received on earth. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.MEMORIAL,
+    rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -600,7 +601,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who taught Saint Zdislava to progress in every state of life along the way of perfection, grant us, by her example, to grow in the holiness of Christian life and to imitate her works of charity. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -625,7 +626,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed Raymond outstanding in the promotion of regular observance and in his devotion to the Virgin Mother of your Son, grant that, following his example, we may bring forth worthy fruits of penance and ever rejoice in the patronage of the same Blessed Virgin Mary. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -650,7 +651,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who willed to direct the steps of the Priest Saint Louis along the way of salvation and of the love of Christ, in the company of the Blessed Virgin, grant us, by his example, that, meditating on the mysteries of your love, we may strive tirelessly for the building up of your Church. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
@@ -678,7 +679,7 @@ export const dominicanSaints: Saint[] = [
     prayers:
       "O God, who made Blessed Hyacinthe Marie an outstanding exemplar of the regular life and of priestly virtues, grant that, strengthened by his prayers and example, we may persevere in our vocation and attain to perfect charity. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
     is_dominican: true,
-    rank: LiturgicalRank.OPTIONAL_MEMORIAL,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
     type: "dominican",
