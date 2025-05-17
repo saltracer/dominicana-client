@@ -557,7 +557,7 @@ export function moveableGeneralCelebrations(year: number): FixedCelebration[] {
       id: "christ-the-king",
       name: "Our Lord Jesus Christ, King of the Universe",
       date: christTheKingString,
-      rank: LiturgicalRank.SOLEMNITY,
+      rank: CelebrationRank.SOLEMNITY,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Time",
       type: "universal",
