@@ -40,19 +40,3 @@ export interface Celebration {
   prayers?: string
   books?: string[]
 }
-/* orig imported from v0 implementation
-export interface Celebration {
-  id: string
-  name: string
-  date: Date
-  rank: string
-  color: string
-  proper?: string
-  readings?: string
-  type: "universal" | "dominican" | "both"
-  isSaint?: boolean
-  short_desc?: string
-  description?: string[]
-  book_recommendation?: any
-}
-*/
