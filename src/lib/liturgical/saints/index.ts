@@ -21,7 +21,7 @@ import { octoberGeneralSaints } from "./october"
 import { novemberGeneralSaints } from "./november"
 import { decemberGeneralSaints } from "./december"
 
-// Combine all saints data
+// Combine all generalsaints data
 export const generalSaints: Saint[] = [
   ...januaryGeneralSaints,
   ...februaryGeneralSaints,
@@ -35,6 +35,13 @@ export const generalSaints: Saint[] = [
   ...octoberGeneralSaints,
   ...novemberGeneralSaints,
   ...decemberGeneralSaints,
+]
+
+// Combine all saints data
+export const allSaints: Saint[] = [
+  ...dominicanSaints,
+  ...doctorSaints,
+  ...generalSaints,
 ]
 
 // Function to get saints for a specific date

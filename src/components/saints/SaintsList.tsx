@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { generalSaints } from '@/lib/saints';
-import type { Saint } from '@/lib/saints/saint-types';
+import { generalSaints } from '@/lib/liturgical/saints';
+import type { Saint } from '@/lib/liturgical/saints/saint-types';
 
 const SaintsList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
