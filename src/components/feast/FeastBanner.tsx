@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format, addDays, subDays, isEqual, startOfDay } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight, Info, RotateCcw } from 'lucide-react';
@@ -8,11 +9,13 @@ import { cn } from '@/lib/utils';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import CelebrationDetailsDialog from '@/components/calendar/CelebrationDetailsDialog';
 
 const FeastBanner: React.FC = () => {
   const { selectedDate, setSelectedDate, currentEvent, setCurrentEvent } = useLiturgicalDay();
   const isToday = format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
   const isMobile = useIsMobile();
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = React.useState(false);
 
   const handleDateChange = (date: Date | undefined) => {
     if (!date) return;
@@ -50,18 +53,6 @@ const FeastBanner: React.FC = () => {
     };
     
     return colorClasses[color.toLowerCase()] || '';
-  };
-
-  // Format description with proper paragraphs
-  const formatDescription = (description: string | undefined) => {
-    if (!description) return null;
-    
-    // If the description is already an array (from joined paragraphs), split it back
-    const paragraphs = description.split(/(?<=\.|\?|\!) (?=[A-Z])/);
-    
-    return paragraphs.map((paragraph, index) => 
-      <p key={index} className="text-sm text-gray-600 mb-2">{paragraph}</p>
-    );
   };
 
   return (
@@ -151,63 +142,27 @@ const FeastBanner: React.FC = () => {
                   </span>
                 )}
                 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Info className="h-5 w-5" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="font-semibold text-xl mb-1">{currentEvent.name}</h4>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className={cn(
-                            "w-3 h-3 rounded-full",
-                            getColorClasses(currentEvent.color).split(' ')[0]
-                          )}></div>
-                          <span className="text-sm font-medium">{currentEvent.rank}</span>
-                          {currentEvent.isDominican && (
-                            <span className="bg-dominican-burgundy/10 text-dominican-burgundy text-xs px-2 py-0.5 rounded">
-                              Dominican
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Date information */}
-                      {(currentEvent.birthYear || currentEvent.deathYear) && (
-                        <div className="text-sm">
-                          <span className="text-gray-500">
-                            {currentEvent.birthYear && currentEvent.deathYear 
-                              ? `${currentEvent.birthYear} - ${currentEvent.deathYear}` 
-                              : (currentEvent.deathYear ? `d. ${currentEvent.deathYear}` : '')}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {/* Patronage information */}
-                      {currentEvent.patronage && (
-                        <div>
-                          <span className="text-sm font-semibold">Patronage:</span>
-                          <p className="text-sm">{currentEvent.patronage}</p>
-                        </div>
-                      )}
-                      
-                      {/* Formatted description */}
-                      {currentEvent.description && (
-                        <div className="mt-2">
-                          {formatDescription(currentEvent.description)}
-                        </div>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => setIsDetailsDialogOpen(true)}
+                >
+                  <Info className="h-5 w-5" />
+                </Button>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Use the same CelebrationDetailsDialog component */}
+      {currentEvent && (
+        <CelebrationDetailsDialog
+          isOpen={isDetailsDialogOpen}
+          onClose={() => setIsDetailsDialogOpen(false)}
+          celebration={currentEvent}
+        />
+      )}
     </div>
   );
 };
