@@ -22,9 +22,10 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
   const features = provinces.map(province => {
     // Handle different boundary formats
     if (province.boundaries.type === 'Feature') {
+      // For boundaries that are already in Feature format
       return {
         ...province.boundaries,
-        type: 'Feature' as const, // Use const assertion to specify exact string type
+        type: 'Feature' as const,
         properties: {
           ...province.boundaries.properties,
           provinceId: province.id,
@@ -34,12 +35,12 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
     } else {
       // For direct Polygon or MultiPolygon types
       return {
-        type: 'Feature' as const, // Use const assertion to ensure type is exactly "Feature"
+        type: 'Feature' as const,
         properties: {
           provinceId: province.id,
           name: province.name
         },
-        geometry: province.boundaries
+        geometry: province.boundaries // Ensure the geometry is explicitly assigned
       };
     }
   });
