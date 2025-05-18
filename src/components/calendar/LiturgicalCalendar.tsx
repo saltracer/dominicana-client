@@ -208,6 +208,18 @@ const LiturgicalCalendar: React.FC = () => {
         </div>
         <div className="mt-4 flex flex-wrap gap-4">
           <div className="flex items-center">
+            <span className="w-4 h-4 rounded mr-2 bg-dominican-burgundy"></span>
+            <span className="text-sm">Dominican Feast</span>
+          </div>
+          <div className="flex items-center">
+            <span className="w-4 h-4 rounded mr-2 bg-liturgical-red"></span>
+            <span className="text-sm">Martyrs</span>
+          </div>
+          <div className="flex items-center">
+            <span className="w-4 h-4 rounded mr-2 bg-liturgical-white border border-gray-300"></span>
+            <span className="text-sm">White Feasts</span>
+          </div>
+          <div className="flex items-center">
             <span className="w-4 h-4 rounded mr-2 bg-liturgical-green"></span>
             <span className="text-sm">Ordinary Time</span>
           </div>
@@ -216,20 +228,8 @@ const LiturgicalCalendar: React.FC = () => {
             <span className="text-sm">Advent/Lent</span>
           </div>
           <div className="flex items-center">
-            <span className="w-4 h-4 rounded mr-2 bg-liturgical-white border border-gray-300"></span>
-            <span className="text-sm">White Feasts</span>
-          </div>
-          <div className="flex items-center">
-            <span className="w-4 h-4 rounded mr-2 bg-liturgical-red"></span>
-            <span className="text-sm">Martyrs</span>
-          </div>
-          <div className="flex items-center">
             <span className="w-4 h-4 rounded mr-2 bg-liturgical-rose"></span>
             <span className="text-sm">Gaudete/Laetare</span>
-          </div>
-          <div className="flex items-center">
-            <span className="w-4 h-4 rounded mr-2 bg-dominican-burgundy"></span>
-            <span className="text-sm">Dominican Feast</span>
           </div>
         </div>
       </div>
