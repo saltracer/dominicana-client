@@ -106,31 +106,6 @@ export const juneGeneralSaints: Saint[] = [
     proper: "Proper of Saints",
   },
   {
-    id: "cyril-of-alexandria",
-    name: "St. Cyril of Alexandria",
-    feast_day: "06-27",
-    short_bio: "Bishop and Doctor of the Church known for defending the title 'Theotokos' for Mary.",
-    biography: [
-      "St. Cyril of Alexandria was born around 376 AD in the small town of Theodosios, Egypt, to a prominent Christian family, and received an excellent education in theology and classical literature, being greatly influenced by his uncle Theophilus, who was the Patriarch of Alexandria and under whose guidance Cyril studied the works of early Christian writers.",
-      "Following his uncle's death in 412, Cyril was elected Patriarch of Alexandria, an important see in the early Church, amid political tensions and violence between various factions, including Christians, pagans, and Jews, and his early years as patriarch were marked by controversy as he asserted Christian dominance in the city.",
-      "The defining theological controversy of Cyril's life began around 428 when Nestorius, the newly appointed Patriarch of Constantinople, publicly denied that Mary should be called \"Theotokos\" (Mother of God or God-Bearer), arguing instead that she should only be called \"Christotokos\" (Christ-Bearer), thereby implying a division between Christ's human and divine natures.",
-      "In response, Cyril wrote extensively to defend the unity of Christ's person and the appropriateness of the title Theotokos, arguing that while Mary did not give birth to the divine nature itself, she did give birth to a divine person who had assumed human nature in her womb—making her truly the Mother of God incarnate.",
-      "The dispute culminated in the Council of Ephesus in 431, where Cyril presided as Pope Celestine I's representative, and where the council fathers affirmed the unity of Christ's person in two natures without confusion or separation, condemned Nestorius's teaching, and officially proclaimed Mary as Theotokos, a dogma that remains central to Catholic and Orthodox Christology.",
-      "Following his victory at Ephesus, Cyril worked tirelessly to reconcile with those bishops who had supported Nestorius, eventually achieving a formula of reunion in 433 with John of Antioch, which balanced the affirmation of Christ's single personhood with the recognition of his two distinct natures—divine and human.",
-      "In addition to his Christological works, Cyril was a prolific writer who produced commentaries on many books of the Bible, treatises against paganism, and numerous homilies, leaving behind a vast body of theological writings that earned him the title of Doctor of the Church by Pope Leo XIII in 1882, particularly for his contributions to Christology and Mariology."
-    ],
-    image_url: "/saints/st-cyril-of-alexandria.jpg",
-    patronage: "Alexandria, Egypt, theologians",
-    birth_year: 376,
-    death_year: 444,
-    prayers:
-      "O God, who made the Bishop Saint Cyril of Alexandria an invincible champion of the divine motherhood of the most Blessed Virgin Mary, grant, we pray, that we, who believe she is truly the Mother of God, may be saved through the Incarnation of Christ your Son. Who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
-    is_dominican: false,
-    rank: CelebrationRank.OPTIONAL_MEMORIAL,
-    color: LiturgicalColor.WHITE,
-    proper: "Proper of Saints",
-  },
-  {
     id: "irenaeus-lyon",
     name: "St. Irenaeus of Lyon",
     feast_day: "06-28",
