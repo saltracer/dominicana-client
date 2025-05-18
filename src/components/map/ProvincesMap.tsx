@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
 import { DivIcon } from 'leaflet';
@@ -11,27 +12,60 @@ import {
 import 'leaflet/dist/leaflet.css';
 
 // Define a custom marker icon using inline SVG
-const createCustomIcon = (color: string) => {
+const createCustomIcon = (color: string, isSelected: boolean = false) => {
+  const size = isSelected ? 28 : 24; // Make selected markers larger
+  const strokeWidth = isSelected ? 3 : 2; // Thicker stroke for selected markers
+  
   return new DivIcon({
     html: `
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="8" fill="${color}" stroke="white" stroke-width="2"/>
+      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${size/2}" cy="${size/2}" r="${(size/2) - 2}" fill="${color}" stroke="${isSelected ? 'black' : 'white'}" stroke-width="${strokeWidth}"/>
       </svg>
     `,
     className: 'custom-div-icon',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
   });
 };
 
 const ProvincesMap: React.FC = () => {
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [mapInstance, setMapInstance] = useState<any>(null);
 
   useEffect(() => {
     // This helps ensure Leaflet only runs in the browser environment
     setIsMapLoaded(true);
   }, []);
+
+  // This effect updates the styling when a province is selected
+  useEffect(() => {
+    if (mapInstance && mapInstance._layers) {
+      // Find and update GeoJSON layers when selection changes
+      Object.values(mapInstance._layers).forEach((layer: any) => {
+        if (layer.feature && layer.setStyle) {
+          const isSelected = selectedProvince?.id === layer.feature.properties.provinceId;
+          
+          if (isSelected) {
+            layer.setStyle({
+              weight: 3,
+              opacity: 1,
+              color: '#000',
+              fillOpacity: 0.8
+            });
+            layer.bringToFront();
+          } else {
+            layer.setStyle({
+              weight: 1,
+              opacity: 1,
+              color: '#fff',
+              fillOpacity: 0.6
+            });
+          }
+        }
+      });
+    }
+  }, [selectedProvince, mapInstance]);
 
   if (!isMapLoaded) {
     return (
@@ -44,11 +78,16 @@ const ProvincesMap: React.FC = () => {
   // Convert province data to GeoJSON
   const geojsonData = provincesToGeoJSON(allProvinces);
   
-  // Create styler function
-  const provinceStyle = createProvinceStyler(allProvinces);
+  // Create styler function with selected province awareness
+  const provinceStyle = createProvinceStyler(allProvinces, selectedProvince);
   
   // Create interaction handlers
   const onEachFeature = createProvinceInteractions(allProvinces, setSelectedProvince);
+
+  // Function to handle map reference
+  const handleMapRef = (map: any) => {
+    setMapInstance(map);
+  };
 
   return (
     <div className="relative">
@@ -59,6 +98,7 @@ const ProvincesMap: React.FC = () => {
         style={{ height: '600px', width: '100%', borderRadius: '0.5rem' }}
         className="z-0"
         zoomControl={false}
+        whenCreated={handleMapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -70,7 +110,7 @@ const ProvincesMap: React.FC = () => {
         
         {/* Render province boundaries */}
         <GeoJSON 
-          data={geojsonData} 
+          data={geojsonData as any} 
           style={provinceStyle}
           onEachFeature={onEachFeature}
         />
@@ -80,7 +120,7 @@ const ProvincesMap: React.FC = () => {
           <Marker 
             key={province.id}
             position={[province.coordinates[0], province.coordinates[1]]} 
-            icon={createCustomIcon(province.color)}
+            icon={createCustomIcon(province.color, selectedProvince?.id === province.id)}
             eventHandlers={{
               click: () => setSelectedProvince(province)
             }}

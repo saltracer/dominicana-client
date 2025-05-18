@@ -1,10 +1,11 @@
 
 import type { Province } from '@/lib/types';
+import { GeoJSON } from 'leaflet';
 
 export interface ProvinceGeoJSON {
-  type: string;
+  type: "FeatureCollection";
   features: {
-    type: string;
+    type: "Feature";
     properties: {
       provinceId: string;
       name: string;
@@ -23,6 +24,7 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
     if (province.boundaries.type === 'Feature') {
       return {
         ...province.boundaries,
+        type: "Feature",
         properties: {
           ...province.boundaries.properties,
           provinceId: province.id,
@@ -51,17 +53,18 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
 /**
  * Creates a style function for GeoJSON features
  */
-export function createProvinceStyler(provinces: Province[]) {
+export function createProvinceStyler(provinces: Province[], selectedProvince: Province | null = null) {
   return (feature: any) => {
     const provinceId = feature.properties.provinceId;
     const province = provinces.find(p => p.id === provinceId);
+    const isSelected = selectedProvince?.id === provinceId;
     
     return {
       fillColor: province?.color || '#6B8D8E',
-      weight: 1,
+      weight: isSelected ? 3 : 1,
       opacity: 1,
-      color: '#fff',
-      fillOpacity: 0.6
+      color: isSelected ? '#000' : '#fff',
+      fillOpacity: isSelected ? 0.8 : 0.6
     };
   };
 }
@@ -81,30 +84,41 @@ export function createProvinceInteractions(provinces: Province[], onSelectProvin
           layer.setStyle({
             weight: 3,
             opacity: 1,
+            color: '#000',
             fillOpacity: 0.8
           });
           layer.bringToFront();
         },
         mouseout: (e: any) => {
           const layer = e.target;
-          layer.setStyle({
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.6
-          });
+          // Check if this is the selected province before reverting style
+          const isSelected = layer.feature.properties.provinceId === e.target._map._selectedProvinceId;
+          if (!isSelected) {
+            layer.setStyle({
+              weight: 1,
+              opacity: 1,
+              color: '#fff',
+              fillOpacity: 0.6
+            });
+          }
         },
         click: () => {
+          // Store selected province ID on the map instance for reference
+          if (layer._map) {
+            layer._map._selectedProvinceId = province.id;
+          }
           onSelectProvince(province);
         }
       });
 
-      // Add tooltip
+      // Create consistent tooltip content between marker and province
       const formationDate = typeof province.formation_date === 'number' 
         ? province.formation_date.toString()
         : province.formation_date;
         
       layer.bindTooltip(`
         <div class="font-medium">${province.name}</div>
+        <div>Region: ${province.region}</div>
         <div>Founded: ${formationDate}</div>
       `);
     }

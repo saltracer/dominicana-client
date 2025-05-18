@@ -1,3 +1,4 @@
+
 import type { Province } from "@/lib/types"
 import { mexicoBoundaries } from "./mexico-boundaries"
 
