@@ -53,6 +53,18 @@ const FeastBanner: React.FC = () => {
     return colorClasses[color.toLowerCase()] || '';
   };
 
+  // Format description with proper paragraphs
+  const formatDescription = (description: string | undefined) => {
+    if (!description) return null;
+    
+    // If the description is already an array (from joined paragraphs), split it back
+    const paragraphs = description.split(/(?<=\.|\?|\!) (?=[A-Z])/);
+    
+    return paragraphs.map((paragraph, index) => 
+      <p key={index} className="text-sm text-gray-600 mb-2">{paragraph}</p>
+    );
+  };
+
   return (
     <div className="relative">
       {/* Liturgical color bar */}
@@ -147,17 +159,47 @@ const FeastBanner: React.FC = () => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold">{currentEvent.name}</h4>
-                      <div className="flex items-center gap-2">
-                        <div className={cn(
-                          "w-3 h-3 rounded-full",
-                          getColorClasses(currentEvent.color).split(' ')[0]
-                        )}></div>
-                        <span className="text-sm">{currentEvent.rank}</span>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold text-xl mb-1">{currentEvent.name}</h4>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className={cn(
+                            "w-3 h-3 rounded-full",
+                            getColorClasses(currentEvent.color).split(' ')[0]
+                          )}></div>
+                          <span className="text-sm font-medium">{currentEvent.rank}</span>
+                          {currentEvent.isDominican && (
+                            <span className="bg-dominican-burgundy/10 text-dominican-burgundy text-xs px-2 py-0.5 rounded">
+                              Dominican
+                            </span>
+                          )}
+                        </div>
                       </div>
+                      
+                      {/* Date information */}
+                      {(currentEvent.birthYear || currentEvent.deathYear) && (
+                        <div className="text-sm">
+                          <span className="text-gray-500">
+                            {currentEvent.birthYear && currentEvent.deathYear 
+                              ? `${currentEvent.birthYear} - ${currentEvent.deathYear}` 
+                              : (currentEvent.deathYear ? `d. ${currentEvent.deathYear}` : '')}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Patronage information */}
+                      {currentEvent.patronage && (
+                        <div>
+                          <span className="text-sm font-semibold">Patronage:</span>
+                          <p className="text-sm">{currentEvent.patronage}</p>
+                        </div>
+                      )}
+                      
+                      {/* Formatted description */}
                       {currentEvent.description && (
-                        <p className="text-sm text-gray-600">{currentEvent.description}</p>
+                        <div className="mt-2">
+                          {formatDescription(currentEvent.description)}
+                        </div>
                       )}
                     </div>
                   </PopoverContent>
