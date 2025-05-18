@@ -1,3 +1,4 @@
+
 import type { Saint } from "../saint-types"
 import { LiturgicalColor } from "../../liturgical-types"
 import { CelebrationRank } from "../../celebrations/celebrations-types"
@@ -70,6 +71,56 @@ export const mayGeneralSaints: Saint[] = [
     death_year: 1889,
     prayers:
       "O God, who gave to Saint Damien a selfless love for his brothers and sisters who were sick, grant, we pray, that, strengthened by his example, we may show our love for Christ in our brothers and sisters who suffer. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
+    is_dominican: false,
+    rank: CelebrationRank.MEMORIAL,
+    color: LiturgicalColor.WHITE,
+    proper: "Proper of Saints",
+  },
+  {
+    id: "rita-of-cascia",
+    name: "St. Rita of Cascia",
+    feast_day: "05-22",
+    short_bio: "Patroness of impossible causes and difficult marriages who bore the stigmata.",
+    biography: [
+      "St. Rita of Cascia was born in 1381 in Roccaporena, a small village near Cascia in the Italian province of Umbria, to Antonio and Amata Lotti, devout and well-respected Christian parents who were official peacemakers in their town, a role that would later influence Rita's own life.",
+      "Despite her desire to enter religious life from an early age, Rita's parents arranged her marriage to Paolo Mancini, a man known for his quick temper and violent tendencies, and with whom she lived for eighteen years in a challenging marriage, enduring his mistreatment with patience, kindness, and profound prayer.",
+      "When Paolo was murdered as part of a long-standing family feud, Rita worked tirelessly to prevent her two sons from seeking revenge, praying that God would take them before they could commit the sin of murder—a prayer that was answered when both sons died of natural causes shortly after, freeing Rita to pursue her lifelong desire to join the Augustinian nuns.",
+      "Initially rejected by the convent due to her status as a widow, Rita persisted in her vocation and was eventually admitted through what is considered a miraculous entrance—waking one morning to find herself inside the convent walls, having been transported there during the night by her patron saints John the Baptist, Augustine, and Nicholas of Tolentino.",
+      "Rita's profound devotion to Christ crucified was visibly manifested when, while meditating before an image of Jesus crowned with thorns, she received a stigmata in the form of a wound on her forehead, which remained open and visible until her death, despite various treatments and attempts to heal it.",
+      "During her last years of life, Rita was confined to her bed with tuberculosis, yet she received a visit from a relative who asked if she desired anything from her home in Roccaporena, to which Rita requested a rose and a fig from her garden—an impossibility in January, yet when the relative returned home, she found a single rose blooming in the frozen garden and a ripe fig on the withered tree, which she brought back to the amazed Rita.",
+      "St. Rita died on May 22, 1457, and her body, which has remained incorrupt, is venerated in the shrine at Cascia, where numerous miracles attributed to her intercession have been recorded through the centuries, leading to her canonization by Pope Leo XIII in 1900 and her continuing veneration as a patroness of impossible causes."
+    ],
+    image_url: "/saints/st-rita-of-cascia.jpg",
+    patronage: "Impossible causes, difficult marriages, abuse victims, loneliness, parenthood",
+    birth_year: 1381,
+    death_year: 1457,
+    prayers:
+      "O Holy Patroness of those in need, St. Rita, whose pleadings before thy Divine Lord are almost irresistible, who for thy lavishness in granting favors hast been called the Advocate of the Hopeless and even of the Impossible; St. Rita, so humble, so pure, so mortified, so patient and of such compassionate love for thy Crucified Jesus that thou couldst obtain from Him whatsoever thou askest, on account of which all confidently have recourse to thee, expecting, if not always relief, at least comfort; be propitious to our petition, showing thy power with God on behalf of thy suppliant; be lavish to us, as thou hast been in so many wonderful cases, for the greater glory of God, for the spreading of thine own devotion, and for the consolation of those who trust in thee. Amen.",
+    is_dominican: false,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
+    color: LiturgicalColor.WHITE,
+    proper: "Proper of Saints",
+  },
+  {
+    id: "philip-neri",
+    name: "St. Philip Neri",
+    feast_day: "05-26",
+    short_bio: "Known as the 'Apostle of Rome' and founder of the Congregation of the Oratory.",
+    biography: [
+      "St. Philip Neri was born in Florence, Italy, on July 21, 1515, to Francesco and Lucrezia Neri, a noble family, but after his mother's death, his father's business failed, leaving Philip with little inheritance, which led him to move to San Germano (now Cassino) to work with his wealthy cousin for the family trade business.",
+      "Having experienced a profound mystical vision while at San Germano, Philip abandoned the business world and moved to Rome in 1533, where he lived as a layman in extreme poverty, spending his time in prayer, studying philosophy and theology, and serving the sick and poor in the city's hospitals.",
+      "In 1544, Philip had a powerful mystical experience during a Pentecost vigil when he saw a globe of fire enter his mouth and descend to his heart, an event which physically enlarged his heart (confirmed after his death when his body was examined) and gave him palpitations whenever he performed religious activities, an experience which many attributed to his being filled with the love of the Holy Spirit.",
+      "Although he lived as a layman until the age of 36, Philip's spiritual director ultimately convinced him to enter the priesthood in 1551, after which he began to work extensively with the youth of Rome, drawing them away from corruption through religious discussions, music, and recreational activities at informal gatherings that evolved into the Congregation of the Oratory.",
+      "Philip was known for his joyful and humorous nature, often playing practical jokes to remind others of the importance of humility—such as cutting off half his beard before receiving important visitors or wearing outlandish clothes in public—yet he was also a profoundly gifted spiritual director with an extraordinary ability to read souls and foretell the future of those he guided.",
+      "As his reputation grew throughout Rome, he became a sought-after confessor by many prominent figures, including future saints like Ignatius of Loyola, Francis de Sales, and Camillus de Lellis, as well as numerous cardinals and Pope Gregory XIV himself, while maintaining his special dedication to the common people, especially the sick, poor, and young.",
+      "St. Philip died on May 26, 1595, at the age of 80, was beatified by Pope Paul V in 1615, and canonized by Pope Gregory XV in 1622, leaving behind a legacy of joy, humility, and devotion that continues through the Oratorian communities he founded, which now exist worldwide."
+    ],
+    image_url: "/saints/st-philip-neri.jpg",
+    patronage: "Rome, youth, humor, joy, comedians, artists",
+    birth_year: 1515,
+    death_year: 1595,
+    prayers:
+      "O holy St. Philip Neri, patron saint of joy, you who trusted Scripture's promise that the Lord is always at hand and that we need not have anxiety about anything, in your compassion heal our worries and sorrows and lift the burdens from our hearts. We come to you as one whose heart swells with abundant love for God and all creation. Hear us, we pray, especially in this need (make your request here). Keep us safe through your loving intercession, and may the joy of the Holy Spirit which filled your heart, St. Philip, transform our lives and bring us peace. Amen.",
     is_dominican: false,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
