@@ -1,3 +1,4 @@
+
 import { format } from "date-fns"
 
 import type { Saint } from "./saint-types"
@@ -62,7 +63,7 @@ export function getSaintsForDate(date: Date): Celebration[] {
 
     // Convert saints to celebrations with more detailed information
     const saintCelebrations = saintsForDate.map((saint) => ({
-      id: saint.id,
+      id: saint.id || `saint-${saint.name.toLowerCase().replace(/\s+/g, '-')}`,
       name: saint.name,
       rank: (saint.rank as CelebrationRank) || CelebrationRank.OPTIONAL_MEMORIAL,
       color: saint.color?.toLowerCase() || "white",

@@ -5,4 +5,29 @@
 @import 'leaflet/dist/leaflet.css';
 @import './leaflet-custom.css';
 
+/* Liturgical colors */
+.bg-liturgical-green {
+  background-color: #3a7d44;
+}
+
+.bg-liturgical-purple {
+  background-color: #673ab7;
+}
+
+.bg-liturgical-white {
+  background-color: #f8f8f8;
+}
+
+.bg-liturgical-red {
+  background-color: #d32f2f;
+}
+
+.bg-liturgical-rose {
+  background-color: #f8bbd0;
+}
+
+.bg-liturgical-gold {
+  background-color: #ffca28;
+}
+
 /* ... keep existing code */
