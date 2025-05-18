@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -26,6 +25,24 @@ const CelebrationDetailsDialog: React.FC<CelebrationDetailsDialogProps> = ({
   onClose,
   celebration,
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   if (!celebration) return null;
   
   // Map liturgical colors to Tailwind classes
@@ -59,7 +76,10 @@ const CelebrationDetailsDialog: React.FC<CelebrationDetailsDialogProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <AlertDialogContent 
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        ref={dialogRef}
+      >
         <AlertDialogHeader>
           <div className={cn(
             "px-4 py-2 rounded mb-4 flex justify-between items-center",
