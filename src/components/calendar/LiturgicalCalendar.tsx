@@ -174,20 +174,22 @@ const LiturgicalCalendar: React.FC = () => {
               "flex justify-between"
             )}>
               <span className="text-sm p-1">{formattedDate}</span>
+              
+              {liturgicalColor && (
+                <span className={cn(
+                  "text-xs p-1 mt-1 rounded",
+                  colorClasses[liturgicalColor.toLowerCase()] || ''
+                )}>
+                  {eventType}
+                </span>
+              )}
+
               {isDominican && (
                 <span className="w-2 h-2 rounded-full bg-dominican-burgundy"></span>
               )}
+              
             </div>
-            
-            {liturgicalColor && (
-              <div className={cn(
-                "text-xs p-1 mt-1 rounded",
-                colorClasses[liturgicalColor.toLowerCase()] || ''
-              )}>
-                {eventType}
-              </div>
-            )}
-            
+                        
             {/* Event name - show if there's an event */}
             {eventName && (
               <div className="text-xs mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
