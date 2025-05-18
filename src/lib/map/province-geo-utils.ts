@@ -63,8 +63,8 @@ export function createProvinceStyler(provinces: Province[], selectedProvince: Pr
       fillColor: province?.color || '#6B8D8E',
       weight: isSelected ? 3 : 1,
       opacity: 1,
-      color: isSelected ? '#000' : '#fff',
-      fillOpacity: isSelected ? 0.8 : 0.6
+      color: isSelected ? '#fff' : province?.color,
+      fillOpacity: isSelected ? 0.9 : 0.6
     };
   };
 }
@@ -84,8 +84,8 @@ export function createProvinceInteractions(provinces: Province[], onSelectProvin
           layer.setStyle({
             weight: 3,
             opacity: 1,
-            color: '#000',
-            fillOpacity: 0.8
+            color: '#fff',
+            fillOpacity: 0.9
           });
           layer.bringToFront();
         },
@@ -97,7 +97,7 @@ export function createProvinceInteractions(provinces: Province[], onSelectProvin
             layer.setStyle({
               weight: 1,
               opacity: 1,
-              color: '#fff',
+              color: province?.color,
               fillOpacity: 0.6
             });
           }

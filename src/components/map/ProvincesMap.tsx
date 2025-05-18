@@ -13,13 +13,15 @@ import 'leaflet/dist/leaflet.css';
 
 // Define a custom marker icon using inline SVG
 const createCustomIcon = (color: string, isSelected: boolean = false) => {
-  const size = isSelected ? 28 : 24; // Make selected markers larger
+  const size = isSelected ? 24 : 18; // Make selected markers larger
   const strokeWidth = isSelected ? 3 : 2; // Thicker stroke for selected markers
+  const strokeColor = isSelected ? '#fff' : '#fff'; // White stroke for selected markers
+  const fillColor = isSelected ? '#f00' : color; // White fill for selected markers
   
   return new DivIcon({
     html: `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="${size/2}" cy="${size/2}" r="${(size/2) - 2}" fill="${color}" stroke="${isSelected ? 'black' : 'white'}" stroke-width="${strokeWidth}"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${(size/2) - 2}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}"/>
       </svg>
     `,
     className: 'custom-div-icon',
@@ -50,8 +52,8 @@ const ProvincesMap: React.FC = () => {
             layer.setStyle({
               weight: 3,
               opacity: 1,
-              color: '#000',
-              fillOpacity: 0.8
+              color: '#fff',
+              fillOpacity: 0.9
             });
             layer.bringToFront();
           } else {
