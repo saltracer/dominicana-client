@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import CelebrationDetailsDialog from './CelebrationDetailsDialog';
 import { Celebration } from '@/lib/liturgical/celebrations/celebrations-types';
+import { AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 const LiturgicalCalendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -277,14 +278,15 @@ const LiturgicalCalendar: React.FC = () => {
                     celebration.color === 'violet' && "bg-liturgical-purple text-white"
                   )}>
                     <div className="flex justify-between items-center">
-                      <span>{celebration.rank}</span>
+                      <span className="font-garamond text-lg font-semibold">{celebration.name}</span>
+                      <span className="text-sm">{celebration.rank}</span>
                       {celebration.isDominican && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-white/20">Dominican</span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-dominican-burgundy text-white">Dominican</span>
                       )}
                     </div>
                   </div>
                   
-                  <h4 className="text-lg font-semibold mb-2">{celebration.name}</h4>
+                  
                   
                   {/* Additional details if available */}
                   {(celebration.birthYear || celebration.deathYear) && (

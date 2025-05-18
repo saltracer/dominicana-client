@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format, addDays, subDays, isEqual, startOfDay } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight, Info, RotateCcw } from 'lucide-react';
