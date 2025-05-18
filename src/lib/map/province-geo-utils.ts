@@ -24,7 +24,7 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
     if (province.boundaries.type === 'Feature') {
       return {
         ...province.boundaries,
-        type: 'Feature',
+        type: 'Feature' as const, // Use const assertion to specify exact string type
         properties: {
           ...province.boundaries.properties,
           provinceId: province.id,
@@ -34,7 +34,7 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
     } else {
       // For direct Polygon or MultiPolygon types
       return {
-        type: 'Feature',
+        type: 'Feature' as const, // Use const assertion to ensure type is exactly "Feature"
         properties: {
           provinceId: province.id,
           name: province.name
