@@ -70,7 +70,7 @@ const FeastBanner: React.FC = () => {
       {currentEvent && (
         <div 
           className={cn(
-            "h-1.5 w-full",
+            "h-1 w-full",
             getColorClasses(currentEvent.color).split(' ')[0] // Only take the background color class
           )}
         ></div>
