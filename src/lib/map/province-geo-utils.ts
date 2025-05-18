@@ -3,9 +3,9 @@ import type { Province } from '@/lib/types';
 import { GeoJSON } from 'leaflet';
 
 export interface ProvinceGeoJSON {
-  type: "FeatureCollection";
+  type: 'FeatureCollection';
   features: {
-    type: "Feature";
+    type: 'Feature';
     properties: {
       provinceId: string;
       name: string;
@@ -24,7 +24,7 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
     if (province.boundaries.type === 'Feature') {
       return {
         ...province.boundaries,
-        type: "Feature",
+        type: 'Feature',
         properties: {
           ...province.boundaries.properties,
           provinceId: province.id,

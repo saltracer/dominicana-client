@@ -100,7 +100,7 @@ const ProvincesMap: React.FC = () => {
         style={{ height: '600px', width: '100%', borderRadius: '0.5rem' }}
         className="z-0"
         zoomControl={false}
-        whenCreated={handleMapRef}
+        whenReady={handleMapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
