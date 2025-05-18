@@ -25,19 +25,19 @@ export const mexicoProvince: Province = {
     {
       name: "Convento de Santo Domingo",
       location: "Mexico City",
-      founded: "1534",
+      founded: 1534,
       description: "The first Dominican priory in Mexico City and the historic center of Dominican activity in Mexico.",
     },
     {
       name: "Convento de Santo Domingo",
       location: "Puebla",
-      founded: "1538",
+      founded: 1538,
       description: "A historic priory known for its beautiful baroque architecture and Rosary Chapel.",
     },
     {
       name: "Convento de Santo Domingo",
       location: "Oaxaca",
-      founded: "1551",
+      founded: 1551,
       description: "One of the most impressive Dominican complexes in Mexico, known for its ornate decoration.",
     },
   ],
