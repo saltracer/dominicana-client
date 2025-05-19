@@ -5,63 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Sample library data
-const books = [
-  {
-    id: 1,
-    title: "Summa Theologica",
-    author: "St. Thomas Aquinas",
-    year: "1265-1274",
-    category: "Theology",
-    coverImage: "",
-    description: "The masterwork of St. Thomas Aquinas, a systematic exposition of theology and philosophy."
-  },
-  {
-    id: 2,
-    title: "The Dialogue",
-    author: "St. Catherine of Siena",
-    year: "1378",
-    category: "Mysticism",
-    coverImage: "",
-    description: "A conversation between God and the human soul, dictated by St. Catherine of Siena during a state of ecstasy."
-  },
-  {
-    id: 3,
-    title: "Confessions",
-    author: "St. Augustine of Hippo",
-    year: "397-400",
-    category: "Autobiography",
-    coverImage: "",
-    description: "An autobiographical work by St. Augustine that details his conversion to Christianity."
-  },
-  {
-    id: 4,
-    title: "On the Holy Trinity",
-    author: "St. Augustine of Hippo",
-    year: "399-419",
-    category: "Theology",
-    coverImage: "",
-    description: "St. Augustine's exploration of the nature of the Trinity."
-  },
-  {
-    id: 5,
-    title: "The City of God",
-    author: "St. Augustine of Hippo",
-    year: "413-426",
-    category: "Philosophy",
-    coverImage: "",
-    description: "St. Augustine's defense of Christianity against paganism, discussing the relationship between the earthly and heavenly cities."
-  },
-  {
-    id: 6,
-    title: "The Interior Castle",
-    author: "St. Teresa of Ávila",
-    year: "1577",
-    category: "Mysticism",
-    coverImage: "",
-    description: "St. Teresa's description of the soul's journey to God through seven mansions or stages of prayer."
-  },
-];
+import { books } from '@/lib/library';
 
 const LibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');

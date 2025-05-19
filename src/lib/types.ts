@@ -1,4 +1,14 @@
 
+export interface Book {
+  id: number;
+  title: string;
+  author: string;
+  year: string;
+  category: string;
+  coverImage: string;
+  description: string;
+}
+
 export interface Province {
   id: string
   name: string
