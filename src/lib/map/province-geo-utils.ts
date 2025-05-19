@@ -1,54 +1,127 @@
-export const getProvinceColor = (provinceName: string): string => {
-  switch (provinceName) {
-    case "Province of St. Joseph":
-      return "#228B22"; // Forest Green
-    case "Province of St. Albert the Great":
-      return "#8B4513"; // Saddle Brown
-    case "Province of St. Dominic":
-      return "#4682B4"; // Steel Blue
-    case "Province of the Most Holy Name of Jesus":
-      return "#D2691E"; // Chocolate
-    case "Province of Our Lady of the Rosary":
-      return "#800080"; // Purple
-    case "Province of the Philippines":
-      return "#FF8C00"; // Dark Orange
-    case "Province of Vietnam":
-      return "#C71585"; // Medium Violet Red
-    case "Province of Nigeria and Ghana":
-      return "#2F4F4F"; // Dark Slate Gray
-    case "Province of Teutonia":
-      return "#BDB76B"; // Dark Khaki
-    case "Province of Bética":
-      return "#CD5C5C"; // Indian Red
-    case "Province of Ireland":
-      return "#008000"; // Green
-    case "Province of Toulouse":
-      return "#A0522D"; // Sienna
-    case "Province of Canada":
-      return "#DC143C"; // Crimson
-    case "Province of France":
-      return "#6A5ACD"; // Slate Blue
-    case "Province of Poland":
-      return "#20B2AA"; // Light Sea Green
-    case "Province of Portugal":
-      return "#DA70D6"; // Orchid
-    case "Province of Spain":
-      return "#FF4500"; // Orange Red
-    case "Province of England":
-      return "#708090"; // Slate Gray
-    case "Province of Austria":
-      return "#BC8F8F"; // Rosy Brown
-    case "Province of Croatia":
-      return "#F08080"; // Light Coral
-    case "Province of Hungary":
-      return "#98FB98"; // Pale Green
-    case "Province of Bohemia":
-      return "#F4A460"; // Sandy Brown
-    case "Province of Switzerland":
-      return "#D87093"; // Pale Violet Red
-    case "Vicariate of Southern Africa":
-      return "#A9A9A9"; // Dark Gray
-    default:
-      return "#808080"; // Gray
-  }
-};
+
+import type { Province } from '@/lib/types';
+import { GeoJSON } from 'leaflet';
+
+export interface ProvinceGeoJSON {
+  type: 'FeatureCollection';
+  features: {
+    type: 'Feature';
+    properties: {
+      provinceId: string;
+      name: string;
+      [key: string]: any;
+    };
+    geometry: any;
+  }[];
+}
+
+/**
+ * Converts province data into GeoJSON format for React-Leaflet
+ */
+export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
+  const features = provinces.map(province => {
+    // Handle different boundary formats
+    if (province.boundaries.type === 'Feature') {
+      // For boundaries that are already in Feature format
+      return {
+        ...province.boundaries,
+        type: 'Feature' as const,
+        properties: {
+          ...province.boundaries.properties,
+          provinceId: province.id,
+          name: province.name
+        }
+      };
+    } else {
+      // For direct Polygon or MultiPolygon types
+      return {
+        type: 'Feature' as const,
+        properties: {
+          provinceId: province.id,
+          name: province.name
+        },
+        geometry: province.boundaries // Ensure the geometry is explicitly assigned
+      };
+    }
+  });
+
+  return {
+    type: 'FeatureCollection',
+    features
+  };
+}
+
+/**
+ * Creates a style function for GeoJSON features
+ */
+export function createProvinceStyler(provinces: Province[], selectedProvince: Province | null = null) {
+  return (feature: any) => {
+    const provinceId = feature.properties.provinceId;
+    const province = provinces.find(p => p.id === provinceId);
+    const isSelected = selectedProvince?.id === provinceId;
+    
+    return {
+      fillColor: province?.color || '#6B8D8E',
+      weight: isSelected ? 3 : 1,
+      opacity: 1,
+      color: isSelected ? '#fff' : province?.color,
+      fillOpacity: isSelected ? 0.9 : 0.6
+    };
+  };
+}
+
+/**
+ * Creates hover and click handlers for GeoJSON features
+ */
+export function createProvinceInteractions(provinces: Province[], onSelectProvince: (province: Province) => void) {
+  return (feature: any, layer: any) => {
+    const provinceId = feature.properties.provinceId;
+    const province = provinces.find(p => p.id === provinceId);
+    
+    if (province) {
+      layer.on({
+        mouseover: (e: any) => {
+          const layer = e.target;
+          layer.setStyle({
+            weight: 3,
+            opacity: 1,
+            color: '#fff',
+            fillOpacity: 0.9
+          });
+          layer.bringToFront();
+        },
+        mouseout: (e: any) => {
+          const layer = e.target;
+          // Check if this is the selected province before reverting style
+          const isSelected = layer.feature.properties.provinceId === e.target._map._selectedProvinceId;
+          if (!isSelected) {
+            layer.setStyle({
+              weight: 1,
+              opacity: 1,
+              color: province?.color,
+              fillOpacity: 0.6
+            });
+          }
+        },
+        click: () => {
+          // Store selected province ID on the map instance for reference
+          if (layer._map) {
+            layer._map._selectedProvinceId = province.id;
+          }
+          onSelectProvince(province);
+        }
+      });
+
+      // Create consistent tooltip content between marker and province
+      const formationDate = typeof province.formation_date === 'number' 
+        ? province.formation_date.toString()
+        : province.formation_date;
+        
+      layer.bindTooltip(`
+        <div class="font-medium">${province.name}</div>
+        <div>Region: ${province.region}</div>
+        <div>Founded: ${formationDate}</div>
+      `);
+    }
+  };
+}
