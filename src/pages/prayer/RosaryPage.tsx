@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
+// Define the rosary prayer types
+type RosaryType = "standard" | "dominican";
 
 const mysteries = {
   joyful: [
@@ -135,21 +140,43 @@ const mysteries = {
   ]
 };
 
+// Define rosary steps for each type
+const standardRosarySteps = [
+  { name: "Sign of the Cross", content: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen." },
+  { name: "Apostles' Creed", content: "I believe in God, the Father almighty, Creator of heaven and earth, and in Jesus Christ, his only Son, our Lord..." },
+  { name: "Our Father", content: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven..." },
+  { name: "Hail Mary (3x)", content: "Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus..." },
+  { name: "Glory Be", content: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen." },
+  { name: "Mysteries", content: "Meditate on the mysteries of the Rosary." },
+  { name: "Concluding Prayers", content: "Hail Holy Queen, Mother of Mercy, hail our life, our sweetness, and our hope..." }
+];
+
+const dominicanRosarySteps = [
+  { name: "Sign of the Cross", content: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen." },
+  { 
+    name: "Opening Versicle", 
+    content: "V: Hail Mary, full of grace, the Lord is with thee.\nR: Blessed art thou among women, and blessed is the fruit of thy womb, Jesus." 
+  },
+  { 
+    name: "Opening Prayer", 
+    content: "V: O Lord, open my lips.\nR: And my mouth shall declare Your praise.\n\nV: O God, come to my assistance.\nR: O Lord, make haste to help me." 
+  },
+  { name: "Glory Be", content: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen." },
+  { name: "Mysteries", content: "Meditate on the mysteries of the Rosary." },
+  { 
+    name: "Concluding Prayers", 
+    content: "Hail Holy Queen, Mother of Mercy, hail our life, our sweetness, and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious Advocate, thine eyes of mercy towards us, and after this our exile, show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary!\n\nV: Pray for us, O Holy Mother of God.\nR: That we may be made worthy of the promises of Christ.\n\nO God, whose only begotten Son, by His life, death, and resurrection, has purchased for us the rewards of eternal life. Grant, we beseech Thee, that by meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.\n\nV: May the Divine Assistance remain always with us.\nR: Amen.\n\nV: And may the souls of the faithful departed rest in peace.\nR: Amen.\n\nV: And may the blessing of Almighty God, the Father, the Son, and the Holy Spirit descend upon us and remain with us forever.\nR: Amen." 
+  }
+];
+
 const RosaryPage: React.FC = () => {
   const [activeSet, setActiveSet] = useState<"joyful" | "sorrowful" | "glorious" | "luminous">("joyful");
   const [activeStep, setActiveStep] = useState<number>(0);
   const [activeMystery, setActiveMystery] = useState<number>(0);
   const [praying, setPraying] = useState<boolean>(false);
+  const [rosaryType, setRosaryType] = useState<RosaryType>("standard");
   
-  const rosarySteps = [
-    { name: "Sign of the Cross", content: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen." },
-    { name: "Apostles' Creed", content: "I believe in God, the Father almighty, Creator of heaven and earth, and in Jesus Christ, his only Son, our Lord..." },
-    { name: "Our Father", content: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven..." },
-    { name: "Hail Mary (3x)", content: "Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus..." },
-    { name: "Glory Be", content: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen." },
-    { name: "Mysteries", content: "Meditate on the mysteries of the Rosary." },
-    { name: "Concluding Prayers", content: "Hail Holy Queen, Mother of Mercy, hail our life, our sweetness, and our hope..." }
-  ];
+  const rosarySteps = rosaryType === "standard" ? standardRosarySteps : dominicanRosarySteps;
 
   const handleNext = () => {
     if (activeStep < rosarySteps.length - 1) {
@@ -172,19 +199,48 @@ const RosaryPage: React.FC = () => {
     }
   };
 
+  const toggleRosaryType = () => {
+    setRosaryType(rosaryType === "standard" ? "dominican" : "standard");
+    // Reset progress when changing rosary type
+    if (praying) {
+      setPraying(false);
+      setActiveStep(0);
+      setActiveMystery(0);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
-        The Dominican Rosary
+        The Rosary
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 mb-8 max-w-3xl">
-        The Rosary has a special place in Dominican spirituality. St. Dominic is traditionally
-        believed to have received the Rosary from the Blessed Virgin Mary as a powerful
-        spiritual weapon. The Dominican Rosary is a contemplative prayer that helps us
-        meditate on the life of Christ through the eyes of Mary.
+      
+      <div className="flex items-center justify-center space-x-2 mb-6">
+        <Switch 
+          id="rosary-type" 
+          checked={rosaryType === "dominican"}
+          onCheckedChange={toggleRosaryType}
+        />
+        <Label htmlFor="rosary-type" className="cursor-pointer">
+          {rosaryType === "standard" ? "Standard Rosary" : "Dominican Rosary"}
+        </Label>
+        <div className="relative ml-1 group">
+          <span className="text-sm text-gray-500 cursor-help">ⓘ</span>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-60 bg-white p-2 rounded shadow-lg text-xs hidden group-hover:block z-10">
+            {rosaryType === "standard" 
+              ? "The standard format of the Rosary as commonly prayed worldwide." 
+              : "The Dominican tradition of praying the Rosary with additional versicles and responses."}
+          </div>
+        </div>
+      </div>
+      
+      <p className="text-gray-700 mb-8 max-w-3xl mx-auto">
+        {rosaryType === "standard" 
+          ? "The Rosary is a Scripture-based prayer that leads us to Jesus through Mary. As we recite the prayers, we meditate on the life of Christ through the eyes of His mother."
+          : "The Dominican Rosary has a special place in Dominican spirituality. St. Dominic is traditionally believed to have received the Rosary from the Blessed Virgin Mary as a powerful spiritual weapon. It includes distinctive opening and closing versicles and responses."}
       </p>
       
       {!praying ? (
@@ -263,14 +319,14 @@ const RosaryPage: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md p-6">
-          {activeStep < 5 ? (
+          {activeStep < rosarySteps.length - 1 && activeStep !== 4 ? (
             <div className="animate-fade-in">
               <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
                 {rosarySteps[activeStep].name}
               </h2>
               
               <div className="bg-dominican-light-gray/30 p-6 rounded-md mb-6">
-                <p className="italic text-gray-700">
+                <p className="italic text-gray-700 whitespace-pre-line">
                   {rosarySteps[activeStep].content}
                 </p>
               </div>
@@ -293,7 +349,7 @@ const RosaryPage: React.FC = () => {
                 </Button>
               </div>
             </div>
-          ) : activeStep === 5 ? (
+          ) : activeStep === 4 ? (
             <div className="animate-fade-in">
               <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
                 {mysteries[activeSet][activeMystery].title}
@@ -346,7 +402,7 @@ const RosaryPage: React.FC = () => {
               </h2>
               
               <div className="bg-dominican-light-gray/30 p-6 rounded-md mb-6">
-                <p className="italic text-gray-700">
+                <p className="italic text-gray-700 whitespace-pre-line">
                   {rosarySteps[activeStep].content}
                 </p>
               </div>
