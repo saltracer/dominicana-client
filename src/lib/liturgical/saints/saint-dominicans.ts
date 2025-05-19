@@ -173,7 +173,6 @@ export const dominicanSaints: Saint[] = [
     death_year: 1221,
     prayers:
       "O God, who have enlightened your Church by the merits and teaching of Saint Dominic your Confessor, grant that through his intercession it may never be deprived of temporal help, and may always grow in spiritual progress. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
-    books: ["history-of-order-of-preachers", "life-of-st-dominic"],
     is_dominican: true,
     rank: CelebrationRank.SOLEMNITY,
     color: LiturgicalColor.WHITE,

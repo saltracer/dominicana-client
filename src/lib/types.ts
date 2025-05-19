@@ -7,6 +7,8 @@ export interface Book {
   category: string;
   coverImage: string;
   description: string;
+  epubPath?: string;
+  epubSamplePath?: string;
 }
 
 export interface Province {
