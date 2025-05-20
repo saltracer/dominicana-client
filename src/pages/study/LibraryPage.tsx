@@ -98,10 +98,10 @@ const LibraryPage: React.FC = () => {
             <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredBooks.map(book => (
               <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
-                <AspectRatio ratio={1.5 / 1} className="bg-dominican-light-gray">
+                <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray">
                   {book.coverImage ? (
                     <img 
                       src={book.coverImage} 
@@ -131,9 +131,9 @@ const LibraryPage: React.FC = () => {
                 </AspectRatio>
                 
                 <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-1">{book.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{book.author} • {book.year}</p>
-                  <p className="text-gray-700 text-sm mb-4 flex-1">{book.description}</p>
+                  <h3 className="font-garamond text-lg font-bold text-dominican-burgundy mb-1 line-clamp-1">{book.title}</h3>
+                  <p className="text-gray-600 text-sm mb-2">{book.author} • {book.year}</p>
+                  <p className="text-gray-700 text-sm mb-3 line-clamp-2">{book.description}</p>
                   
                   <div className="flex justify-between items-center mt-auto">
                     <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
