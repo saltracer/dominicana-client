@@ -7,6 +7,7 @@ export const migrateBooks = async () => {
     const { data, error } = await supabase.functions.invoke('migrate-books');
     
     if (error) {
+      console.error('Error during books migration:', error);
       throw error;
     }
     

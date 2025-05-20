@@ -67,6 +67,29 @@ serve(async (req) => {
       });
     }
 
+    // Get current books in the database
+    const { data: existingBooks, error: existingBooksError } = await supabaseClient
+      .from('books')
+      .select('id');
+
+    if (existingBooksError) {
+      throw existingBooksError;
+    }
+
+    console.log(`Found ${existingBooks.length} existing books in database`);
+
+    // If there are already books in the database, don't import duplicates
+    if (existingBooks.length > 0) {
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Books already migrated, skipping re-import',
+        existingCount: existingBooks.length 
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // All book data from our library (hardcoded to match library files)
     const booksData: Book[] = [
       // St. Thomas Aquinas books
@@ -287,22 +310,39 @@ serve(async (req) => {
       }
     ];
 
-    // Insert books into the database - use on conflict to avoid duplicates
+    console.log(`Starting migration of ${booksData.length} books`);
+    let insertedCount = 0;
+
+    // Insert books into the database using batch insertion
     for (const book of booksData) {
-      await supabaseClient.from('books').upsert({
-        id: book.id,
-        title: book.title,
-        author: book.author,
-        year: book.year,
-        category: book.category,
-        cover_image: book.coverImage || null,
-        description: book.description,
-        epub_path: book.epubPath || null,
-        epub_sample_path: book.epubSamplePath || null,
-      }, { onConflict: 'id' });
+      // Insert each book individually
+      const { data, error } = await supabaseClient
+        .from('books')
+        .insert({
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          year: book.year,
+          category: book.category,
+          cover_image: book.coverImage || null,
+          description: book.description,
+          epub_path: book.epubPath || null,
+          epub_sample_path: book.epubSamplePath || null,
+        });
+
+      if (error) {
+        console.error(`Error inserting book ${book.title}:`, error);
+      } else {
+        insertedCount++;
+      }
     }
 
-    return new Response(JSON.stringify({ success: true, message: 'Books migration completed' }), {
+    console.log(`Successfully migrated ${insertedCount} books`);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: `Books migration completed successfully. Migrated ${insertedCount} books.` 
+    }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
