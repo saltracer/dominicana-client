@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Book } from '@/lib/types';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Upload } from 'lucide-react';
 import { migrateBooks } from '@/services/migrationService';
 
 const formSchema = z.object({
@@ -34,6 +34,10 @@ const BooksManager = () => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [migrationStatus, setMigrationStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [uploadingEpub, setUploadingEpub] = useState(false);
+  const [uploadingEpubSample, setUploadingEpubSample] = useState(false);
+  const [epubFile, setEpubFile] = useState<File | null>(null);
+  const [epubSampleFile, setEpubSampleFile] = useState<File | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -149,8 +153,95 @@ const BooksManager = () => {
     }
   };
 
+  // Handle file uploads to Supabase storage
+  const handleEpubUpload = async (file: File, bookId?: number): Promise<string | null> => {
+    if (!file) return null;
+    
+    setUploadingEpub(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${bookId || 'new'}.${fileExt}`;
+      const filePath = `${fileName}`;
+      
+      const { data, error } = await supabase.storage
+        .from('epub_files')
+        .upload(filePath, file);
+      
+      if (error) throw error;
+      
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from('epub_files')
+        .getPublicUrl(filePath);
+      
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading epub:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload EPUB file',
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploadingEpub(false);
+    }
+  };
+
+  const handleEpubSampleUpload = async (file: File, bookId?: number): Promise<string | null> => {
+    if (!file) return null;
+    
+    setUploadingEpubSample(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `sample_${Date.now()}_${bookId || 'new'}.${fileExt}`;
+      const filePath = `${fileName}`;
+      
+      const { data, error } = await supabase.storage
+        .from('epub_files')
+        .upload(filePath, file);
+      
+      if (error) throw error;
+      
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from('epub_files')
+        .getPublicUrl(filePath);
+      
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading epub sample:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload EPUB sample file',
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploadingEpubSample(false);
+    }
+  };
+
   const handleCreateBook = async (data: FormValues) => {
     try {
+      // Upload epub file if exists
+      let epubPath = data.epubPath;
+      if (epubFile) {
+        const uploadedUrl = await handleEpubUpload(epubFile);
+        if (uploadedUrl) {
+          epubPath = uploadedUrl;
+        }
+      }
+      
+      // Upload epub sample file if exists
+      let epubSamplePath = data.epubSamplePath;
+      if (epubSampleFile) {
+        const uploadedUrl = await handleEpubSampleUpload(epubSampleFile);
+        if (uploadedUrl) {
+          epubSamplePath = uploadedUrl;
+        }
+      }
+      
       const { error } = await supabase
         .from('books')
         .insert({
@@ -160,8 +251,8 @@ const BooksManager = () => {
           category: data.category,
           description: data.description,
           cover_image: data.coverImage || null,
-          epub_path: data.epubPath || null,
-          epub_sample_path: data.epubSamplePath || null,
+          epub_path: epubPath || null,
+          epub_sample_path: epubSamplePath || null,
         });
 
       if (error) throw error;
@@ -170,6 +261,10 @@ const BooksManager = () => {
         title: 'Success',
         description: 'Book created successfully',
       });
+      
+      // Clear file state
+      setEpubFile(null);
+      setEpubSampleFile(null);
       
       // Close dialog and refresh
       setDialogOpen(false);
@@ -188,6 +283,24 @@ const BooksManager = () => {
     if (!selectedBook) return;
     
     try {
+      // Upload epub file if exists
+      let epubPath = data.epubPath;
+      if (epubFile) {
+        const uploadedUrl = await handleEpubUpload(epubFile, selectedBook.id);
+        if (uploadedUrl) {
+          epubPath = uploadedUrl;
+        }
+      }
+      
+      // Upload epub sample file if exists
+      let epubSamplePath = data.epubSamplePath;
+      if (epubSampleFile) {
+        const uploadedUrl = await handleEpubSampleUpload(epubSampleFile, selectedBook.id);
+        if (uploadedUrl) {
+          epubSamplePath = uploadedUrl;
+        }
+      }
+      
       const { error } = await supabase
         .from('books')
         .update({
@@ -197,8 +310,8 @@ const BooksManager = () => {
           category: data.category,
           description: data.description,
           cover_image: data.coverImage || null,
-          epub_path: data.epubPath || null,
-          epub_sample_path: data.epubSamplePath || null,
+          epub_path: epubPath || null,
+          epub_sample_path: epubSamplePath || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', selectedBook.id);
@@ -209,6 +322,10 @@ const BooksManager = () => {
         title: 'Success',
         description: 'Book updated successfully',
       });
+      
+      // Clear file state
+      setEpubFile(null);
+      setEpubSampleFile(null);
       
       // Close dialog and refresh
       setDialogOpen(false);
@@ -267,6 +384,16 @@ const BooksManager = () => {
   const openCreateDialog = () => {
     setSelectedBook(null);
     setDialogOpen(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'epub' | 'epubSample') => {
+    if (e.target.files && e.target.files[0]) {
+      if (type === 'epub') {
+        setEpubFile(e.target.files[0]);
+      } else {
+        setEpubSampleFile(e.target.files[0]);
+      }
+    }
   };
 
   return (
@@ -450,9 +577,38 @@ const BooksManager = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>EPUB Path</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Path to EPUB file (optional)" {...field} value={field.value || ''} />
-                      </FormControl>
+                      <div className="flex gap-2 items-start">
+                        <FormControl className="flex-1">
+                          <Input placeholder="Path to EPUB file (optional)" {...field} value={field.value || ''} disabled={!!epubFile} />
+                        </FormControl>
+                        <div className="relative">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            className="flex items-center"
+                            disabled={uploadingEpub}
+                          >
+                            <label className="cursor-pointer flex items-center">
+                              {uploadingEpub ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              ) : (
+                                <Upload className="h-4 w-4 mr-2" />
+                              )}
+                              Upload EPUB
+                              <Input
+                                type="file"
+                                className="hidden"
+                                accept=".epub"
+                                onChange={(e) => handleFileChange(e, 'epub')}
+                                disabled={uploadingEpub}
+                              />
+                            </label>
+                          </Button>
+                        </div>
+                      </div>
+                      {epubFile && (
+                        <p className="text-sm text-green-600">File selected: {epubFile.name}</p>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -465,16 +621,46 @@ const BooksManager = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>EPUB Sample Path</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Path to EPUB sample file (optional)" {...field} value={field.value || ''} />
-                    </FormControl>
+                    <div className="flex gap-2 items-start">
+                      <FormControl className="flex-1">
+                        <Input placeholder="Path to EPUB sample file (optional)" {...field} value={field.value || ''} disabled={!!epubSampleFile} />
+                      </FormControl>
+                      <div className="relative">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          className="flex items-center"
+                          disabled={uploadingEpubSample}
+                        >
+                          <label className="cursor-pointer flex items-center">
+                            {uploadingEpubSample ? (
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : (
+                              <Upload className="h-4 w-4 mr-2" />
+                            )}
+                            Upload Sample
+                            <Input
+                              type="file"
+                              className="hidden"
+                              accept=".epub"
+                              onChange={(e) => handleFileChange(e, 'epubSample')}
+                              disabled={uploadingEpubSample}
+                            />
+                          </label>
+                        </Button>
+                      </div>
+                    </div>
+                    {epubSampleFile && (
+                      <p className="text-sm text-green-600">File selected: {epubSampleFile.name}</p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
               <DialogFooter>
-                <Button type="submit">
+                <Button type="submit" disabled={uploadingEpub || uploadingEpubSample}>
+                  {(uploadingEpub || uploadingEpubSample) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {selectedBook ? 'Update Book' : 'Add Book'}
                 </Button>
               </DialogFooter>
