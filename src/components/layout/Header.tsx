@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import UserMenu from "../auth/UserMenu";
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -100,6 +100,8 @@ const Header: React.FC = () => {
                 )}
               </div>
             ))}
+            
+        <UserMenu />
           </nav>
 
           {/* Mobile Menu Button */}
@@ -156,6 +158,7 @@ const Header: React.FC = () => {
             </div>
           ))}
         </div>
+        <UserMenu />
       </div>
     </header>
   );

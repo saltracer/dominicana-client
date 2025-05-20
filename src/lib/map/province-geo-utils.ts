@@ -1,4 +1,3 @@
-
 import type { Province } from '@/lib/types';
 import { GeoJSON } from 'leaflet';
 
@@ -30,7 +29,8 @@ export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
           ...province.boundaries.properties,
           provinceId: province.id,
           name: province.name
-        }
+        },
+        geometry: province.boundaries.geometry // Ensure the geometry is explicitly assigned
       };
     } else {
       // For direct Polygon or MultiPolygon types

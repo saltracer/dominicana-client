@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
-import { DivIcon } from 'leaflet';
+import { DivIcon, map } from 'leaflet';
 import { allProvinces } from '@/lib/provinces';
 import type { Province } from '@/lib/types';
 import { 
@@ -100,7 +100,7 @@ const ProvincesMap: React.FC = () => {
         style={{ height: '600px', width: '100%', borderRadius: '0.5rem' }}
         className="z-0"
         zoomControl={false}
-        whenReady={({ target }) => setMapInstance(target)}
+        //whenReady={( target ) => setMapInstance(target)}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

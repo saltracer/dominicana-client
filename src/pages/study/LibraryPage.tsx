@@ -4,12 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 import { books } from '@/lib/library';
 
 const LibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
+  const { userRole } = useAuth();
   
   const filteredBooks = books.filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -20,6 +22,7 @@ const LibraryPage: React.FC = () => {
   });
   
   const categories = ['all', ...new Set(books.map(book => book.category.toLowerCase()))];
+  const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,9 +91,14 @@ const LibraryPage: React.FC = () => {
                   <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
                     {book.category}
                   </span>
-                  <Button asChild variant="outline" size="sm" className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10">
-                    <Link to={`/login`}>
-                      Read Book
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                  >
+                    <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                      {canReadBooks ? "Read Book" : "Login to Read"}
                     </Link>
                   </Button>
                 </div>
@@ -105,18 +113,20 @@ const LibraryPage: React.FC = () => {
           )}
         </div>
         
-        <div className="mt-8 p-4 bg-dominican-burgundy/10 rounded-md">
-          <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Login Required</h3>
-          <p className="text-gray-700 mb-4">
-            A free account is required to access the full text of books in our digital library. 
-            Please log in or create an account to continue.
-          </p>
-          <Button asChild className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
-            <Link to="/login">
-              Sign In
-            </Link>
-          </Button>
-        </div>
+        {!canReadBooks && (
+          <div className="mt-8 p-4 bg-dominican-burgundy/10 rounded-md">
+            <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Login Required</h3>
+            <p className="text-gray-700 mb-4">
+              A free account is required to access the full text of books in our digital library. 
+              Please log in or create an account to continue.
+            </p>
+            <Button asChild className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
+              <Link to="/auth">
+                Sign In
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
