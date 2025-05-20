@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 import { User, LogOut, Settings } from 'lucide-react';
 
 const UserMenu: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, userRole } = useAuth();
 
   if (!user) {
     return (
@@ -51,6 +51,9 @@ const UserMenu: React.FC = () => {
         <DropdownMenuItem disabled className="flex justify-between">
           {user.email}
         </DropdownMenuItem>
+        <DropdownMenuItem disabled className="flex justify-between">
+          <span>Role:</span> <span className="font-medium">{userRole}</span>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/profile" className="flex items-center w-full cursor-pointer">
             <User className="mr-2 h-4 w-4" />
@@ -63,6 +66,13 @@ const UserMenu: React.FC = () => {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
+        {userRole === 'admin' && (
+          <DropdownMenuItem asChild>
+            <Link to="/admin" className="flex items-center w-full cursor-pointer">
+              <span>Admin Panel</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />

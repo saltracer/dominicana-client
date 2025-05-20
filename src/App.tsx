@@ -10,6 +10,10 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import AuthPage from "./pages/AuthPage";
 import RequireAuth from "./components/auth/RequireAuth";
+import RoleGuard from "./components/auth/RoleGuard";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
+import AdminPanel from "./pages/admin/AdminPanel";
 
 // Prayer Pages
 import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
@@ -41,29 +45,58 @@ const App = () => {
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                <Route path="/subscription" element={<SubscriptionPage />} />
                 
-                {/* Prayer Routes */}
+                {/* Prayer Routes - Free User Access to Pages, Authentication for Features */}
                 <Route path="/prayer/liturgy-of-the-hours" element={
-                  <RequireAuth>
+                  <RoleGuard requiredRole="free">
                     <LiturgyOfHoursPage />
-                  </RequireAuth>
+                  </RoleGuard>
                 } />
                 <Route path="/prayer/rosary" element={
-                  <RequireAuth>
+                  <RoleGuard requiredRole="free">
                     <RosaryPage />
-                  </RequireAuth>
+                  </RoleGuard>
                 } />
                 
-                {/* Study Routes */}
-                <Route path="/study/library" element={<LibraryPage />} />
+                {/* Study Routes - Library browsing is free, reading books requires auth */}
+                <Route path="/study/library" element={
+                  <RoleGuard requiredRole="free">
+                    <LibraryPage />
+                  </RoleGuard>
+                } />
                 
-                {/* Community Routes */}
-                <Route path="/community/liturgical-calendar" element={<LiturgicalCalendarPage />} />
-                <Route path="/community/saints" element={<SaintsPage />} />
-                <Route path="/community/provinces" element={<ProvincesPage />} />
+                {/* Community Routes - All community pages are public */}
+                <Route path="/community/liturgical-calendar" element={
+                  <RoleGuard requiredRole="free">
+                    <LiturgicalCalendarPage />
+                  </RoleGuard>
+                } />
+                <Route path="/community/saints" element={
+                  <RoleGuard requiredRole="free">
+                    <SaintsPage />
+                  </RoleGuard>
+                } />
+                <Route path="/community/provinces" element={
+                  <RoleGuard requiredRole="free">
+                    <ProvincesPage />
+                  </RoleGuard>
+                } />
                 
                 {/* Preaching Routes */}
-                <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
+                <Route path="/preaching/daily-reflections" element={
+                  <RoleGuard requiredRole="free">
+                    <DailyReflectionsPage />
+                  </RoleGuard>
+                } />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={
+                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
+                    <AdminPanel />
+                  </RoleGuard>
+                } />
                 
                 {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
