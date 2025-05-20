@@ -1,6 +1,17 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { books } from '@/lib/library';
+import { Database } from '@/integrations/supabase/types';
+
+type BookCategory = Database['public']['Enums']['book_category'];
+
+// Helper function to validate if a category is valid
+const isValidCategory = (category: string): category is BookCategory => {
+  const validCategories: BookCategory[] = [
+    'Theology', 'Philosophy', 'Spiritual', 'Mysticism', 'Science', 'Natural History'
+  ];
+  return validCategories.includes(category as BookCategory);
+};
 
 export const migrateBooks = async () => {
   try {
@@ -30,14 +41,21 @@ export const migrateBooks = async () => {
 
     // Insert each book individually
     for (const book of books) {
+      // Validate the category before insertion
+      if (!isValidCategory(book.category)) {
+        console.error(`Invalid category "${book.category}" for book "${book.title}"`);
+        errors.push({ book: book.title, error: `Invalid category: ${book.category}` });
+        continue;
+      }
+
       const { error } = await supabase
         .from('books')
         .insert({
-          id: book.id,
+          // Don't explicitly set id, let Supabase handle it
           title: book.title,
           author: book.author,
           year: book.year,
-          category: book.category,
+          category: book.category as BookCategory,
           cover_image: book.coverImage || null,
           description: book.description,
           epub_path: book.epubPath || null,
