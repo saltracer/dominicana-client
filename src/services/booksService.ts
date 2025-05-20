@@ -45,6 +45,51 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
     throw error;
   }
 
+  // Get a signed URL for the EPUB file if it exists to bypass CORS issues
+  let epubPath = data.epub_path;
+  let epubSamplePath = data.epub_sample_path;
+  
+  if (epubPath) {
+    console.log("Original EPUB path:", epubPath);
+    
+    // Check if it's a Supabase storage URL
+    if (epubPath.includes('supabase.co/storage')) {
+      try {
+        // Extract the bucket and file path from the URL
+        const url = new URL(epubPath);
+        const pathParts = url.pathname.split('/');
+        const bucketIndex = pathParts.findIndex(part => part === 'object');
+        
+        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
+          const bucket = pathParts[bucketIndex + 2];
+          const filePath = pathParts.slice(bucketIndex + 3).join('/');
+          
+          console.log("Getting signed URL for bucket:", bucket, "file:", filePath);
+          
+          // Get a signed URL that will work with CORS
+          const { data: signedUrlData, error: signedUrlError } = await supabase
+            .storage
+            .from(bucket)
+            .createSignedUrl(filePath, 60 * 60); // 1 hour expiry
+            
+          if (signedUrlData && !signedUrlError) {
+            console.log("Got signed URL:", signedUrlData.signedUrl);
+            epubPath = signedUrlData.signedUrl;
+          } else {
+            console.error("Error getting signed URL:", signedUrlError);
+          }
+        }
+      } catch (e) {
+        console.error("Error processing EPUB URL:", e);
+      }
+    }
+  }
+  
+  if (epubSamplePath) {
+    // Do the same for sample path if needed
+    // Similar code as above
+  }
+
   // Transform to match the Book type
   const book: Book = {
     id: data.id,
@@ -54,8 +99,8 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
     category: data.category,
     coverImage: data.cover_image || '',
     description: data.description,
-    epubPath: data.epub_path || undefined,
-    epubSamplePath: data.epub_sample_path || undefined,
+    epubPath: epubPath || undefined,
+    epubSamplePath: epubSamplePath || undefined,
   };
 
   return book;
