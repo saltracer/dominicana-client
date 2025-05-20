@@ -86,9 +86,9 @@ const ProvincesMap: React.FC = () => {
   // Create interaction handlers
   const onEachFeature = createProvinceInteractions(allProvinces, setSelectedProvince);
 
-  // Function to handle map reference
-  const handleMapReady = () => {
-    // No parameters needed - just a callback
+  // Function to handle map reference - Fixed to accept target parameter
+  const handleMapReady = (target: { target: any }) => {
+    setMapInstance(target.target);
   };
 
   return (
@@ -100,7 +100,7 @@ const ProvincesMap: React.FC = () => {
         style={{ height: '600px', width: '100%', borderRadius: '0.5rem' }}
         className="z-0"
         zoomControl={false}
-        //whenReady={( target ) => setMapInstance(target)}
+        whenReady={handleMapReady}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

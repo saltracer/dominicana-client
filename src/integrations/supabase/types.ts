@@ -9,24 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admins: {
-        Row: {
-          created_at: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -83,43 +65,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      bootstrap_first_admin: {
-        Args: { admin_email: string }
-        Returns: boolean
-      }
       get_auth_uid: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      has_role: {
-        Args: { role: Database["public"]["Enums"]["user_role"] }
-        Returns: boolean
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never> | { uid: string }
-        Returns: boolean
-      }
-      is_admin_check: {
-        Args: { uid: string }
-        Returns: boolean
-      }
-      is_admin_check_all_users: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          user_id: string
-        }[]
-      }
       is_admin_from_table: {
         Args: Record<PropertyKey, never>
         Returns: boolean
-      }
-      is_admin_user: {
-        Args: { uid: string }
-        Returns: boolean
-      }
-      migrate_initial_books: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
       }
     }
     Enums: {
