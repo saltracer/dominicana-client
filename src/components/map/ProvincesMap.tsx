@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
 import { DivIcon } from 'leaflet';
@@ -85,11 +84,6 @@ const ProvincesMap: React.FC = () => {
   
   // Create interaction handlers
   const onEachFeature = createProvinceInteractions(allProvinces, setSelectedProvince);
-
-  // Function to handle map reference
-  const handleMapReady = () => {
-    // No parameters needed - just a callback
-  };
 
   return (
     <div className="relative">

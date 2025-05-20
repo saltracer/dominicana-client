@@ -7,6 +7,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthContext";
+import AuthPage from "./pages/AuthPage";
+import RequireAuth from "./components/auth/RequireAuth";
 
 // Prayer Pages
 import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
@@ -29,35 +32,46 @@ const App = () => {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              
-              {/* Prayer Routes */}
-              <Route path="/prayer/liturgy-of-the-hours" element={<LiturgyOfHoursPage />} />
-              <Route path="/prayer/rosary" element={<RosaryPage />} />
-              
-              {/* Study Routes */}
-              <Route path="/study/library" element={<LibraryPage />} />
-              
-              {/* Community Routes */}
-              <Route path="/community/liturgical-calendar" element={<LiturgicalCalendarPage />} />
-              <Route path="/community/saints" element={<SaintsPage />} />
-              <Route path="/community/provinces" element={<ProvincesPage />} />
-              
-              {/* Preaching Routes */}
-              <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                
+                {/* Prayer Routes */}
+                <Route path="/prayer/liturgy-of-the-hours" element={
+                  <RequireAuth>
+                    <LiturgyOfHoursPage />
+                  </RequireAuth>
+                } />
+                <Route path="/prayer/rosary" element={
+                  <RequireAuth>
+                    <RosaryPage />
+                  </RequireAuth>
+                } />
+                
+                {/* Study Routes */}
+                <Route path="/study/library" element={<LibraryPage />} />
+                
+                {/* Community Routes */}
+                <Route path="/community/liturgical-calendar" element={<LiturgicalCalendarPage />} />
+                <Route path="/community/saints" element={<SaintsPage />} />
+                <Route path="/community/provinces" element={<ProvincesPage />} />
+                
+                {/* Preaching Routes */}
+                <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
