@@ -9,6 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -90,6 +108,10 @@ export type Database = {
         Returns: {
           user_id: string
         }[]
+      }
+      is_admin_from_table: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       is_admin_user: {
         Args: { uid: string }
