@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Book } from '@/lib/types';
 import { fetchBooks } from '@/services/booksService';
 import { toast } from '@/components/ui/use-toast';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const LibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,25 +101,34 @@ const LibraryPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBooks.map(book => (
               <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
-                <div className="h-40 bg-dominican-light-gray flex items-center justify-center overflow-hidden">
+                <AspectRatio ratio={1.5 / 1} className="bg-dominican-light-gray">
                   {book.coverImage ? (
                     <img 
                       src={book.coverImage} 
                       alt={book.title} 
-                      className="object-contain h-full w-auto max-w-full"
+                      className="object-cover h-full w-full"
                       onError={(e) => {
                         // If image fails to load, show text fallback
                         e.currentTarget.style.display = 'none';
-                        e.currentTarget.parentElement?.classList.add('has-fallback');
+                        e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'p-4');
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'text-center';
+                        placeholder.innerHTML = `
+                          <p class="font-garamond text-xl font-bold text-dominican-burgundy">${book.title}</p>
+                          <p class="text-gray-600">${book.author}</p>
+                        `;
+                        e.currentTarget.parentElement?.appendChild(placeholder);
                       }}
                     />
                   ) : (
-                    <div className="text-center p-4">
-                      <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
-                      <p className="text-gray-600">{book.author}</p>
+                    <div className="flex items-center justify-center h-full w-full p-4">
+                      <div className="text-center">
+                        <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
+                        <p className="text-gray-600">{book.author}</p>
+                      </div>
                     </div>
                   )}
-                </div>
+                </AspectRatio>
                 
                 <div className="p-4 flex-1 flex flex-col">
                   <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-1">{book.title}</h3>
