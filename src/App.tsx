@@ -21,6 +21,7 @@ import RosaryPage from "./pages/prayer/RosaryPage";
 
 // Study Pages
 import LibraryPage from "./pages/study/LibraryPage";
+import BookReaderPage from "./pages/study/BookReaderPage";
 
 // Community Pages
 import LiturgicalCalendarPage from "./pages/community/LiturgicalCalendarPage";
@@ -64,6 +65,11 @@ const App = () => {
                 <Route path="/study/library" element={
                   <RoleGuard requiredRole="free">
                     <LibraryPage />
+                  </RoleGuard>
+                } />
+                <Route path="/books/:id" element={
+                  <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
+                    <BookReaderPage />
                   </RoleGuard>
                 } />
                 

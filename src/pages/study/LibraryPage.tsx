@@ -144,9 +144,10 @@ const LibraryPage: React.FC = () => {
                       variant="outline" 
                       size="sm" 
                       className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                      disabled={!canReadBooks && !book.epubPath}
                     >
                       <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
-                        {canReadBooks ? "Read Book" : "Login to Read"}
+                        {!canReadBooks ? "Login to Read" : !book.epubPath ? "No EPUB Available" : "Read Book"}
                       </Link>
                     </Button>
                   </div>
