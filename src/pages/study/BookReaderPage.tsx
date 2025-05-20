@@ -7,18 +7,14 @@ import { fetchBookById } from '@/services/booksService';
 import { Loader2, ArrowLeft, Settings, Book as BookIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { Navigator } from '@readium/navigator';
-import { Publication } from '@readium/shared';
 
 const BookReaderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pub, setPub] = useState<Publication | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const viewerRef = useRef<HTMLDivElement>(null);
-  const navigatorRef = useRef<Navigator | null>(null);
+  const viewerRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     // Fetch book details
@@ -46,8 +42,23 @@ const BookReaderPage: React.FC = () => {
 
         setBook(bookData);
         
-        // Initialize the reader once we have the book data
-        initializeReader(bookData.epubPath);
+        // Load the EPUB directly in the iframe
+        if (viewerRef.current && bookData.epubPath) {
+          viewerRef.current.src = bookData.epubPath;
+          
+          // Add load event listener to hide loader when iframe loads
+          viewerRef.current.onload = () => {
+            console.log("EPUB loaded in iframe");
+            setLoading(false);
+          };
+          
+          // Add error event listener
+          viewerRef.current.onerror = () => {
+            console.error("Failed to load EPUB in iframe");
+            setError('Failed to load EPUB file. Please try again later.');
+            setLoading(false);
+          };
+        }
       } catch (err) {
         console.error('Error loading book:', err);
         setError('Error loading book: ' + (err instanceof Error ? err.message : String(err)));
@@ -56,102 +67,32 @@ const BookReaderPage: React.FC = () => {
     };
 
     getBookDetails();
-
-    // Cleanup function to destroy the navigator when unmounting
-    return () => {
-      if (navigatorRef.current) {
-        navigatorRef.current.destroy();
-      }
-    };
   }, [id]);
 
-  const initializeReader = async (epubUrl: string) => {
+  // Simple font size controls for iframe content
+  const changeFontSize = (increase: boolean) => {
+    if (!viewerRef.current) return;
+    
     try {
-      if (!viewerRef.current) return;
-
-      // Clear the viewer element
-      viewerRef.current.innerHTML = '';
-      
-      // Create publication object from the EPUB URL
-      const response = await fetch(epubUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch EPUB: ${response.statusText}`);
-      }
-      
-      const epubBlob = await response.blob();
-      const publication = await Publication.fromBlob(epubBlob);
-      setPub(publication);
-      
-      // Create a new Navigator instance
-      const navigator = new Navigator({
-        publication,
-        viewport: viewerRef.current,
-        preferences: {
-          pageMode: 'paginated', // or 'scrolled'
-          appearance: {
-            textAlignment: 'justify',
-            fontFamily: 'serif',
-            fontSize: 100, // percentage
-            theme: 'light',
-          },
-        }
-      });
-      
-      navigatorRef.current = navigator;
-      
-      // Set default view
-      navigator.goTo(1); // Go to first page
-      
-      setLoading(false);
-    } catch (err) {
-      console.error('Error initializing reader:', err);
-      setError('Error initializing the reader: ' + (err instanceof Error ? err.message : String(err)));
-      setLoading(false);
+      viewerRef.current.contentWindow?.postMessage({
+        action: 'changeFontSize',
+        value: increase ? 'increase' : 'decrease'
+      }, '*');
+    } catch (e) {
+      console.error('Error changing font size:', e);
     }
   };
 
-  // Handle font size changes
-  const changeFontSize = (increase: boolean) => {
-    if (!navigatorRef.current) return;
-    
-    const currentPreferences = navigatorRef.current.preferences;
-    const currentSize = currentPreferences.appearance?.fontSize || 100;
-    const newSize = increase ? currentSize + 10 : Math.max(70, currentSize - 10);
-    
-    navigatorRef.current.preferences = {
-      ...currentPreferences,
-      appearance: {
-        ...currentPreferences.appearance,
-        fontSize: newSize
-      }
-    };
-  };
-
-  // Handle theme changes
+  // Toggle theme for iframe content
   const toggleTheme = () => {
-    if (!navigatorRef.current) return;
+    if (!viewerRef.current) return;
     
-    const currentPreferences = navigatorRef.current.preferences;
-    const currentTheme = currentPreferences.appearance?.theme || 'light';
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    navigatorRef.current.preferences = {
-      ...currentPreferences,
-      appearance: {
-        ...currentPreferences.appearance,
-        theme: newTheme
-      }
-    };
-  };
-
-  // Navigation controls
-  const navigate = (forward: boolean) => {
-    if (!navigatorRef.current) return;
-    
-    if (forward) {
-      navigatorRef.current.goRight();
-    } else {
-      navigatorRef.current.goLeft();
+    try {
+      viewerRef.current.contentWindow?.postMessage({
+        action: 'toggleTheme'
+      }, '*');
+    } catch (e) {
+      console.error('Error toggling theme:', e);
     }
   };
 
@@ -221,30 +162,13 @@ const BookReaderPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <>
-            {/* EPUB Reader Container */}
-            <div 
-              ref={viewerRef} 
-              className="flex-1 overflow-hidden border rounded-md bg-white" 
-              style={{ minHeight: '300px' }}
-            />
-            
-            {/* Navigation controls */}
-            <div className="flex justify-between mt-4">
-              <Button 
-                variant="outline"
-                onClick={() => navigate(false)}
-              >
-                Previous Page
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => navigate(true)}
-              >
-                Next Page
-              </Button>
-            </div>
-          </>
+          <iframe 
+            ref={viewerRef}
+            className="flex-1 w-full border rounded-md"
+            title={book?.title || 'Book Reader'}
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            allow="fullscreen"
+          />
         )}
       </div>
     </div>
