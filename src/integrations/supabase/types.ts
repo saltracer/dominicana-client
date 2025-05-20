@@ -73,10 +73,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
-      is_admin_from_table: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
     }
     Enums: {
       user_role: "free" | "authenticated" | "subscribed" | "admin"

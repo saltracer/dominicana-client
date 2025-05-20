@@ -114,16 +114,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const userId = userData.id;
 
-      // Then update or insert the role for this user
-      const { error } = await supabase
+      // Check if the user already has a role record
+      const { data: existingRole, error: roleCheckError } = await supabase
         .from('user_roles')
-        .upsert({ 
-          user_id: userId, 
-          role: role,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id, role'
-        });
+        .select('id, role')
+        .eq('user_id', userId)
+        .single();
+
+      if (roleCheckError && roleCheckError.code !== 'PGRST116') {
+        // If error is not "no rows returned", it's a real error
+        throw roleCheckError;
+      }
+
+      let error;
+      
+      if (existingRole) {
+        // Update existing role
+        const { error: updateError } = await supabase
+          .from('user_roles')
+          .update({ 
+            role: role,
+            updated_at: new Date().toISOString() 
+          })
+          .eq('id', existingRole.id);
+        
+        error = updateError;
+      } else {
+        // Insert new role if none exists
+        const { error: insertError } = await supabase
+          .from('user_roles')
+          .insert({ 
+            user_id: userId, 
+            role: role,
+            updated_at: new Date().toISOString() 
+          });
+        
+        error = insertError;
+      }
 
       if (error) throw error;
       
