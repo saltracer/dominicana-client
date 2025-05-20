@@ -66,11 +66,11 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
           
           console.log("Getting signed URL for bucket:", bucket, "file:", filePath);
           
-          // Get a signed URL that will work with CORS
+          // Get a signed URL with a longer expiry time (4 hours)
           const { data: signedUrlData, error: signedUrlError } = await supabase
             .storage
             .from(bucket)
-            .createSignedUrl(filePath, 60 * 60); // 1 hour expiry
+            .createSignedUrl(filePath, 4 * 60 * 60); // 4 hours expiry
             
           if (signedUrlData && !signedUrlError) {
             console.log("Got signed URL:", signedUrlData.signedUrl);
@@ -86,8 +86,30 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
   }
   
   if (epubSamplePath) {
-    // Do the same for sample path if needed
-    // Similar code as above
+    // Apply the same logic for sample path
+    if (epubSamplePath.includes('supabase.co/storage')) {
+      try {
+        const url = new URL(epubSamplePath);
+        const pathParts = url.pathname.split('/');
+        const bucketIndex = pathParts.findIndex(part => part === 'object');
+        
+        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
+          const bucket = pathParts[bucketIndex + 2];
+          const filePath = pathParts.slice(bucketIndex + 3).join('/');
+          
+          const { data: signedUrlData, error: signedUrlError } = await supabase
+            .storage
+            .from(bucket)
+            .createSignedUrl(filePath, 4 * 60 * 60);
+            
+          if (signedUrlData && !signedUrlError) {
+            epubSamplePath = signedUrlData.signedUrl;
+          }
+        }
+      } catch (e) {
+        console.error("Error processing EPUB sample URL:", e);
+      }
+    }
   }
 
   // Transform to match the Book type

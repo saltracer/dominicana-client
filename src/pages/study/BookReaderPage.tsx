@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -33,18 +34,16 @@ const BookReaderPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch book details
     const getBookDetails = async () => {
-      setLoading(true);
-      setLoadingStage("fetching book data");
-      try {
-        if (!id) {
-          console.error("No book ID provided");
-          setError('No book ID provided');
-          setLoading(false);
-          return;
-        }
+      if (!id) {
+        console.error("No book ID provided");
+        setError('No book ID provided');
+        setLoading(false);
+        return;
+      }
 
+      try {
+        setLoadingStage("fetching book data");
         console.log(`Fetching book with ID: ${id}`);
         const bookData = await fetchBookById(parseInt(id));
         console.log("Book data received:", bookData);
@@ -66,75 +65,10 @@ const BookReaderPage: React.FC = () => {
         console.log("EPUB path:", bookData.epubPath);
         setBook(bookData);
         
-        // Initialize the EPUB reader if the viewer element exists
-        if (viewerRef.current && bookData.epubPath) {
-          setLoadingStage("initializing EPUB reader");
-          console.log("Initializing EPUB reader with path:", bookData.epubPath);
-          
-          try {
-            // Create a new Book instance
-            console.log("Creating EPUB.js Book instance");
-            const book = ePub(bookData.epubPath);
-            bookRef.current = book;
-            
-            // Add a listener for book open failure
-            book.on('openFailed', (error: any) => {
-              console.error("Failed to open EPUB:", error);
-              setError(`Failed to open EPUB: ${error.message || 'Unknown error'}`);
-              setLoading(false);
-            });
-            
-            // Wait for the book to be opened
-            setLoadingStage("opening book");
-            book.ready.then(() => {
-              console.log("EPUB book ready");
-              setLoadingStage("rendering book");
-              
-              // Render the book
-              console.log("Creating rendition");
-              const rendition = book.renderTo(viewerRef.current, {
-                width: '100%',
-                height: '100%',
-                spread: 'none'
-              });
-              renditionRef.current = rendition;
-              
-              // Log book metadata
-              book.loaded.metadata.then((metadata: any) => {
-                console.log("Book metadata:", metadata);
-              }).catch((err: any) => {
-                console.error("Error loading metadata:", err);
-              });
-              
-              // Display the first page
-              console.log("Attempting to display first page");
-              rendition.display().then(() => {
-                console.log("EPUB first page displayed successfully");
-                setLoadingStage("complete");
-                setLoading(false);
-              }).catch((err: any) => {
-                console.error("Error displaying EPUB content:", err);
-                setError(`Error displaying EPUB content: ${err.message || 'Unknown error'}`);
-                setLoading(false);
-              });
-              
-              // Add keyboard event listeners for navigation
-              document.addEventListener('keydown', handleKeyPress);
-            }).catch((err: any) => {
-              console.error("Error loading EPUB:", err);
-              setError(`Error loading EPUB file: ${err.message || 'Unknown error'}`);
-              setLoading(false);
-            });
-          } catch (err) {
-            console.error("Exception during EPUB initialization:", err);
-            setError(`Exception during EPUB initialization: ${err instanceof Error ? err.message : String(err)}`);
-            setLoading(false);
-          }
-        } else {
-          console.error("Viewer reference not available or no EPUB path");
-          setError('Viewer reference not available or no EPUB path');
-          setLoading(false);
-        }
+        // Wait for the next tick to ensure DOM is ready
+        setTimeout(() => {
+          initializeEpubReader(bookData.epubPath as string);
+        }, 100);
       } catch (err) {
         console.error('Error loading book:', err);
         setError(`Error loading book: ${err instanceof Error ? err.message : String(err)}`);
@@ -149,6 +83,86 @@ const BookReaderPage: React.FC = () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [id]);
+
+  const initializeEpubReader = (epubPath: string) => {
+    if (!viewerRef.current) {
+      console.error("Viewer element not found in DOM");
+      setError('Viewer element not found in DOM');
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoadingStage("initializing EPUB reader");
+      console.log("Initializing EPUB reader with path:", epubPath);
+      console.log("Viewer ref available:", !!viewerRef.current);
+      
+      // Create a new Book instance
+      console.log("Creating EPUB.js Book instance");
+      const book = ePub(epubPath);
+      bookRef.current = book;
+      
+      // Add a listener for book open failure
+      book.on('openFailed', (error: any) => {
+        console.error("Failed to open EPUB:", error);
+        setError(`Failed to open EPUB: ${error.message || 'Unknown error'}`);
+        setLoading(false);
+      });
+      
+      // Wait for the book to be opened
+      setLoadingStage("opening book");
+      book.ready.then(() => {
+        console.log("EPUB book ready");
+        setLoadingStage("rendering book");
+        
+        if (!viewerRef.current) {
+          console.error("Viewer element lost during rendering");
+          setError('Viewer element lost during rendering');
+          setLoading(false);
+          return;
+        }
+        
+        // Render the book
+        console.log("Creating rendition, viewer ref:", viewerRef.current);
+        const rendition = book.renderTo(viewerRef.current, {
+          width: '100%',
+          height: '100%',
+          spread: 'none'
+        });
+        renditionRef.current = rendition;
+        
+        // Log book metadata
+        book.loaded.metadata.then((metadata: any) => {
+          console.log("Book metadata:", metadata);
+        }).catch((err: any) => {
+          console.error("Error loading metadata:", err);
+        });
+        
+        // Add keyboard event listeners for navigation
+        document.addEventListener('keydown', handleKeyPress);
+        
+        // Display the first page
+        console.log("Attempting to display first page");
+        rendition.display().then(() => {
+          console.log("EPUB first page displayed successfully");
+          setLoadingStage("complete");
+          setLoading(false);
+        }).catch((err: any) => {
+          console.error("Error displaying EPUB content:", err);
+          setError(`Error displaying EPUB content: ${err.message || 'Unknown error'}`);
+          setLoading(false);
+        });
+      }).catch((err: any) => {
+        console.error("Error loading EPUB:", err);
+        setError(`Error loading EPUB file: ${err.message || 'Unknown error'}`);
+        setLoading(false);
+      });
+    } catch (err) {
+      console.error("Exception during EPUB initialization:", err);
+      setError(`Exception during EPUB initialization: ${err instanceof Error ? err.message : String(err)}`);
+      setLoading(false);
+    }
+  };
 
   // Handle keyboard navigation
   const handleKeyPress = (e: KeyboardEvent) => {
@@ -235,9 +249,18 @@ const BookReaderPage: React.FC = () => {
         viewerRef.current.appendChild(iframe);
         setLoading(false);
         setError(null);
+        toast({
+          title: "Alternative Loading Method",
+          description: "Using direct iframe to display the EPUB content",
+        });
       }
     } catch (e) {
       console.error('Error with alternative loading method:', e);
+      toast({
+        title: "Error",
+        description: "Failed to load with alternative method",
+        variant: "destructive",
+      });
     }
   };
 
@@ -321,7 +344,11 @@ const BookReaderPage: React.FC = () => {
                 <h3 className="font-medium mb-2">Debug Information</h3>
                 <div className="text-sm mb-2">
                   <strong>Book ID:</strong> {book.id}<br />
-                  <strong>EPUB Path:</strong> <span className="break-all">{book.epubPath}</span>
+                  <strong>EPUB Path:</strong> <span className="break-all">{book.epubPath}</span><br />
+                  <strong>Loading Stage:</strong> {loadingStage}<br />
+                  <strong>Viewer Ref Available:</strong> {viewerRef.current ? "Yes" : "No"}<br />
+                  <strong>Book Ref Available:</strong> {bookRef.current ? "Yes" : "No"}<br />
+                  <strong>Rendition Ref Available:</strong> {renditionRef.current ? "Yes" : "No"}
                 </div>
                 <div className="mb-4">
                   <Button
@@ -384,6 +411,7 @@ const BookReaderPage: React.FC = () => {
           <div 
             ref={viewerRef} 
             className="flex-1 w-full border rounded-md overflow-hidden bg-white"
+            id="epub-viewer"
           ></div>
         )}
       </div>
