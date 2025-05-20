@@ -1,17 +1,42 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-
-import { books } from '@/lib/library';
+import { Book } from '@/lib/types';
+import { fetchBooks } from '@/services/booksService';
+import { toast } from '@/components/ui/use-toast';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const LibraryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
   const { userRole } = useAuth();
+  
+  useEffect(() => {
+    const loadBooks = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchBooks();
+        setBooks(data);
+      } catch (error) {
+        console.error('Failed to load books:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load library books',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadBooks();
+  }, []);
   
   const filteredBooks = books.filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -68,50 +93,74 @@ const LibraryPage: React.FC = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBooks.map(book => (
-            <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
-              <div className="h-40 bg-dominican-light-gray flex items-center justify-center">
-                {book.coverImage ? (
-                  <img src={book.coverImage} alt={book.title} className="h-full w-auto" />
-                ) : (
-                  <div className="text-center p-4">
-                    <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
-                    <p className="text-gray-600">{book.author}</p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="p-4 flex-1 flex flex-col">
-                <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-1">{book.title}</h3>
-                <p className="text-gray-600 text-sm mb-3">{book.author} • {book.year}</p>
-                <p className="text-gray-700 text-sm mb-4 flex-1">{book.description}</p>
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredBooks.map(book => (
+              <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
+                <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray">
+                  {book.coverImage ? (
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      className="object-cover h-full w-full"
+                      onError={(e) => {
+                        // If image fails to load, show text fallback
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'p-4');
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'text-center';
+                        placeholder.innerHTML = `
+                          <p class="font-garamond text-xl font-bold text-dominican-burgundy">${book.title}</p>
+                          <p class="text-gray-600">${book.author}</p>
+                        `;
+                        e.currentTarget.parentElement?.appendChild(placeholder);
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full p-4">
+                      <div className="text-center">
+                        <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
+                        <p className="text-gray-600">{book.author}</p>
+                      </div>
+                    </div>
+                  )}
+                </AspectRatio>
                 
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
-                    {book.category}
-                  </span>
-                  <Button 
-                    asChild 
-                    variant="outline" 
-                    size="sm" 
-                    className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                  >
-                    <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
-                      {canReadBooks ? "Read Book" : "Login to Read"}
-                    </Link>
-                  </Button>
+                <div className="p-4 flex-1 flex flex-col">
+                  <h3 className="font-garamond text-lg font-bold text-dominican-burgundy mb-1 line-clamp-1">{book.title}</h3>
+                  <p className="text-gray-600 text-sm mb-2">{book.author} • {book.year}</p>
+                  <p className="text-gray-700 text-sm mb-3 line-clamp-2">{book.description}</p>
+                  
+                  <div className="flex justify-between items-center mt-auto">
+                    <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
+                      {book.category}
+                    </span>
+                    <Button 
+                      asChild 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                    >
+                      <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                        {canReadBooks ? "Read Book" : "Login to Read"}
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          
-          {filteredBooks.length === 0 && (
-            <div className="col-span-full text-center py-10">
-              <p className="text-gray-600">No books found matching your search criteria.</p>
-            </div>
-          )}
-        </div>
+            ))}
+            
+            {filteredBooks.length === 0 && !loading && (
+              <div className="col-span-full text-center py-10">
+                <p className="text-gray-600">No books found matching your search criteria.</p>
+              </div>
+            )}
+          </div>
+        )}
         
         {!canReadBooks && (
           <div className="mt-8 p-4 bg-dominican-burgundy/10 rounded-md">

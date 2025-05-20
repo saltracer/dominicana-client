@@ -14,6 +14,9 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+
+import BooksManager from '@/components/admin/BooksManager';
+
 interface UserData {
   id: string;
   email: string;
@@ -132,7 +135,7 @@ const AdminPanel: React.FC = () => {
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-6">
           <TabsTrigger value="users">User Management</TabsTrigger>
-          <TabsTrigger value="content">Content Management</TabsTrigger>
+          <TabsTrigger value="books">Library Management</TabsTrigger>
           <TabsTrigger value="settings">Site Settings</TabsTrigger>
         </TabsList>
         
@@ -251,6 +254,10 @@ const AdminPanel: React.FC = () => {
         <TabsContent value="content" className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold mb-4">Content Management</h2>
           <p className="text-gray-600">Content management features will be available in future updates.</p>
+        </TabsContent>
+		
+        <TabsContent value="books">
+          <BooksManager />
         </TabsContent>
         
         <TabsContent value="settings" className="bg-white rounded-lg shadow-md p-6">
