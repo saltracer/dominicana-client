@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import UserMenu from "../auth/UserMenu";
@@ -13,20 +14,14 @@ const Header: React.FC = () => {
         
         {/* Navigation Links */}
         <nav className="hidden md:flex space-x-6">
-          <Link to="/prayer" className="hover:text-dominican-gold transition-colors">Prayer</Link>
-          <Link to="/study" className="hover:text-dominican-gold transition-colors">Study</Link>
-          <Link to="/community" className="hover:text-dominican-gold transition-colors">Community</Link>
-          <Link to="/preaching" className="hover:text-dominican-gold transition-colors">Preaching</Link>
+          <Link to="/prayer/liturgy-of-the-hours" className="hover:text-dominican-gold transition-colors">Prayer</Link>
+          <Link to="/study/library" className="hover:text-dominican-gold transition-colors">Study</Link>
+          <Link to="/community/liturgical-calendar" className="hover:text-dominican-gold transition-colors">Community</Link>
+          <Link to="/preaching/daily-reflections" className="hover:text-dominican-gold transition-colors">Preaching</Link>
         </nav>
         
         {/* Add UserMenu to the right side of the header */}
-        <div className="flex items-center space-x-4">
-          {/* Navigation Links (visible on smaller screens) */}
-          <nav className="md:hidden">
-            <Link to="/menu" className="hover:text-dominican-gold transition-colors">Menu</Link>
-          </nav>
-          <UserMenu />
-        </div>
+        <UserMenu />
       </div>
     </header>
   );
