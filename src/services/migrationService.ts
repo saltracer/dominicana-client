@@ -26,7 +26,7 @@ export const migrateBooks = async () => {
     }
     
     // If there are already books in the database, don't import duplicates
-    if (existingBooks && existingBooks.length > 0) {
+    if ((existingBooks && existingBooks.length > 0) && ((books.length <= existingBooks.length) && books.length > 0)) {
       console.log(`Found ${existingBooks.length} existing books in database, skipping import`);
       return { 
         success: true, 
