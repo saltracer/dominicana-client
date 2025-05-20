@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -120,13 +120,21 @@ const BooksManager = () => {
   const handleMigrateBooks = async () => {
     setMigrationStatus('loading');
     try {
-      await migrateBooks();
+      const result = await migrateBooks();
       
       setMigrationStatus('success');
-      toast({
-        title: 'Success',
-        description: 'Books migrated successfully',
-      });
+      
+      if (result.existingCount) {
+        toast({
+          title: 'Info',
+          description: `Books already migrated (${result.existingCount} existing books)`,
+        });
+      } else {
+        toast({
+          title: 'Success',
+          description: result.message || 'Books migrated successfully',
+        });
+      }
       
       // Refresh the books list
       fetchBooks();
