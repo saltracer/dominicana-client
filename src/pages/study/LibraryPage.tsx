@@ -146,7 +146,7 @@ const LibraryPage: React.FC = () => {
                       className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
                       disabled={!canReadBooks && !book.epubPath}
                     >
-                      <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                      <Link to={canReadBooks ? `/study/books/${book.id}` : `/auth`}>
                         {!canReadBooks ? "Login to Read" : !book.epubPath ? "No EPUB Available" : "Read Book"}
                       </Link>
                     </Button>

@@ -7,6 +7,7 @@ import { fetchBookById } from '@/services/booksService';
 import { Loader2, ArrowLeft, Settings, Book as BookIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import ePub from 'epubjs';
 
 const BookReaderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,18 @@ const BookReaderPage: React.FC = () => {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const viewerRef = useRef<HTMLIFrameElement>(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const renditionRef = useRef<any>(null);
+  const bookRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Clean up function to remove any existing EPUB reader instances
+    return () => {
+      if (bookRef.current) {
+        bookRef.current.destroy();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Fetch book details
@@ -42,22 +54,41 @@ const BookReaderPage: React.FC = () => {
 
         setBook(bookData);
         
-        // Load the EPUB directly in the iframe
+        // Initialize the EPUB reader if the viewer element exists
         if (viewerRef.current && bookData.epubPath) {
-          viewerRef.current.src = bookData.epubPath;
+          // Create a new Book instance
+          const book = ePub(bookData.epubPath);
+          bookRef.current = book;
           
-          // Add load event listener to hide loader when iframe loads
-          viewerRef.current.onload = () => {
-            console.log("EPUB loaded in iframe");
+          // Wait for the book to be opened
+          book.ready.then(() => {
+            console.log("EPUB book ready");
+            
+            // Render the book
+            const rendition = book.renderTo(viewerRef.current, {
+              width: '100%',
+              height: '100%',
+              spread: 'none'
+            });
+            renditionRef.current = rendition;
+            
+            // Display the first page
+            rendition.display().then(() => {
+              console.log("EPUB first page displayed");
+              setLoading(false);
+            }).catch((err: any) => {
+              console.error("Error displaying EPUB content:", err);
+              setError('Error displaying EPUB content. Please try again later.');
+              setLoading(false);
+            });
+            
+            // Add keyboard event listeners for navigation
+            document.addEventListener('keydown', handleKeyPress);
+          }).catch((err: any) => {
+            console.error("Error loading EPUB:", err);
+            setError('Error loading EPUB file. Please try again later.');
             setLoading(false);
-          };
-          
-          // Add error event listener
-          viewerRef.current.onerror = () => {
-            console.error("Failed to load EPUB in iframe");
-            setError('Failed to load EPUB file. Please try again later.');
-            setLoading(false);
-          };
+          });
         }
       } catch (err) {
         console.error('Error loading book:', err);
@@ -67,30 +98,77 @@ const BookReaderPage: React.FC = () => {
     };
 
     getBookDetails();
+    
+    // Cleanup keyboard event listeners
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
   }, [id]);
 
-  // Simple font size controls for iframe content
+  // Handle keyboard navigation
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (!renditionRef.current) return;
+    
+    if (e.key === 'ArrowRight') {
+      renditionRef.current.next();
+    } else if (e.key === 'ArrowLeft') {
+      renditionRef.current.prev();
+    }
+  };
+
+  // Navigation functions
+  const nextPage = () => {
+    if (renditionRef.current) {
+      renditionRef.current.next();
+    }
+  };
+
+  const prevPage = () => {
+    if (renditionRef.current) {
+      renditionRef.current.prev();
+    }
+  };
+
+  // Font size controls
   const changeFontSize = (increase: boolean) => {
-    if (!viewerRef.current) return;
+    if (!renditionRef.current) return;
     
     try {
-      viewerRef.current.contentWindow?.postMessage({
-        action: 'changeFontSize',
-        value: increase ? 'increase' : 'decrease'
-      }, '*');
+      const currentSize = renditionRef.current.themes.fontSize();
+      const newSize = increase ? 
+        (parseFloat(currentSize) * 1.2) + 'px' : 
+        (parseFloat(currentSize) / 1.2) + 'px';
+      
+      renditionRef.current.themes.fontSize(newSize);
     } catch (e) {
       console.error('Error changing font size:', e);
     }
   };
 
-  // Toggle theme for iframe content
+  // Toggle theme (dark/light mode)
   const toggleTheme = () => {
-    if (!viewerRef.current) return;
+    if (!renditionRef.current) return;
     
     try {
-      viewerRef.current.contentWindow?.postMessage({
-        action: 'toggleTheme'
-      }, '*');
+      const theme = document.body.classList.contains('dark') ? 'light' : 'dark';
+      
+      if (theme === 'dark') {
+        renditionRef.current.themes.register('dark', {
+          body: { 
+            color: '#ffffff !important', 
+            background: '#121212 !important' 
+          }
+        });
+        renditionRef.current.themes.select('dark');
+      } else {
+        renditionRef.current.themes.register('light', {
+          body: { 
+            color: '#000000 !important', 
+            background: '#ffffff !important' 
+          }
+        });
+        renditionRef.current.themes.select('light');
+      }
     } catch (e) {
       console.error('Error toggling theme:', e);
     }
@@ -117,6 +195,22 @@ const BookReaderPage: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => prevPage()}
+              title="Previous page"
+            >
+              <ArrowLeft size={16} />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => nextPage()}
+              title="Next page"
+            >
+              <ArrowLeft size={16} className="rotate-180" />
+            </Button>
             <Button 
               variant="outline" 
               size="sm"
@@ -162,13 +256,10 @@ const BookReaderPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <iframe 
-            ref={viewerRef}
-            className="flex-1 w-full border rounded-md"
-            title={book?.title || 'Book Reader'}
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-            allow="fullscreen"
-          />
+          <div 
+            ref={viewerRef} 
+            className="flex-1 w-full border rounded-md overflow-hidden bg-white"
+          ></div>
         )}
       </div>
     </div>

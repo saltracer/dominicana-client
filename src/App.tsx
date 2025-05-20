@@ -67,7 +67,7 @@ const App = () => {
                     <LibraryPage />
                   </RoleGuard>
                 } />
-                <Route path="/books/:id" element={
+                <Route path="/study/books/:id" element={
                   <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
                     <BookReaderPage />
                   </RoleGuard>
