@@ -19,6 +19,7 @@ const BookReaderPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingStage, setLoadingStage] = useState<string>("initializing"); // Track loading stages
   const [showDebug, setShowDebug] = useState(false);
+  const [viewerReady, setViewerReady] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<any>(null);
   const bookRef = useRef<any>(null);
@@ -33,6 +34,7 @@ const BookReaderPage: React.FC = () => {
     };
   }, []);
 
+  // First effect: Fetch book data
   useEffect(() => {
     const getBookDetails = async () => {
       if (!id) {
@@ -65,10 +67,7 @@ const BookReaderPage: React.FC = () => {
         console.log("EPUB path:", bookData.epubPath);
         setBook(bookData);
         
-        // Wait for the next tick to ensure DOM is ready
-        setTimeout(() => {
-          initializeEpubReader(bookData.epubPath as string);
-        }, 100);
+        // Don't initialize the reader here - wait for the DOM to be ready
       } catch (err) {
         console.error('Error loading book:', err);
         setError(`Error loading book: ${err instanceof Error ? err.message : String(err)}`);
@@ -83,6 +82,32 @@ const BookReaderPage: React.FC = () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [id]);
+
+  // Second effect: Check if viewer div exists and set it ready
+  useEffect(() => {
+    if (book && viewerRef.current) {
+      console.log("Viewer element found in DOM:", viewerRef.current);
+      // Mark viewer as ready after a short delay to ensure DOM is fully rendered
+      const timer = setTimeout(() => {
+        setViewerReady(true);
+      }, 200); // Small delay to ensure DOM is ready
+      
+      return () => clearTimeout(timer);
+    }
+  }, [book, viewerRef.current]);
+
+  // Third effect: Initialize EPUB reader when both book data and viewer are ready
+  useEffect(() => {
+    if (book?.epubPath && viewerReady && viewerRef.current) {
+      console.log("Both book data and viewer are ready, initializing EPUB reader");
+      initializeEpubReader(book.epubPath);
+    } else if (book?.epubPath && viewerReady) {
+      console.log("Book data ready but viewer ref is still null:", 
+        "book.epubPath:", book.epubPath, 
+        "viewerReady:", viewerReady,
+        "viewerRef.current:", viewerRef.current);
+    }
+  }, [book, viewerReady]);
 
   const initializeEpubReader = (epubPath: string) => {
     if (!viewerRef.current) {
@@ -346,6 +371,7 @@ const BookReaderPage: React.FC = () => {
                   <strong>Book ID:</strong> {book.id}<br />
                   <strong>EPUB Path:</strong> <span className="break-all">{book.epubPath}</span><br />
                   <strong>Loading Stage:</strong> {loadingStage}<br />
+                  <strong>Viewer Ready State:</strong> {viewerReady ? "Ready" : "Not Ready"}<br />
                   <strong>Viewer Ref Available:</strong> {viewerRef.current ? "Yes" : "No"}<br />
                   <strong>Book Ref Available:</strong> {bookRef.current ? "Yes" : "No"}<br />
                   <strong>Rendition Ref Available:</strong> {renditionRef.current ? "Yes" : "No"}
@@ -361,7 +387,25 @@ const BookReaderPage: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={() => {
+                      // Force-set viewer ready and attempt to reinitialize if we have book data
+                      if (book?.epubPath) {
+                        setViewerReady(true);
+                        setTimeout(() => {
+                          if (viewerRef.current) {
+                            initializeEpubReader(book.epubPath as string);
+                          }
+                        }, 100);
+                      }
+                    }}
+                  >
+                    Retry Initialization
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => window.open(book.epubPath, '_blank')}
+                    className="ml-2"
                   >
                     Open EPUB URL Directly
                   </Button>
