@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      books: {
+        Row: {
+          author: string
+          category: Database["public"]["Enums"]["book_category"]
+          cover_image: string | null
+          created_at: string
+          description: string
+          epub_path: string | null
+          epub_sample_path: string | null
+          id: number
+          title: string
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          author: string
+          category: Database["public"]["Enums"]["book_category"]
+          cover_image?: string | null
+          created_at?: string
+          description: string
+          epub_path?: string | null
+          epub_sample_path?: string | null
+          id?: number
+          title: string
+          updated_at?: string
+          year: string
+        }
+        Update: {
+          author?: string
+          category?: Database["public"]["Enums"]["book_category"]
+          cover_image?: string | null
+          created_at?: string
+          description?: string
+          epub_path?: string | null
+          epub_sample_path?: string | null
+          id?: number
+          title?: string
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -73,8 +115,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      migrate_initial_books: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
+      book_category:
+        | "Theology"
+        | "Philosophy"
+        | "Spiritual"
+        | "Mysticism"
+        | "Science"
+        | "Natural History"
       user_role: "free" | "authenticated" | "subscribed" | "admin"
     }
     CompositeTypes: {
@@ -191,6 +244,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      book_category: [
+        "Theology",
+        "Philosophy",
+        "Spiritual",
+        "Mysticism",
+        "Science",
+        "Natural History",
+      ],
       user_role: ["free", "authenticated", "subscribed", "admin"],
     },
   },

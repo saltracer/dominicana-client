@@ -1,1 +1,5 @@
+
 project_id = "rimpzfnxwqmamplowaoq"
+
+[functions.migrate-books]
+verify_jwt = true
