@@ -78,7 +78,7 @@ const BookFilters: React.FC<BookFiltersProps> = ({
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No Sort</SelectItem>
+              <SelectItem value="empty">No Sort</SelectItem>
               <SelectItem value="title">Title</SelectItem>
               <SelectItem value="author">Author</SelectItem>
               <SelectItem value="year">Year</SelectItem>

@@ -22,7 +22,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onEdit, onDelete }) => {
       </CardHeader>
       
       <CardContent className="flex-grow pb-2">
-        <AspectRatio ratio={1.5 / 1} className="bg-dominican-light-gray mb-4 overflow-hidden rounded-md">
+        <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray mb-4 overflow-hidden rounded-md">
           {book.coverImage ? (
             <img 
               src={book.coverImage} 
