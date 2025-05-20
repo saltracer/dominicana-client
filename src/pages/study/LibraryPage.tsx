@@ -100,9 +100,18 @@ const LibraryPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBooks.map(book => (
               <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
-                <div className="h-40 bg-dominican-light-gray flex items-center justify-center">
+                <div className="h-40 bg-dominican-light-gray flex items-center justify-center overflow-hidden">
                   {book.coverImage ? (
-                    <img src={book.coverImage} alt={book.title} className="h-full w-auto" />
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      className="object-contain h-full w-auto max-w-full"
+                      onError={(e) => {
+                        // If image fails to load, show text fallback
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement?.classList.add('has-fallback');
+                      }}
+                    />
                   ) : (
                     <div className="text-center p-4">
                       <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>

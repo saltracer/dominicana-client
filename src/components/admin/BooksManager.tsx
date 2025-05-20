@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Book } from '@/lib/types';
-import { Loader2, Plus, Upload } from 'lucide-react';
+import { Loader2, Plus, Upload, Image as ImageIcon } from 'lucide-react';
 import { migrateBooks } from '@/services/migrationService';
 
 const formSchema = z.object({
@@ -38,6 +38,8 @@ const BooksManager = () => {
   const [uploadingEpubSample, setUploadingEpubSample] = useState(false);
   const [epubFile, setEpubFile] = useState<File | null>(null);
   const [epubSampleFile, setEpubSampleFile] = useState<File | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -222,8 +224,51 @@ const BooksManager = () => {
     }
   };
 
+  const handleCoverImageUpload = async (file: File, bookId?: number): Promise<string | null> => {
+    if (!file) return null;
+    
+    setUploadingCover(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `cover_${Date.now()}_${bookId || 'new'}.${fileExt}`;
+      const filePath = `${fileName}`;
+      
+      const { data, error } = await supabase.storage
+        .from('book_covers')
+        .upload(filePath, file);
+      
+      if (error) throw error;
+      
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from('book_covers')
+        .getPublicUrl(filePath);
+      
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading cover image:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload cover image',
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
   const handleCreateBook = async (data: FormValues) => {
     try {
+      // Upload cover image file if exists
+      let coverImageUrl = data.coverImage;
+      if (coverImageFile) {
+        const uploadedUrl = await handleCoverImageUpload(coverImageFile);
+        if (uploadedUrl) {
+          coverImageUrl = uploadedUrl;
+        }
+      }
+      
       // Upload epub file if exists
       let epubPath = data.epubPath;
       if (epubFile) {
@@ -250,7 +295,7 @@ const BooksManager = () => {
           year: data.year,
           category: data.category,
           description: data.description,
-          cover_image: data.coverImage || null,
+          cover_image: coverImageUrl || null,
           epub_path: epubPath || null,
           epub_sample_path: epubSamplePath || null,
         });
@@ -263,6 +308,7 @@ const BooksManager = () => {
       });
       
       // Clear file state
+      setCoverImageFile(null);
       setEpubFile(null);
       setEpubSampleFile(null);
       
@@ -283,6 +329,15 @@ const BooksManager = () => {
     if (!selectedBook) return;
     
     try {
+      // Upload cover image file if exists
+      let coverImageUrl = data.coverImage;
+      if (coverImageFile) {
+        const uploadedUrl = await handleCoverImageUpload(coverImageFile, selectedBook.id);
+        if (uploadedUrl) {
+          coverImageUrl = uploadedUrl;
+        }
+      }
+      
       // Upload epub file if exists
       let epubPath = data.epubPath;
       if (epubFile) {
@@ -309,7 +364,7 @@ const BooksManager = () => {
           year: data.year,
           category: data.category,
           description: data.description,
-          cover_image: data.coverImage || null,
+          cover_image: coverImageUrl || null,
           epub_path: epubPath || null,
           epub_sample_path: epubSamplePath || null,
           updated_at: new Date().toISOString(),
@@ -324,6 +379,7 @@ const BooksManager = () => {
       });
       
       // Clear file state
+      setCoverImageFile(null);
       setEpubFile(null);
       setEpubSampleFile(null);
       
@@ -386,9 +442,11 @@ const BooksManager = () => {
     setDialogOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'epub' | 'epubSample') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'cover' | 'epub' | 'epubSample') => {
     if (e.target.files && e.target.files[0]) {
-      if (type === 'epub') {
+      if (type === 'cover') {
+        setCoverImageFile(e.target.files[0]);
+      } else if (type === 'epub') {
         setEpubFile(e.target.files[0]);
       } else {
         setEpubSampleFile(e.target.files[0]);
@@ -428,6 +486,15 @@ const BooksManager = () => {
                 <CardDescription>{book.author} • {book.year}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
+                {book.coverImage && (
+                  <div className="mb-4 h-40 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      className="object-contain h-full w-auto max-w-full"
+                    />
+                  </div>
+                )}
                 <p className="text-sm text-gray-600 mb-2">{book.category}</p>
                 <p className="text-sm">{book.description}</p>
               </CardContent>
@@ -556,21 +623,67 @@ const BooksManager = () => {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="coverImage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cover Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Cover image URL (optional)" {...field} />
+              <FormField
+                control={form.control}
+                name="coverImage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cover Image</FormLabel>
+                    <div className="flex gap-2 items-start">
+                      <FormControl className="flex-1">
+                        <Input 
+                          placeholder="Cover image URL (optional)" 
+                          {...field} 
+                          value={field.value || ''}
+                          disabled={!!coverImageFile}
+                        />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      <div className="relative">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          className="flex items-center"
+                          disabled={uploadingCover}
+                        >
+                          <label className="cursor-pointer flex items-center">
+                            {uploadingCover ? (
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : (
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                            )}
+                            Upload Image
+                            <Input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={(e) => handleFileChange(e, 'cover')}
+                              disabled={uploadingCover}
+                            />
+                          </label>
+                        </Button>
+                      </div>
+                    </div>
+                    {coverImageFile && (
+                      <p className="text-sm text-green-600">File selected: {coverImageFile.name}</p>
+                    )}
+                    {field.value && !coverImageFile && (
+                      <div className="mt-2 max-w-[200px] max-h-[100px] overflow-hidden">
+                        <img 
+                          src={field.value} 
+                          alt="Cover preview" 
+                          className="object-contain w-full h-auto"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="epubPath"
@@ -659,8 +772,8 @@ const BooksManager = () => {
               />
 
               <DialogFooter>
-                <Button type="submit" disabled={uploadingEpub || uploadingEpubSample}>
-                  {(uploadingEpub || uploadingEpubSample) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="submit" disabled={uploadingCover || uploadingEpub || uploadingEpubSample}>
+                  {(uploadingCover || uploadingEpub || uploadingEpubSample) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {selectedBook ? 'Update Book' : 'Add Book'}
                 </Button>
               </DialogFooter>
