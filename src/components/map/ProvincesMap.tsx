@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
-import { DivIcon, map } from 'leaflet';
+import { DivIcon } from 'leaflet';
 import { allProvinces } from '@/lib/provinces';
 import type { Province } from '@/lib/types';
 import { 
@@ -87,8 +87,8 @@ const ProvincesMap: React.FC = () => {
   const onEachFeature = createProvinceInteractions(allProvinces, setSelectedProvince);
 
   // Function to handle map reference - Fixed to accept target parameter
-  const handleMapReady = (target: { target: any }) => {
-    setMapInstance(target.target);
+  const handleMapReady = (map: any) => {
+    setMapInstance(map.target);
   };
 
   return (
