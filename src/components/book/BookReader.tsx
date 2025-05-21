@@ -4,6 +4,7 @@ import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 interface BookReaderProps {
   url: string;
@@ -20,12 +21,15 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const [error, setError] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
+  const { userRole } = useAuth(); // Get user role from auth context
+  const isAdmin = userRole === 'admin'; // Check if user is admin
 
   // Add debugging for URL and component lifecycle
   useEffect(() => {
     console.log('BookReader - Component mounted');
     console.log('BookReader - Received book URL:', url);
     console.log('BookReader - Book title:', title);
+    console.log('BookReader - User role:', userRole);
     
     // Update dimensions on mount
     if (containerRef.current) {
@@ -105,7 +109,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       console.log('BookReader - Component unmounting');
       window.removeEventListener('resize', handleResize);
     };
-  }, [url, title]);
+  }, [url, title, userRole]);
 
   // Location changed handler
   const locationChanged = (epubcifi: string) => {
@@ -266,8 +270,9 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               handleKeyPress={() => {}}
               showToc={true}
               swipeable={true}
-              style={{
-                // Explicit styling for ReactReader component
+              className="reader-wrapper"
+              // The 'style' property should be passed as styles
+              styles={{
                 container: {
                   overflow: 'hidden',
                   position: 'relative',
@@ -315,79 +320,81 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                   cursor: 'pointer',
                 },
               }}
-              className="reader-wrapper"
             />
           </div>
           
-          <div className="mt-4 p-4 bg-gray-100 rounded-md">
-            <p className="text-sm text-gray-700">Debug Controls:</p>
-            <div className="flex gap-2 mt-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  console.log('BookReader - Debug info:');
-                  console.log('Current location:', location);
-                  console.log('Rendition ref:', renditionRef.current);
-                  console.log('TOC ref:', tocRef.current);
-                  console.log('Container dimensions:', dimensions);
-                  
-                  if (renditionRef.current) {
-                    console.log('Book loaded:', renditionRef.current.book?.loaded);
-                    console.log('Current view manager type:', renditionRef.current.manager?.name);
-                  }
-                  
-                  alert('Debug info logged to console');
-                }}
-              >
-                Log Debug Info
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  localStorage.removeItem(`book-progress-${title}`);
-                  setLocation(0);
-                  console.log('BookReader - Progress reset');
-                  
-                  if (renditionRef.current) {
-                    console.log('BookReader - Attempting to display location 0');
-                    try {
-                      renditionRef.current.display(0);
-                      alert('Reading progress reset and returned to beginning');
-                    } catch (err) {
-                      console.error('BookReader - Error resetting location:', err);
-                      alert('Failed to reset position: ' + err);
+          {/* Only render the debug controls if user is admin */}
+          {isAdmin && (
+            <div className="mt-4 p-4 bg-gray-100 rounded-md">
+              <p className="text-sm text-gray-700">Debug Controls:</p>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    console.log('BookReader - Debug info:');
+                    console.log('Current location:', location);
+                    console.log('Rendition ref:', renditionRef.current);
+                    console.log('TOC ref:', tocRef.current);
+                    console.log('Container dimensions:', dimensions);
+                    
+                    if (renditionRef.current) {
+                      console.log('Book loaded:', renditionRef.current.book?.loaded);
+                      console.log('Current view manager type:', renditionRef.current.manager?.name);
                     }
-                  } else {
-                    alert('Reading progress reset (rendition not available)');
-                  }
-                }}
-              >
-                Reset Progress
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  if (renditionRef.current) {
-                    console.log('BookReader - Forcing display() call');
-                    try {
-                      renditionRef.current.display();
-                      alert('Forced display refresh');
-                    } catch (err) {
-                      console.error('BookReader - Error in force display:', err);
-                      alert('Display refresh failed: ' + err);
+                    
+                    alert('Debug info logged to console');
+                  }}
+                >
+                  Log Debug Info
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    localStorage.removeItem(`book-progress-${title}`);
+                    setLocation(0);
+                    console.log('BookReader - Progress reset');
+                    
+                    if (renditionRef.current) {
+                      console.log('BookReader - Attempting to display location 0');
+                      try {
+                        renditionRef.current.display(0);
+                        alert('Reading progress reset and returned to beginning');
+                      } catch (err) {
+                        console.error('BookReader - Error resetting location:', err);
+                        alert('Failed to reset position: ' + err);
+                      }
+                    } else {
+                      alert('Reading progress reset (rendition not available)');
                     }
-                  } else {
-                    alert('Cannot refresh, reader not initialized');
-                  }
-                }}
-              >
-                Force Refresh
-              </Button>
+                  }}
+                >
+                  Reset Progress
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    if (renditionRef.current) {
+                      console.log('BookReader - Forcing display() call');
+                      try {
+                        renditionRef.current.display();
+                        alert('Forced display refresh');
+                      } catch (err) {
+                        console.error('BookReader - Error in force display:', err);
+                        alert('Display refresh failed: ' + err);
+                      }
+                    } else {
+                      alert('Cannot refresh, reader not initialized');
+                    }
+                  }}
+                >
+                  Force Refresh
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
