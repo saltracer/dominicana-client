@@ -153,6 +153,26 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     rendition.on('displayError', (error: any) => {
       console.error('BookReader - Display error:', error);
     });
+
+    // Fix navigation within TOC by intercepting clicks
+    rendition.hooks.content.register((contents: any) => {
+      contents.window.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName.toLowerCase() === 'a' && target.getAttribute('href')) {
+          const href = target.getAttribute('href') || '';
+          // Handle internal navigation differently
+          if (href.startsWith('#') || !href.includes('://')) {
+            e.preventDefault();
+            try {
+              // Try to use rendition's display method for internal navigation
+              rendition.display(href);
+            } catch (err) {
+              console.error('BookReader - Error navigating to internal link:', href, err);
+            }
+          }
+        }
+      });
+    });
     
     // Try to get the saved progress from localStorage after rendition is ready
     const savedLocation = localStorage.getItem(`book-progress-${title}`);
@@ -256,8 +276,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 openAs: 'epub',
               }}
               epubOptions={{
-                flow: 'paginated', // Changed from 'scrolled' to 'paginated' to avoid ContinuousViewManager issue
-                manager: 'default', // Changed from 'continuous' to 'default'
+                flow: 'paginated',
+                manager: 'default',
                 allowPopups: true,
               }}
               loadingView={
@@ -270,8 +290,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               handleKeyPress={() => {}}
               showToc={true}
               swipeable={true}
-              className="reader-wrapper"
-              // The 'style' property should be passed as styles
               styles={{
                 container: {
                   overflow: 'hidden',
