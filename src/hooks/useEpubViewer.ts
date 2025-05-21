@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Book } from '@/lib/types';
 import { toast } from '@/components/ui/use-toast';
 import ePub from 'epubjs';
@@ -52,29 +52,39 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     toggleTheme
   } = useEpubControls({ renditionInstanceRef });
   
-  // Initialize EPUB reader when both book data and viewer are ready
+  // Initialize EPUB reader once when both book data and viewer are ready
+  // Use a ref to track if initialization has been attempted
+  const initAttempted = useRef(false);
+  
   useEffect(() => {
-    if (!book?.epubPath || !viewerReady || !viewerRef.current) {
-      if (book?.epubPath) {
-        console.log("Book data ready but viewer ref is still null:", 
-          "book.epubPath:", book.epubPath, 
-          "viewerReady:", viewerReady,
-          "viewerRef.current:", viewerRef.current);
-      }
+    // Reset initialization attempt flag when book changes
+    if (book?.id) {
+      initAttempted.current = false;
+    }
+  }, [book?.id]);
+  
+  useEffect(() => {
+    // Only attempt initialization once per book
+    if (!book?.epubPath || !viewerReady || !viewerRef.current || initAttempted.current) {
       return;
     }
 
     console.log("Both book data and viewer are ready, initializing EPUB reader");
+    initAttempted.current = true;
     initializeEpubReader(book.epubPath);
     
     // Clean up function to remove any existing EPUB reader instances
     return () => {
       if (bookInstanceRef.current) {
         console.log("Cleaning up EPUB instance");
-        bookInstanceRef.current.destroy();
+        try {
+          bookInstanceRef.current.destroy();
+        } catch (e) {
+          console.error("Error cleaning up EPUB instance:", e);
+        }
       }
     };
-  }, [book, viewerReady, initializeEpubReader]);
+  }, [book, viewerReady, initializeEpubReader, viewerRef]);
 
   // Set up keyboard event listeners
   useEffect(() => {

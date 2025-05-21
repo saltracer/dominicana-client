@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Book } from '@/lib/types';
@@ -19,15 +19,6 @@ const BookReaderPage: React.FC = () => {
   const [showDebug, setShowDebug] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
   
-  // Set a data attribute on the viewer element that we can check from the hook
-  // to help with DOM identification
-  React.useLayoutEffect(() => {
-    if (viewerRef.current && id) {
-      viewerRef.current.dataset.viewerId = `epub-viewer-${id}`;
-      viewerRef.current.dataset.initialized = 'true';
-    }
-  }, [id]);
-  
   // Fetch book data using React Query
   const { data: book, isLoading: isBookLoading } = useQuery({
     queryKey: ['book', id],
@@ -36,6 +27,15 @@ const BookReaderPage: React.FC = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2
   });
+
+  // Set a data attribute on the viewer element that we can check from the hook
+  // Move this to useLayoutEffect to happen before the render cycle
+  useLayoutEffect(() => {
+    if (viewerRef.current && id) {
+      viewerRef.current.dataset.viewerId = `epub-viewer-${id}`;
+      viewerRef.current.dataset.initialized = 'true';
+    }
+  }, [id]);
 
   // Use our custom hook for the EPUB viewer functionality
   const {
@@ -62,16 +62,20 @@ const BookReaderPage: React.FC = () => {
   // Show loading state when fetching the book
   const isLoading = isBookLoading || loading;
 
-  // Log current state for debugging
-  console.log("BookReaderPage render state:", {
-    id,
-    bookLoaded: !!book,
-    isBookLoading,
-    loading,
-    viewerReady,
-    errorState: error,
-    viewerRefExists: !!viewerRef.current
-  });
+  // Limit logging to prevent excessive console output
+  const shouldLog = useRef(0);
+  if (shouldLog.current % 10 === 0) {
+    console.log("BookReaderPage render state:", {
+      id,
+      bookLoaded: !!book,
+      isBookLoading,
+      loading,
+      viewerReady,
+      errorState: error,
+      viewerRefExists: !!viewerRef.current
+    });
+  }
+  shouldLog.current++;
 
   return (
     <div className="container mx-auto px-4 py-6">
