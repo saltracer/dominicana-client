@@ -7,7 +7,7 @@ import { fetchBookById } from '@/services/booksService';
 import { Loader2 } from 'lucide-react';
 import useEpubViewer from '@/hooks/useEpubViewer';
 
-// Import our newly created components
+// Import our reader components
 import ReaderHeader from '@/components/reader/ReaderHeader';
 import ReaderDebugPanel from '@/components/reader/ReaderDebugPanel';
 import ReaderErrorDisplay from '@/components/reader/ReaderErrorDisplay';
@@ -18,6 +18,15 @@ const BookReaderPage: React.FC = () => {
   const { user } = useAuth();
   const [showDebug, setShowDebug] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
+  
+  // Set a data attribute on the viewer element that we can check from the hook
+  // to help with DOM identification
+  React.useLayoutEffect(() => {
+    if (viewerRef.current && id) {
+      viewerRef.current.dataset.viewerId = `epub-viewer-${id}`;
+      viewerRef.current.dataset.initialized = 'true';
+    }
+  }, [id]);
   
   // Fetch book data using React Query
   const { data: book, isLoading: isBookLoading } = useQuery({
@@ -52,6 +61,17 @@ const BookReaderPage: React.FC = () => {
 
   // Show loading state when fetching the book
   const isLoading = isBookLoading || loading;
+
+  // Log current state for debugging
+  console.log("BookReaderPage render state:", {
+    id,
+    bookLoaded: !!book,
+    isBookLoading,
+    loading,
+    viewerReady,
+    errorState: error,
+    viewerRefExists: !!viewerRef.current
+  });
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -107,7 +127,9 @@ const BookReaderPage: React.FC = () => {
             className="flex-1 w-full border rounded-md overflow-hidden bg-white"
             id={`epub-viewer-${id}`}
             data-testid="epub-viewer"
+            data-viewer-id={`epub-viewer-${id}`}
             data-ready={viewerReady ? "true" : "false"}
+            data-initialized="false"
           ></div>
         )}
       </div>

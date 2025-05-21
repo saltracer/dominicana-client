@@ -1,129 +1,50 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Book } from '@/lib/types';
+import { libraryBooks } from '@/lib/library';
 
+// Fetch all books
 export const fetchBooks = async (): Promise<Book[]> => {
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .order('id', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching books:', error);
-    throw error;
-  }
-
-  // Transform to match the Book type
-  const books: Book[] = data.map(book => ({
-    id: book.id,
-    title: book.title,
-    author: book.author,
-    year: book.year,
-    category: book.category,
-    coverImage: book.cover_image || '',
-    description: book.description,
-    epubPath: book.epub_path || undefined,
-    epubSamplePath: book.epub_sample_path || undefined,
-  }));
-
-  return books;
+  // For authenticated users, we'll eventually load from Supabase
+  // For now, we'll use the local static data
+  return libraryBooks;
 };
 
+// Fetch a single book by ID
 export const fetchBookById = async (id: number): Promise<Book | null> => {
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      // Record not found
-      return null;
-    }
-    console.error('Error fetching book:', error);
-    throw error;
-  }
-
-  // Get a signed URL for the EPUB file if it exists to bypass CORS issues
-  let epubPath = data.epub_path;
-  let epubSamplePath = data.epub_sample_path;
+  // Check local library data first
+  const localBook = libraryBooks.find(book => book.id === id);
   
-  if (epubPath) {
-    console.log("Original EPUB path:", epubPath);
+  if (localBook) {
+    // If the book has an EPUB file, convert its path into a signed URL
+    if (localBook.epub) {
+      try {
+        // Create a signed URL that expires in 8 hours (adjusted from 24 hours)
+        const { data, error } = await supabase.storage
+          .from('books')
+          .createSignedUrl(localBook.epub, 60 * 60 * 8);
+        
+        if (error) {
+          console.error("Error creating signed URL:", error);
+          throw new Error(`Could not generate access URL: ${error.message}`);
+        }
+        
+        // Return the book data with the signed URL as epubPath
+        return {
+          ...localBook,
+          epubPath: data.signedUrl
+        };
+      } catch (error) {
+        console.error("Error in fetchBookById:", error);
+        throw error;
+      }
+    }
     
-    // Check if it's a Supabase storage URL
-    if (epubPath.includes('supabase.co/storage')) {
-      try {
-        // Extract the bucket and file path from the URL
-        const url = new URL(epubPath);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.findIndex(part => part === 'object');
-        
-        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
-          const bucket = pathParts[bucketIndex + 2];
-          const filePath = pathParts.slice(bucketIndex + 3).join('/');
-          
-          console.log("Getting signed URL for bucket:", bucket, "file:", filePath);
-          
-          // Get a signed URL with 8 hours expiry (changed from 24 hours)
-          const { data: signedUrlData, error: signedUrlError } = await supabase
-            .storage
-            .from(bucket)
-            .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
-            
-          if (signedUrlData && !signedUrlError) {
-            console.log("Got signed URL:", signedUrlData.signedUrl);
-            epubPath = signedUrlData.signedUrl;
-          } else {
-            console.error("Error getting signed URL:", signedUrlError);
-          }
-        }
-      } catch (e) {
-        console.error("Error processing EPUB URL:", e);
-      }
-    }
+    // If no EPUB file reference, just return the local data
+    return localBook;
   }
   
-  if (epubSamplePath) {
-    // Apply the same logic for sample path with 8 hours expiry time
-    if (epubSamplePath.includes('supabase.co/storage')) {
-      try {
-        const url = new URL(epubSamplePath);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.findIndex(part => part === 'object');
-        
-        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
-          const bucket = pathParts[bucketIndex + 2];
-          const filePath = pathParts.slice(bucketIndex + 3).join('/');
-          
-          const { data: signedUrlData, error: signedUrlError } = await supabase
-            .storage
-            .from(bucket)
-            .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
-            
-          if (signedUrlData && !signedUrlError) {
-            epubSamplePath = signedUrlData.signedUrl;
-          }
-        }
-      } catch (e) {
-        console.error("Error processing EPUB sample URL:", e);
-      }
-    }
-  }
-
-  // Transform to match the Book type
-  const book: Book = {
-    id: data.id,
-    title: data.title,
-    author: data.author,
-    year: data.year,
-    category: data.category,
-    coverImage: data.cover_image || '',
-    description: data.description,
-    epubPath: epubPath || undefined,
-    epubSamplePath: epubSamplePath || undefined,
-  };
-
-  return book;
+  // If not found locally, return null
+  // In a real application, we might check Supabase here
+  return null;
 };
