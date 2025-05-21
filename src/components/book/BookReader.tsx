@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import { ReactReader } from 'react-reader';
+import { ReactReader, ReactReaderStyle } from 'react-reader';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,8 +18,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Get styles for reader - using object literal instead of type reference
-  const readerStyles = {
+  // Get styles for reader
+  const readerStyles: ReactReaderStyle = {
     container: {
       overflow: 'hidden',
       position: 'relative',
@@ -139,7 +139,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             title={title}
             location={location}
             locationChanged={locationChanged}
-            style={readerStyles} // Changed from "styles" to "style"
+            styles={readerStyles}
             getRendition={(rendition) => {
               renditionRef.current = rendition;
               rendition.themes.default({
@@ -157,7 +157,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             epubOptions={{
               flow: 'scrolled',
               manager: 'continuous',
-              allowPopups: true, // Add missing required property
             }}
             loadingView={
               isLoading && (
@@ -170,6 +169,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             handleKeyPress={() => {}}
             showToc={true}
             swipeable={true}
+            loadingView={null}
             onReady={handleReady}
             onError={handleError}
           />
