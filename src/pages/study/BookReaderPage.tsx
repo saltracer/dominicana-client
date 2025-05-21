@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Book } from '@/lib/types';
@@ -20,12 +20,13 @@ const BookReaderPage: React.FC = () => {
   const [loadingStage, setLoadingStage] = useState<string>("initializing"); // Track loading stages
   const [showDebug, setShowDebug] = useState(false);
   const [viewerReady, setViewerReady] = useState(false);
+  const [domCheckCounter, setDomCheckCounter] = useState(0);
   const viewerRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<any>(null);
   const bookRef = useRef<any>(null);
 
+  // Clean up function to remove any existing EPUB reader instances
   useEffect(() => {
-    // Clean up function to remove any existing EPUB reader instances
     return () => {
       if (bookRef.current) {
         console.log("Cleaning up EPUB instance");
@@ -34,7 +35,7 @@ const BookReaderPage: React.FC = () => {
     };
   }, []);
 
-  // First effect: Fetch book data
+  // First fetch the book data
   useEffect(() => {
     const getBookDetails = async () => {
       if (!id) {
@@ -67,7 +68,8 @@ const BookReaderPage: React.FC = () => {
         console.log("EPUB path:", bookData.epubPath);
         setBook(bookData);
         
-        // Don't initialize the reader here - wait for the DOM to be ready
+        // Force a check of the DOM to ensure the viewer element is available
+        setDomCheckCounter(prev => prev + 1);
       } catch (err) {
         console.error('Error loading book:', err);
         setError(`Error loading book: ${err instanceof Error ? err.message : String(err)}`);
@@ -83,35 +85,76 @@ const BookReaderPage: React.FC = () => {
     };
   }, [id]);
 
-  // Second effect: Check if viewer div exists and set it ready
+  // Use useLayoutEffect to ensure DOM is ready and check viewer ref
+  useLayoutEffect(() => {
+    // Generate a unique ID for this component instance to ensure we can find it
+    const viewerId = `epub-viewer-${id}`;
+    
+    // Check for our viewerRef and also look by ID as a backup
+    const viewerElement = viewerRef.current || document.getElementById(viewerId);
+    
+    if (viewerElement) {
+      console.log("Viewer element found:", viewerElement);
+      
+      // If viewerRef isn't set but we found by ID, set it
+      if (!viewerRef.current && viewerElement) {
+        viewerRef.current = viewerElement as HTMLDivElement;
+      }
+      
+      setViewerReady(true);
+    } else {
+      console.log("Viewer element not found in DOM");
+      
+      // If we've been waiting for the DOM for a while, retry later
+      if (domCheckCounter > 5) {
+        console.log("Multiple attempts to find viewer element failed, delaying...");
+        setTimeout(() => {
+          setDomCheckCounter(prev => prev + 1);
+        }, 300);
+      }
+    }
+  }, [domCheckCounter, id, book]);
+
+  // Initialize EPUB reader when both book data and viewer are ready
   useEffect(() => {
-    if (book && viewerRef.current) {
-      console.log("Viewer element found in DOM:", viewerRef.current);
-      // Mark viewer as ready after a short delay to ensure DOM is fully rendered
+    if (!book?.epubPath || !viewerReady || !viewerRef.current) {
+      if (book?.epubPath) {
+        console.log("Book data ready but viewer ref is still null:", 
+          "book.epubPath:", book.epubPath, 
+          "viewerReady:", viewerReady,
+          "viewerRef.current:", viewerRef.current);
+      }
+      return;
+    }
+
+    console.log("Both book data and viewer are ready, initializing EPUB reader");
+    initializeEpubReader(book.epubPath);
+  }, [book, viewerReady]);
+
+  // Add another effect to force initialize after a short delay if needed
+  useEffect(() => {
+    if (book?.epubPath && !loading && !error && !renditionRef.current) {
+      // If we have the book data but the viewer isn't initializing, try once more after a delay
       const timer = setTimeout(() => {
-        setViewerReady(true);
-      }, 200); // Small delay to ensure DOM is ready
+        console.log("Attempting forced initialization after delay");
+        
+        // Double-check if the viewer element exists by ID
+        const viewerElement = document.getElementById(`epub-viewer-${id}`);
+        if (viewerElement && book.epubPath) {
+          console.log("Found viewer element by ID during forced init");
+          viewerRef.current = viewerElement as HTMLDivElement;
+          setViewerReady(true);
+          initializeEpubReader(book.epubPath);
+        }
+      }, 500);
       
       return () => clearTimeout(timer);
     }
-  }, [book, viewerRef.current]);
-
-  // Third effect: Initialize EPUB reader when both book data and viewer are ready
-  useEffect(() => {
-    if (book?.epubPath && viewerReady && viewerRef.current) {
-      console.log("Both book data and viewer are ready, initializing EPUB reader");
-      initializeEpubReader(book.epubPath);
-    } else if (book?.epubPath && viewerReady) {
-      console.log("Book data ready but viewer ref is still null:", 
-        "book.epubPath:", book.epubPath, 
-        "viewerReady:", viewerReady,
-        "viewerRef.current:", viewerRef.current);
-    }
-  }, [book, viewerReady]);
+  }, [book, loading, error, id]);
 
   const initializeEpubReader = (epubPath: string) => {
     if (!viewerRef.current) {
-      console.error("Viewer element not found in DOM");
+      console.error("Viewer element not found in DOM during initialization");
       setError('Viewer element not found in DOM');
       setLoading(false);
       return;
@@ -172,6 +215,11 @@ const BookReaderPage: React.FC = () => {
           console.log("EPUB first page displayed successfully");
           setLoadingStage("complete");
           setLoading(false);
+          
+          toast({
+            title: "Book loaded successfully",
+            description: `Now reading: ${book.packaging.metadata.title}`,
+          });
         }).catch((err: any) => {
           console.error("Error displaying EPUB content:", err);
           setError(`Error displaying EPUB content: ${err.message || 'Unknown error'}`);
@@ -289,6 +337,48 @@ const BookReaderPage: React.FC = () => {
     }
   };
 
+  const forceRefresh = () => {
+    // Force a complete refresh of the component
+    setBook(null);
+    setLoading(true);
+    setError(null);
+    setLoadingStage("initializing");
+    
+    // Clean up any existing instances
+    if (bookRef.current) {
+      bookRef.current.destroy();
+      bookRef.current = null;
+    }
+    renditionRef.current = null;
+    
+    // Reset DOM check counter to trigger DOM checks
+    setDomCheckCounter(0);
+    setViewerReady(false);
+    
+    // Refetch the book data after a short delay
+    setTimeout(() => {
+      const getBookDetailsAgain = async () => {
+        if (!id) return;
+        
+        try {
+          setLoadingStage("fetching book data again");
+          const bookData = await fetchBookById(parseInt(id));
+          
+          if (bookData && bookData.epubPath) {
+            setBook(bookData);
+            setDomCheckCounter(prev => prev + 1); // Trigger DOM check
+          }
+        } catch (err) {
+          console.error('Error reloading book:', err);
+          setError(`Error reloading book: ${err instanceof Error ? err.message : String(err)}`);
+          setLoading(false);
+        }
+      };
+      
+      getBookDetailsAgain();
+    }, 300);
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex flex-col h-[calc(100vh-180px)]">
@@ -371,16 +461,17 @@ const BookReaderPage: React.FC = () => {
                   <strong>Book ID:</strong> {book.id}<br />
                   <strong>EPUB Path:</strong> <span className="break-all">{book.epubPath}</span><br />
                   <strong>Loading Stage:</strong> {loadingStage}<br />
+                  <strong>DOM Check Counter:</strong> {domCheckCounter}<br />
                   <strong>Viewer Ready State:</strong> {viewerReady ? "Ready" : "Not Ready"}<br />
+                  <strong>Viewer Element ID:</strong> epub-viewer-{id}<br />
                   <strong>Viewer Ref Available:</strong> {viewerRef.current ? "Yes" : "No"}<br />
                   <strong>Book Ref Available:</strong> {bookRef.current ? "Yes" : "No"}<br />
                   <strong>Rendition Ref Available:</strong> {renditionRef.current ? "Yes" : "No"}
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 flex flex-wrap gap-2">
                   <Button
                     size="sm"
                     onClick={tryAlternativeLoad}
-                    className="mr-2"
                   >
                     Try Alternative Loading
                   </Button>
@@ -389,13 +480,10 @@ const BookReaderPage: React.FC = () => {
                     variant="outline"
                     onClick={() => {
                       // Force-set viewer ready and attempt to reinitialize if we have book data
-                      if (book?.epubPath) {
-                        setViewerReady(true);
-                        setTimeout(() => {
-                          if (viewerRef.current) {
-                            initializeEpubReader(book.epubPath as string);
-                          }
-                        }, 100);
+                      if (book?.epubPath && viewerRef.current) {
+                        initializeEpubReader(book.epubPath);
+                      } else {
+                        setDomCheckCounter(prev => prev + 1); // Trigger another DOM check
                       }
                     }}
                   >
@@ -404,8 +492,14 @@ const BookReaderPage: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={forceRefresh}
+                  >
+                    Force Complete Refresh
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => window.open(book.epubPath, '_blank')}
-                    className="ml-2"
                   >
                     Open EPUB URL Directly
                   </Button>
@@ -439,6 +533,9 @@ const BookReaderPage: React.FC = () => {
                     <Button variant="outline" onClick={tryAlternativeLoad}>
                       Try Alternative Loading Method
                     </Button>
+                    <Button variant="outline" onClick={forceRefresh}>
+                      Force Complete Refresh
+                    </Button>
                     <Button variant="outline" onClick={() => window.open(book.epubPath, '_blank')}>
                       Open EPUB URL Directly
                     </Button>
@@ -455,7 +552,7 @@ const BookReaderPage: React.FC = () => {
           <div 
             ref={viewerRef} 
             className="flex-1 w-full border rounded-md overflow-hidden bg-white"
-            id="epub-viewer"
+            id={`epub-viewer-${id}`}
           ></div>
         )}
       </div>

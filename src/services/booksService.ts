@@ -66,11 +66,11 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
           
           console.log("Getting signed URL for bucket:", bucket, "file:", filePath);
           
-          // Get a signed URL with a longer expiry time (8 hours)
+          // Get a signed URL with a longer expiry time (24 hours instead of 8)
           const { data: signedUrlData, error: signedUrlError } = await supabase
             .storage
             .from(bucket)
-            .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
+            .createSignedUrl(filePath, 24 * 60 * 60); // 24 hours expiry
             
           if (signedUrlData && !signedUrlError) {
             console.log("Got signed URL:", signedUrlData.signedUrl);
@@ -86,7 +86,7 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
   }
   
   if (epubSamplePath) {
-    // Apply the same logic for sample path
+    // Apply the same logic for sample path with increased expiry time
     if (epubSamplePath.includes('supabase.co/storage')) {
       try {
         const url = new URL(epubSamplePath);
@@ -100,7 +100,7 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
           const { data: signedUrlData, error: signedUrlError } = await supabase
             .storage
             .from(bucket)
-            .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
+            .createSignedUrl(filePath, 24 * 60 * 60); // 24 hours expiry
             
           if (signedUrlData && !signedUrlError) {
             epubSamplePath = signedUrlData.signedUrl;
