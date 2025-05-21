@@ -39,7 +39,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
   } = useEpubInitializer({
     id,
     book,
-    viewerRef,
+    viewerRef: viewerRef as React.MutableRefObject<HTMLDivElement | null>,
     bookInstanceRef,
     renditionInstanceRef,
     setLoading,
@@ -47,7 +47,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     setLoadingStage,
     setViewerReady
   });
-
+  
   const {
     nextPage,
     prevPage,
@@ -95,6 +95,11 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     
     // Set initialization flag to prevent multiple attempts
     initAttempted.current = true;
+    
+    // Validate that the EPUB URL has the required token parameter
+    if (book.epubPath.includes('supabase.co/storage') && !book.epubPath.includes('token=')) {
+      console.warn("EPUB URL does not contain the token parameter, may fail to load");
+    }
     
     // Use setTimeout to ensure DOM stability before initializing
     initTimerId.current = window.setTimeout(() => {

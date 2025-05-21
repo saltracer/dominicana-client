@@ -7,7 +7,7 @@ import ePub from 'epubjs';
 interface UseEpubInitializerProps {
   id: string | undefined;
   book: Book | null;
-  viewerRef: React.RefObject<HTMLDivElement>;
+  viewerRef: React.MutableRefObject<HTMLDivElement | null>;
   bookInstanceRef: React.MutableRefObject<any>;
   renditionInstanceRef: React.MutableRefObject<any>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -83,9 +83,48 @@ export const useEpubInitializer = ({
           // Update ref safely
           bookInstanceRef.current = book;
           
+          // Ensure the URL includes the token parameter
+          // The issue is likely that EPUB.js is trying to fetch resources within the EPUB
+          // and losing the token parameter in subsequent requests
+          let processedEpubPath = epubPath;
+          
+          // If URL contains a token parameter, ensure it's preserved for all requests
+          if (epubPath.includes('token=')) {
+            console.log("URL already contains token, preserving it");
+            
+            // We'll set this up in the book's request handler to ensure all requests include the token
+            book.request.withCredentials(false);
+            
+            // Add hooks to the book's request system to ensure the token is maintained
+            const originalFetch = book.request.fetch.bind(book.request);
+            book.request.fetch = function(url: string) {
+              let modifiedUrl = url;
+              
+              // Extract token from original URL
+              try {
+                const originalUrl = new URL(epubPath);
+                const token = originalUrl.searchParams.get('token');
+                
+                if (token) {
+                  // If the URL already has parameters, append the token
+                  if (url.includes('?')) {
+                    modifiedUrl = `${url}&token=${encodeURIComponent(token)}`;
+                  } else {
+                    modifiedUrl = `${url}?token=${encodeURIComponent(token)}`;
+                  }
+                  console.log("Added token to resource URL");
+                }
+              } catch (e) {
+                console.warn("Error processing URL for token:", e);
+              }
+              
+              return originalFetch(modifiedUrl);
+            };
+          }
+          
           // First open the book
           setLoadingStage("opening book");
-          book.open(epubPath)
+          book.open(processedEpubPath)
             .then(() => {
               console.log("EPUB book opened successfully");
               setLoadingStage("rendering book");

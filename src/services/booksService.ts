@@ -66,7 +66,7 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
           
           console.log("Getting signed URL for bucket:", bucket, "file:", filePath);
           
-          // Get a signed URL with 8 hours expiry (changed from 24 hours)
+          // Get a signed URL with 8 hours expiry
           const { data: signedUrlData, error: signedUrlError } = await supabase
             .storage
             .from(bucket)
@@ -74,6 +74,14 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
             
           if (signedUrlData && !signedUrlError) {
             console.log("Got signed URL:", signedUrlData.signedUrl);
+            // Make sure the URL contains the token parameter
+            const signedUrl = new URL(signedUrlData.signedUrl);
+            console.log("URL parameters:", Array.from(signedUrl.searchParams.entries()));
+            
+            if (!signedUrl.searchParams.has('token')) {
+              console.error("Warning: Signed URL does not contain token parameter");
+            }
+            
             epubPath = signedUrlData.signedUrl;
           } else {
             console.error("Error getting signed URL:", signedUrlError);
