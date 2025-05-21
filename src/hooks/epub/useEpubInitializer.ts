@@ -16,6 +16,12 @@ interface UseEpubInitializerProps {
   setViewerReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Define a more specific type for the EPUB.js request object
+interface EpubRequest {
+  withCredentials: (value: boolean) => void;
+  fetch: (url: string) => Promise<Response>;
+}
+
 export const useEpubInitializer = ({
   id,
   book,
@@ -92,12 +98,17 @@ export const useEpubInitializer = ({
           if (epubPath.includes('token=')) {
             console.log("URL already contains token, preserving it");
             
+            // Cast request to the proper type to avoid TypeScript errors
+            const request = book.request as unknown as EpubRequest;
+            
             // We'll set this up in the book's request handler to ensure all requests include the token
-            book.request.withCredentials(false);
+            request.withCredentials(false);
             
             // Add hooks to the book's request system to ensure the token is maintained
-            const originalFetch = book.request.fetch.bind(book.request);
-            book.request.fetch = function(url: string) {
+            const originalFetch = request.fetch.bind(request);
+            
+            // Override the fetch method with our token-preserving version
+            (book.request as any).fetch = function(url: string) {
               let modifiedUrl = url;
               
               // Extract token from original URL
