@@ -16,6 +16,7 @@ const BookPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [epubUrl, setEpubUrl] = useState<string | null>(null);
   const [epubError, setEpubError] = useState<string | null>(null);
+  const [loadStage, setLoadStage] = useState<string>('initializing');
   const { userRole } = useAuth();
   
   const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
@@ -24,12 +25,14 @@ const BookPage: React.FC = () => {
     const loadBook = async () => {
       if (!id) {
         console.log('BookPage - No book ID provided');
+        setLoadStage('error-no-id');
         return;
       }
       
       console.log('BookPage - Loading book with ID:', id);
       setLoading(true);
       setEpubError(null);
+      setLoadStage('fetching-book');
       
       try {
         const bookId = parseInt(id, 10);
@@ -37,11 +40,13 @@ const BookPage: React.FC = () => {
         const bookData = await fetchBookById(bookId);
         console.log('BookPage - Book data received:', bookData);
         setBook(bookData);
+        setLoadStage('book-fetched');
         
         // Check if book has epubPath
         if (bookData?.epubPath) {
           console.log('BookPage - Book has epubPath:', bookData.epubPath);
           console.log('BookPage - EPUB URL type:', typeof bookData.epubPath);
+          setLoadStage('processing-epub-path');
           
           // Check if it's a valid URL
           try {
@@ -51,12 +56,14 @@ const BookPage: React.FC = () => {
             setEpubError(`Invalid URL format: ${e.message}`);
             setEpubUrl(null);
             setLoading(false);
+            setLoadStage('error-invalid-url');
             return;
           }
           
           // Check if it's a Supabase storage URL
           if (bookData.epubPath.includes('supabase.co/storage')) {
             console.log('BookPage - Book path is a Supabase storage URL - attempting to get secure URL');
+            setLoadStage('processing-supabase-url');
             try {
               // Extract bucket and file path from URL
               const url = new URL(bookData.epubPath);
@@ -75,6 +82,7 @@ const BookPage: React.FC = () => {
                 
                 console.log('BookPage - Extracted bucket:', bucketName);
                 console.log('BookPage - Extracted file path:', filePath);
+                setLoadStage('getting-signed-url');
                 
                 // Attempt to get signed URL for better security
                 const { data, error } = await supabase.storage
@@ -85,8 +93,10 @@ const BookPage: React.FC = () => {
                   console.error('BookPage - Failed to get signed URL:', error);
                   console.log('BookPage - Falling back to public URL');
                   setEpubUrl(bookData.epubPath);
+                  setLoadStage('using-public-url-fallback');
                 } else if (data) {
                   console.log('BookPage - Got signed URL:', data.signedUrl);
+                  setLoadStage('testing-signed-url');
                   
                   // Test the signed URL with a HEAD request to verify it works
                   try {
@@ -96,30 +106,37 @@ const BookPage: React.FC = () => {
                     
                     if (testResponse.ok) {
                       setEpubUrl(data.signedUrl);
+                      setLoadStage('using-signed-url');
                     } else {
                       console.error('BookPage - Signed URL test failed, falling back to public URL');
                       setEpubUrl(bookData.epubPath);
+                      setLoadStage('using-public-url-fallback-after-test-fail');
                     }
                   } catch (fetchError) {
                     console.error('BookPage - Error testing signed URL:', fetchError);
                     setEpubUrl(bookData.epubPath);
+                    setLoadStage('using-public-url-fallback-after-fetch-error');
                   }
                 }
               } else {
                 console.log('BookPage - Could not parse Supabase URL correctly, using original URL');
                 setEpubUrl(bookData.epubPath);
+                setLoadStage('using-original-url-parse-fail');
               }
             } catch (error) {
               console.error('BookPage - Error parsing Supabase URL:', error);
               setEpubUrl(bookData.epubPath);
+              setLoadStage('using-original-url-error');
             }
           } else {
             console.log('BookPage - Using direct URL from book data');
             setEpubUrl(bookData.epubPath);
+            setLoadStage('using-direct-url');
           }
         } else {
           console.log('BookPage - Book does not have epubPath');
           setEpubUrl(null);
+          setLoadStage('no-epub-path');
         }
         
       } catch (error) {
@@ -130,8 +147,10 @@ const BookPage: React.FC = () => {
           variant: 'destructive',
         });
         setEpubError('Failed to load book data');
+        setLoadStage('error-loading-book');
       } finally {
         setLoading(false);
+        setLoadStage('loading-complete');
       }
     };
     
@@ -146,10 +165,11 @@ const BookPage: React.FC = () => {
   
   // Check if book is loading
   if (loading) {
-    console.log('BookPage - Book is still loading');
+    console.log('BookPage - Book is still loading, current stage:', loadStage);
     return (
-      <div className="flex justify-center items-center h-[80vh]">
+      <div className="flex flex-col justify-center items-center h-[80vh] gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy" />
+        <p className="text-gray-600">Loading book... ({loadStage})</p>
       </div>
     );
   }
@@ -207,7 +227,15 @@ const BookPage: React.FC = () => {
   }
   
   console.log('BookPage - Rendering BookReader with URL:', epubUrl);
-  return <BookReader url={epubUrl} title={book.title} />;
+  console.log('BookPage - Current load stage:', loadStage);
+  return (
+    <div>
+      <BookReader url={epubUrl} title={book.title} />
+      <div className="bg-gray-100 p-2 text-xs text-gray-500 text-center">
+        Debug: Load stage: {loadStage} | Book ID: {book.id}
+      </div>
+    </div>
+  );
 };
 
 export default BookPage;

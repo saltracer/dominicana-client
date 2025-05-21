@@ -14,9 +14,11 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   // Create refs and state
   const renditionRef = useRef<any>(null);
   const tocRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState<string | number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
 
   // Add debugging for URL and component lifecycle
@@ -24,6 +26,18 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     console.log('BookReader - Component mounted');
     console.log('BookReader - Received book URL:', url);
     console.log('BookReader - Book title:', title);
+    
+    // Update dimensions on mount
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight
+      });
+      console.log('BookReader - Container dimensions:', {
+        width: containerRef.current.clientWidth,
+        height: containerRef.current.clientHeight
+      });
+    }
     
     // Test if the URL is accessible
     fetch(url)
@@ -70,61 +84,28 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       // Don't set it immediately, wait for reader to initialize
     }
     
+    // Add resize handler
+    const handleResize = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
+        console.log('BookReader - Window resized, new dimensions:', {
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
     // Cleanup function
     return () => {
       console.log('BookReader - Component unmounting');
+      window.removeEventListener('resize', handleResize);
     };
   }, [url, title]);
-
-  // Get styles for reader
-  const readerStyles = {
-    container: {
-      overflow: 'hidden',
-      position: 'relative',
-      height: 'calc(100vh - 150px)',
-    },
-    readerArea: {
-      position: 'relative',
-      zIndex: 1,
-      height: '100%',
-      width: '100%',
-      backgroundColor: '#fff',
-      color: '#000',
-    },
-    tocArea: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      bottom: 0,
-      zIndex: 0,
-      width: '16rem',
-      backgroundColor: '#f5f5f5',
-      overflowY: 'auto',
-      transition: 'transform .25s ease-out',
-      transform: 'translateX(-100%)',
-      boxShadow: '0 0 10px rgba(0,0,0,.1)',
-    },
-    tocAreaButton: {
-      position: 'absolute',
-      top: '0.5rem',
-      right: '-2rem',
-      border: 'none',
-      background: '#660020',
-      color: '#fff',
-      width: '2rem',
-      height: '2rem',
-      borderRadius: '0 4px 4px 0',
-    },
-    tocButton: {
-      backgroundColor: '#660020',
-      margin: '0.5rem',
-      padding: '0.5rem',
-      color: 'white',
-      border: 'none',
-      borderRadius: '0.25rem',
-      cursor: 'pointer',
-    },
-  };
 
   // Location changed handler
   const locationChanged = (epubcifi: string) => {
@@ -233,52 +214,112 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
           </Button>
         </div>
       ) : (
-        <div className="container mx-auto px-4 py-2">
-          <ReactReader
-            url={url}
-            title={title}
-            location={location}
-            locationChanged={locationChanged}
-            getRendition={(rendition) => {
-              console.log('BookReader - Got rendition object');
-              renditionRef.current = rendition;
-              handleRenditionReady(rendition);
-              
-              rendition.themes.default({
-                '::selection': {
-                  background: 'rgba(102, 0, 32, 0.3)',
+        <div className="container mx-auto px-4 py-2" ref={containerRef}>
+          {/* Reader container with explicit height and position */}
+          <div 
+            style={{ 
+              position: 'relative',
+              height: 'calc(100vh - 150px)',
+              width: '100%',
+              overflow: 'hidden',
+              marginBottom: '1rem'
+            }}
+          >
+            <ReactReader
+              url={url}
+              title={title}
+              location={location}
+              locationChanged={locationChanged}
+              getRendition={(rendition) => {
+                console.log('BookReader - Got rendition object');
+                renditionRef.current = rendition;
+                handleRenditionReady(rendition);
+                
+                rendition.themes.default({
+                  '::selection': {
+                    background: 'rgba(102, 0, 32, 0.3)',
+                  },
+                  'a': {
+                    color: '#660020 !important',
+                  },
+                });
+              }}
+              tocChanged={(toc) => {
+                console.log('BookReader - TOC changed:', toc);
+                tocRef.current = toc;
+              }}
+              epubInitOptions={{
+                openAs: 'epub',
+              }}
+              epubOptions={{
+                flow: 'paginated', // Changed from 'scrolled' to 'paginated' to avoid ContinuousViewManager issue
+                manager: 'default', // Changed from 'continuous' to 'default'
+                allowPopups: true,
+              }}
+              loadingView={
+                isLoading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dominican-burgundy"></div>
+                  </div>
+                ) : null
+              }
+              handleKeyPress={() => {}}
+              showToc={true}
+              swipeable={true}
+              style={{
+                // Explicit styling for ReactReader component
+                container: {
+                  overflow: 'hidden',
+                  position: 'relative',
+                  height: '100%',
                 },
-                'a': {
-                  color: '#660020 !important',
+                readerArea: {
+                  position: 'relative',
+                  zIndex: 1,
+                  height: '100%',
+                  width: '100%',
+                  backgroundColor: '#fff',
+                  color: '#000',
                 },
-              });
-            }}
-            tocChanged={(toc) => {
-              console.log('BookReader - TOC changed:', toc);
-              tocRef.current = toc;
-            }}
-            epubInitOptions={{
-              openAs: 'epub',
-            }}
-            epubOptions={{
-              flow: 'paginated', // Changed from 'scrolled' to 'paginated' to avoid ContinuousViewManager issue
-              manager: 'default', // Changed from 'continuous' to 'default'
-              allowPopups: true,
-            }}
-            loadingView={
-              isLoading && (
-                <div className="flex justify-center items-center h-full">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dominican-burgundy"></div>
-                </div>
-              )
-            }
-            handleKeyPress={() => {}}
-            showToc={true}
-            swipeable={true}
-            styles={readerStyles}
-            className="reader-wrapper"
-          />
-          <div className="debug-controls mt-4 p-4 bg-gray-100 rounded-md">
+                tocArea: {
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 0,
+                  width: '16rem',
+                  backgroundColor: '#f5f5f5',
+                  overflowY: 'auto',
+                  transition: 'transform .25s ease-out',
+                  transform: 'translateX(-100%)',
+                  boxShadow: '0 0 10px rgba(0,0,0,.1)',
+                },
+                tocAreaButton: {
+                  position: 'absolute',
+                  top: '0.5rem',
+                  right: '-2rem',
+                  border: 'none',
+                  background: '#660020',
+                  color: '#fff',
+                  width: '2rem',
+                  height: '2rem',
+                  borderRadius: '0 4px 4px 0',
+                },
+                tocButton: {
+                  backgroundColor: '#660020',
+                  margin: '0.5rem',
+                  padding: '0.5rem',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.25rem',
+                  cursor: 'pointer',
+                },
+              }}
+              className="reader-wrapper"
+            />
+          </div>
+          
+          <div className="mt-4 p-4 bg-gray-100 rounded-md">
             <p className="text-sm text-gray-700">Debug Controls:</p>
             <div className="flex gap-2 mt-2">
               <Button
@@ -289,6 +330,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                   console.log('Current location:', location);
                   console.log('Rendition ref:', renditionRef.current);
                   console.log('TOC ref:', tocRef.current);
+                  console.log('Container dimensions:', dimensions);
                   
                   if (renditionRef.current) {
                     console.log('Book loaded:', renditionRef.current.book?.loaded);
@@ -307,10 +349,42 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                   localStorage.removeItem(`book-progress-${title}`);
                   setLocation(0);
                   console.log('BookReader - Progress reset');
-                  alert('Reading progress reset');
+                  
+                  if (renditionRef.current) {
+                    console.log('BookReader - Attempting to display location 0');
+                    try {
+                      renditionRef.current.display(0);
+                      alert('Reading progress reset and returned to beginning');
+                    } catch (err) {
+                      console.error('BookReader - Error resetting location:', err);
+                      alert('Failed to reset position: ' + err);
+                    }
+                  } else {
+                    alert('Reading progress reset (rendition not available)');
+                  }
                 }}
               >
                 Reset Progress
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (renditionRef.current) {
+                    console.log('BookReader - Forcing display() call');
+                    try {
+                      renditionRef.current.display();
+                      alert('Forced display refresh');
+                    } catch (err) {
+                      console.error('BookReader - Error in force display:', err);
+                      alert('Display refresh failed: ' + err);
+                    }
+                  } else {
+                    alert('Cannot refresh, reader not initialized');
+                  }
+                }}
+              >
+                Force Refresh
               </Button>
             </div>
           </div>
