@@ -13,13 +13,15 @@ interface BookReaderProps {
 const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   // Create refs and state
   const renditionRef = useRef<any>(null);
+  const tocRef = useRef<any>(null);
   const [location, setLocation] = useState<string | number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Add debugging for URL
+  // Add debugging for URL and component lifecycle
   useEffect(() => {
+    console.log('BookReader - Component mounted');
     console.log('BookReader - Received book URL:', url);
     console.log('BookReader - Book title:', title);
     
@@ -27,20 +29,55 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     fetch(url)
       .then(response => {
         console.log('BookReader - URL fetch status:', response.status);
-        console.log('BookReader - URL fetch headers:', response.headers);
         if (!response.ok) {
           console.error('BookReader - URL fetch failed with status:', response.status);
           setError(`Failed to access book URL (Status ${response.status})`);
+        } else {
+          // Check content type
+          const contentType = response.headers.get('content-type');
+          console.log('BookReader - Content type:', contentType);
+          
+          // For debugging, check a small part of the response
+          return response.blob().then(blob => {
+            console.log('BookReader - Response blob size:', blob.size);
+            console.log('BookReader - Response blob type:', blob.type);
+            
+            // Log the first few bytes of the file to check if it's a valid EPUB
+            const reader = new FileReader();
+            reader.onload = () => {
+              const arrayBuffer = reader.result as ArrayBuffer;
+              const bytes = new Uint8Array(arrayBuffer);
+              const firstBytes = Array.from(bytes.slice(0, 50)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+              console.log('BookReader - First bytes of file:', firstBytes);
+              
+              // Check if it has the EPUB signature
+              const isPossiblyEpub = firstBytes.includes('50 4b'); // PK signature for ZIP (EPUB is a ZIP file)
+              console.log('BookReader - Has ZIP/EPUB signature:', isPossiblyEpub);
+            };
+            reader.readAsArrayBuffer(blob.slice(0, 50));
+          });
         }
       })
       .catch(err => {
         console.error('BookReader - URL fetch error:', err);
         setError('Failed to access book URL: ' + err.message);
       });
+      
+    // Attempt to get the saved location from localStorage
+    const savedLocation = localStorage.getItem(`book-progress-${title}`);
+    if (savedLocation) {
+      console.log('BookReader - Found saved location:', savedLocation);
+      // Don't set it immediately, wait for reader to initialize
+    }
+    
+    // Cleanup function
+    return () => {
+      console.log('BookReader - Component unmounting');
+    };
   }, [url, title]);
 
   // Get styles for reader
-  const readerStyles: Record<string, React.CSSProperties> = {
+  const readerStyles = {
     container: {
       overflow: 'hidden',
       position: 'relative',
@@ -92,24 +129,63 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   // Location changed handler
   const locationChanged = (epubcifi: string) => {
     console.log('BookReader - Location changed:', epubcifi);
-    // epubcifi is a string with the format: epubcfi(/6/4[chap01ref]!/4/2/1:0)
-    // Here we save it to localStorage for persistence
-    if (epubcifi) {
+    
+    // Check if epubcifi is valid before setting it
+    if (epubcifi && typeof epubcifi === 'string' && epubcifi.includes('epubcfi')) {
+      console.log('BookReader - Setting new location and saving to localStorage');
       setLocation(epubcifi);
       localStorage.setItem(`book-progress-${title}`, epubcifi);
+    } else {
+      console.warn('BookReader - Invalid location received:', epubcifi);
     }
   };
 
-  // Handle loading
-  const handleReady = () => {
-    console.log('BookReader - Reader ready event fired');
-    setIsLoading(false);
-    // Try to get the saved progress from localStorage
+  // Load null locations after initialization to avoid the error
+  const handleRenditionReady = (rendition: any) => {
+    console.log('BookReader - Rendition ready event fired');
+    
+    // Log rendition details
+    console.log('BookReader - Rendition object keys:', Object.keys(rendition));
+    console.log('BookReader - Rendition book object keys:', Object.keys(rendition.book || {}));
+    
+    // Register event listeners for debugging
+    rendition.on('relocated', (location: any) => {
+      console.log('BookReader - Relocated event:', location);
+      if (location.start) {
+        console.log('BookReader - Current page:', location.start.cfi);
+        console.log('BookReader - Current chapter:', location.start.href);
+      }
+    });
+    
+    rendition.on('rendered', (section: any) => {
+      console.log('BookReader - Section rendered:', section);
+    });
+    
+    rendition.on('layout', (layout: any) => {
+      console.log('BookReader - Layout changed:', layout);
+    });
+    
+    rendition.on('displayError', (error: any) => {
+      console.error('BookReader - Display error:', error);
+    });
+    
+    // Try to get the saved progress from localStorage after rendition is ready
     const savedLocation = localStorage.getItem(`book-progress-${title}`);
     if (savedLocation) {
-      console.log('BookReader - Found saved location:', savedLocation);
-      setLocation(savedLocation);
+      console.log('BookReader - Applying saved location:', savedLocation);
+      // Wait a bit before applying to ensure book is fully loaded
+      setTimeout(() => {
+        try {
+          rendition.display(savedLocation);
+        } catch (err) {
+          console.error('BookReader - Error applying saved location:', err);
+          // If there's an error with the saved location, go to the beginning
+          rendition.display();
+        }
+      }, 100);
     }
+    
+    setIsLoading(false);
   };
 
   // Handle errors
@@ -166,6 +242,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             getRendition={(rendition) => {
               console.log('BookReader - Got rendition object');
               renditionRef.current = rendition;
+              handleRenditionReady(rendition);
+              
               rendition.themes.default({
                 '::selection': {
                   background: 'rgba(102, 0, 32, 0.3)',
@@ -174,30 +252,17 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                   color: '#660020 !important',
                 },
               });
-              
-              // Add more debugging for rendition
-              rendition.on('rendered', (section: any) => {
-                console.log('BookReader - Section rendered:', section.href);
-              });
-              
-              rendition.on('relocated', (location: any) => {
-                console.log('BookReader - Relocated to:', location);
-              });
-              
-              rendition.on('resized', (size: any) => {
-                console.log('BookReader - Resized:', size);
-              });
-              
-              rendition.on('error', (err: any) => {
-                console.error('BookReader - Rendition error:', err);
-              });
+            }}
+            tocChanged={(toc) => {
+              console.log('BookReader - TOC changed:', toc);
+              tocRef.current = toc;
             }}
             epubInitOptions={{
               openAs: 'epub',
             }}
             epubOptions={{
-              flow: 'scrolled',
-              manager: 'continuous',
+              flow: 'paginated', // Changed from 'scrolled' to 'paginated' to avoid ContinuousViewManager issue
+              manager: 'default', // Changed from 'continuous' to 'default'
               allowPopups: true,
             }}
             loadingView={
@@ -207,13 +272,48 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 </div>
               )
             }
-            tocChanged={(toc) => console.log('BookReader - TOC changed:', toc)}
             handleKeyPress={() => {}}
             showToc={true}
             swipeable={true}
-            onReady={handleReady}
-            onError={handleError}
+            styles={readerStyles}
+            className="reader-wrapper"
           />
+          <div className="debug-controls mt-4 p-4 bg-gray-100 rounded-md">
+            <p className="text-sm text-gray-700">Debug Controls:</p>
+            <div className="flex gap-2 mt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  console.log('BookReader - Debug info:');
+                  console.log('Current location:', location);
+                  console.log('Rendition ref:', renditionRef.current);
+                  console.log('TOC ref:', tocRef.current);
+                  
+                  if (renditionRef.current) {
+                    console.log('Book loaded:', renditionRef.current.book?.loaded);
+                    console.log('Current view manager type:', renditionRef.current.manager?.name);
+                  }
+                  
+                  alert('Debug info logged to console');
+                }}
+              >
+                Log Debug Info
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  localStorage.removeItem(`book-progress-${title}`);
+                  setLocation(0);
+                  console.log('BookReader - Progress reset');
+                  alert('Reading progress reset');
+                }}
+              >
+                Reset Progress
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

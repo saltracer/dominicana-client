@@ -5,15 +5,17 @@ import { fetchBookById } from '@/services/booksService';
 import { Book } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import BookReader from '@/components/book/BookReader';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 
 const BookPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [epubUrl, setEpubUrl] = useState<string | null>(null);
+  const [epubError, setEpubError] = useState<string | null>(null);
   const { userRole } = useAuth();
   
   const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
@@ -27,6 +29,7 @@ const BookPage: React.FC = () => {
       
       console.log('BookPage - Loading book with ID:', id);
       setLoading(true);
+      setEpubError(null);
       
       try {
         const bookId = parseInt(id, 10);
@@ -38,6 +41,18 @@ const BookPage: React.FC = () => {
         // Check if book has epubPath
         if (bookData?.epubPath) {
           console.log('BookPage - Book has epubPath:', bookData.epubPath);
+          console.log('BookPage - EPUB URL type:', typeof bookData.epubPath);
+          
+          // Check if it's a valid URL
+          try {
+            new URL(bookData.epubPath);
+          } catch (e) {
+            console.error('BookPage - Invalid URL format:', e);
+            setEpubError(`Invalid URL format: ${e.message}`);
+            setEpubUrl(null);
+            setLoading(false);
+            return;
+          }
           
           // Check if it's a Supabase storage URL
           if (bookData.epubPath.includes('supabase.co/storage')) {
@@ -45,7 +60,12 @@ const BookPage: React.FC = () => {
             try {
               // Extract bucket and file path from URL
               const url = new URL(bookData.epubPath);
+              console.log('BookPage - Parsed URL:', url.toString());
+              console.log('BookPage - URL pathname:', url.pathname);
+              
               const pathSegments = url.pathname.split('/');
+              console.log('BookPage - Path segments:', pathSegments);
+              
               // Format is usually /storage/v1/object/public/BUCKET_NAME/FILE_PATH
               const bucketIndex = pathSegments.indexOf('public');
               
@@ -63,11 +83,27 @@ const BookPage: React.FC = () => {
                 
                 if (error) {
                   console.error('BookPage - Failed to get signed URL:', error);
-                  // Fallback to public URL if signed URL fails
+                  console.log('BookPage - Falling back to public URL');
                   setEpubUrl(bookData.epubPath);
                 } else if (data) {
                   console.log('BookPage - Got signed URL:', data.signedUrl);
-                  setEpubUrl(data.signedUrl);
+                  
+                  // Test the signed URL with a HEAD request to verify it works
+                  try {
+                    const testResponse = await fetch(data.signedUrl, { method: 'HEAD' });
+                    console.log('BookPage - Signed URL test response:', testResponse.status);
+                    console.log('BookPage - Signed URL headers:', [...testResponse.headers.entries()]);
+                    
+                    if (testResponse.ok) {
+                      setEpubUrl(data.signedUrl);
+                    } else {
+                      console.error('BookPage - Signed URL test failed, falling back to public URL');
+                      setEpubUrl(bookData.epubPath);
+                    }
+                  } catch (fetchError) {
+                    console.error('BookPage - Error testing signed URL:', fetchError);
+                    setEpubUrl(bookData.epubPath);
+                  }
                 }
               } else {
                 console.log('BookPage - Could not parse Supabase URL correctly, using original URL');
@@ -83,6 +119,7 @@ const BookPage: React.FC = () => {
           }
         } else {
           console.log('BookPage - Book does not have epubPath');
+          setEpubUrl(null);
         }
         
       } catch (error) {
@@ -92,6 +129,7 @@ const BookPage: React.FC = () => {
           description: 'Failed to load the book',
           variant: 'destructive',
         });
+        setEpubError('Failed to load book data');
       } finally {
         setLoading(false);
       }
@@ -127,6 +165,28 @@ const BookPage: React.FC = () => {
         <p className="text-gray-700 mb-4">
           Sorry, the book you're looking for doesn't exist or has been removed.
         </p>
+      </div>
+    );
+  }
+  
+  // Check if there was an error with the epub URL
+  if (epubError) {
+    console.log('BookPage - EPUB error:', epubError);
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-4">
+          {book.title}
+        </h1>
+        <div className="flex items-center justify-center gap-2 text-red-500 mb-4">
+          <AlertTriangle className="h-5 w-5" />
+          <p className="font-medium">Error loading digital book</p>
+        </div>
+        <p className="text-gray-700 mb-8">
+          There was a problem loading this book's digital format. Technical details: {epubError}
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
       </div>
     );
   }
