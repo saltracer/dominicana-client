@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { fetchBookById } from '@/services/booksService';
@@ -19,7 +20,6 @@ const BookPage: React.FC = () => {
   const { userRole } = useAuth();
   
   const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
-  const isAdmin = userRole === 'admin';
   
   useEffect(() => {
     const loadBook = async () => {
@@ -231,12 +231,9 @@ const BookPage: React.FC = () => {
   return (
     <div>
       <BookReader url={epubUrl} title={book.title} />
-      {/* Only show debug info for admins */}
-      {isAdmin && (
-        <div className="bg-gray-100 p-2 text-xs text-gray-500 text-center">
-          Debug: Load stage: {loadStage} | Book ID: {book.id}
-        </div>
-      )}
+      <div className="bg-gray-100 p-2 text-xs text-gray-500 text-center">
+        Debug: Load stage: {loadStage} | Book ID: {book.id}
+      </div>
     </div>
   );
 };
