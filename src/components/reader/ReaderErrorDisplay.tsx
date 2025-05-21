@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book } from '@/components/ui/book';
 import { Button } from '@/components/ui/button';
-import { Bug } from 'lucide-react';
+import { Bug, BookOpen } from 'lucide-react';
 import { Book as BookType } from '@/lib/types';
 
 interface ReaderErrorDisplayProps {
@@ -28,7 +27,7 @@ const ReaderErrorDisplay: React.FC<ReaderErrorDisplayProps> = ({
   return (
     <div className="flex flex-1 flex-col items-center justify-center text-center max-w-md mx-auto">
       <div className="bg-red-50 border border-red-200 rounded-md p-6">
-        <Book className="h-12 w-12 text-dominican-burgundy mb-4 mx-auto" />
+        <BookOpen className="h-12 w-12 text-dominican-burgundy mb-4 mx-auto" />
         <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Unable to Load Book</h3>
         <p className="text-gray-700 mb-4">{error}</p>
         <Button asChild className="mb-2">

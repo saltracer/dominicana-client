@@ -17,8 +17,9 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
   const [viewerReady, setViewerReady] = useState(false);
   const [domCheckCounter, setDomCheckCounter] = useState(0);
   const [domPollingActive, setDomPollingActive] = useState(false);
-  const renditionRef = useRef<any>(null);
-  const bookRef = useRef<any>(null);
+  // Use mutable refs that we can safely reassign
+  const bookInstanceRef = useRef<any>(null);
+  const renditionInstanceRef = useRef<any>(null);
 
   // Add additional check for DOM readiness with a polling mechanism
   useEffect(() => {
@@ -35,9 +36,8 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
         
         if (viewerElement) {
           console.log("DOM polling successful - viewer element found!");
-          if (!viewerRef.current && viewerElement) {
-            viewerRef.current = viewerElement as HTMLDivElement;
-          }
+          // We don't need to modify viewerRef.current as it's read-only
+          // Instead we just use the reference we have
           
           clearInterval(pollInterval);
           setViewerReady(true);
@@ -54,7 +54,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
         setDomPollingActive(false);
       };
     }
-  }, [book?.epubPath, viewerReady, id, domPollingActive]);
+  }, [book?.epubPath, viewerReady, id, domPollingActive, viewerRef]);
 
   // Use useLayoutEffect to ensure DOM is ready and check viewer ref
   useLayoutEffect(() => {
@@ -69,11 +69,8 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     if (viewerElement) {
       console.log("Viewer element found:", viewerElement);
       
-      // If viewerRef isn't set but we found by ID, set it
-      if (!viewerRef.current && viewerElement) {
-        viewerRef.current = viewerElement as HTMLDivElement;
-      }
-      
+      // We don't need to modify viewerRef.current as it's read-only
+      // Just set the viewer as ready
       setViewerReady(true);
     } else {
       console.log("Viewer element not found in DOM");
@@ -86,7 +83,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
         }, 300);
       }
     }
-  }, [domCheckCounter, id, book?.epubPath]);
+  }, [domCheckCounter, id, book?.epubPath, viewerRef]);
 
   // Initialize EPUB reader when both book data and viewer are ready
   useEffect(() => {
@@ -105,9 +102,9 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     
     // Clean up function to remove any existing EPUB reader instances
     return () => {
-      if (bookRef.current) {
+      if (bookInstanceRef.current) {
         console.log("Cleaning up EPUB instance");
-        bookRef.current.destroy();
+        bookInstanceRef.current.destroy();
       }
     };
   }, [book, viewerReady]);
@@ -126,15 +123,15 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
       console.log("Viewer ref available:", !!viewerRef.current);
       
       // Clean up any existing instances
-      if (bookRef.current) {
+      if (bookInstanceRef.current) {
         console.log("Cleaning up previous EPUB instance");
-        bookRef.current.destroy();
+        bookInstanceRef.current.destroy();
       }
       
       // Create a new Book instance
       console.log("Creating EPUB.js Book instance");
       const book = ePub(epubPath);
-      bookRef.current = book;
+      bookInstanceRef.current = book;
       
       // Add a listener for book open failure
       book.on('openFailed', (error: any) => {
@@ -163,7 +160,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
           height: '100%',
           spread: 'none'
         });
-        renditionRef.current = rendition;
+        renditionInstanceRef.current = rendition;
         
         // Log book metadata
         book.loaded.metadata.then((metadata: any) => {
@@ -202,28 +199,28 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
 
   // Navigation functions
   const nextPage = () => {
-    if (renditionRef.current) {
-      renditionRef.current.next();
+    if (renditionInstanceRef.current) {
+      renditionInstanceRef.current.next();
     }
   };
 
   const prevPage = () => {
-    if (renditionRef.current) {
-      renditionRef.current.prev();
+    if (renditionInstanceRef.current) {
+      renditionInstanceRef.current.prev();
     }
   };
 
   // Font size controls
   const changeFontSize = (increase: boolean) => {
-    if (!renditionRef.current) return;
+    if (!renditionInstanceRef.current) return;
     
     try {
-      const currentSize = renditionRef.current.themes.fontSize();
+      const currentSize = renditionInstanceRef.current.themes.fontSize();
       const newSize = increase ? 
         (parseFloat(currentSize) * 1.2) + 'px' : 
         (parseFloat(currentSize) / 1.2) + 'px';
       
-      renditionRef.current.themes.fontSize(newSize);
+      renditionInstanceRef.current.themes.fontSize(newSize);
     } catch (e) {
       console.error('Error changing font size:', e);
     }
@@ -231,27 +228,27 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
 
   // Toggle theme (dark/light mode)
   const toggleTheme = () => {
-    if (!renditionRef.current) return;
+    if (!renditionInstanceRef.current) return;
     
     try {
       const theme = document.body.classList.contains('dark') ? 'light' : 'dark';
       
       if (theme === 'dark') {
-        renditionRef.current.themes.register('dark', {
+        renditionInstanceRef.current.themes.register('dark', {
           body: { 
             color: '#ffffff !important', 
             background: '#121212 !important' 
           }
         });
-        renditionRef.current.themes.select('dark');
+        renditionInstanceRef.current.themes.select('dark');
       } else {
-        renditionRef.current.themes.register('light', {
+        renditionInstanceRef.current.themes.register('light', {
           body: { 
             color: '#000000 !important', 
             background: '#ffffff !important' 
           }
         });
-        renditionRef.current.themes.select('light');
+        renditionInstanceRef.current.themes.select('light');
       }
     } catch (e) {
       console.error('Error toggling theme:', e);
@@ -294,11 +291,11 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     setLoadingStage("initializing");
     
     // Clean up any existing instances
-    if (bookRef.current) {
-      bookRef.current.destroy();
-      bookRef.current = null;
+    if (bookInstanceRef.current) {
+      bookInstanceRef.current.destroy();
+      bookInstanceRef.current = null;
     }
-    renditionRef.current = null;
+    renditionInstanceRef.current = null;
     
     // Reset DOM check counter to trigger DOM checks
     setDomCheckCounter(0);
@@ -321,12 +318,12 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
   // Set up keyboard event listeners
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!renditionRef.current) return;
+      if (!renditionInstanceRef.current) return;
       
       if (e.key === 'ArrowRight') {
-        renditionRef.current.next();
+        renditionInstanceRef.current.next();
       } else if (e.key === 'ArrowLeft') {
-        renditionRef.current.prev();
+        renditionInstanceRef.current.prev();
       }
     };
     
@@ -343,8 +340,8 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     loadingStage,
     viewerReady,
     domCheckCounter,
-    bookRef,
-    renditionRef,
+    bookRef: bookInstanceRef,
+    renditionRef: renditionInstanceRef,
     initializeEpubReader,
     nextPage,
     prevPage,
