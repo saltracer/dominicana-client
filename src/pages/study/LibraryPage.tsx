@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,10 +20,12 @@ const LibraryPage: React.FC = () => {
     const loadBooks = async () => {
       setLoading(true);
       try {
+        console.log('LibraryPage - Fetching books');
         const data = await fetchBooks();
+        console.log('LibraryPage - Books data received:', data);
         setBooks(data);
       } catch (error) {
-        console.error('Failed to load books:', error);
+        console.error('LibraryPage - Failed to load books:', error);
         toast({
           title: 'Error',
           description: 'Failed to load library books',
@@ -48,6 +49,12 @@ const LibraryPage: React.FC = () => {
   
   const categories = ['all', ...new Set(books.map(book => book.category.toLowerCase()))];
   const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
+  
+  // Add a debug function for book links
+  const handleBookClick = (book: Book) => {
+    console.log('LibraryPage - Book clicked:', book);
+    console.log('LibraryPage - Book epubPath:', book.epubPath);
+  };
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -146,6 +153,7 @@ const LibraryPage: React.FC = () => {
                       className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
                       disabled={!book.epubPath && canReadBooks}
                       title={!book.epubPath ? "No digital version available" : undefined}
+                      onClick={() => handleBookClick(book)}
                     >
                       <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
                         {canReadBooks ? (book.epubPath ? "Read Book" : "No Digital Version") : "Login to Read"}

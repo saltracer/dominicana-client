@@ -1,6 +1,6 @@
 
-import React, { useRef, useState } from 'react';
-import { ReactReader, ReactReaderStyle } from 'react-reader';
+import React, { useRef, useState, useEffect } from 'react';
+import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,6 +17,27 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Add debugging for URL
+  useEffect(() => {
+    console.log('BookReader - Received book URL:', url);
+    console.log('BookReader - Book title:', title);
+    
+    // Test if the URL is accessible
+    fetch(url)
+      .then(response => {
+        console.log('BookReader - URL fetch status:', response.status);
+        console.log('BookReader - URL fetch headers:', response.headers);
+        if (!response.ok) {
+          console.error('BookReader - URL fetch failed with status:', response.status);
+          setError(`Failed to access book URL (Status ${response.status})`);
+        }
+      })
+      .catch(err => {
+        console.error('BookReader - URL fetch error:', err);
+        setError('Failed to access book URL: ' + err.message);
+      });
+  }, [url, title]);
 
   // Get styles for reader
   const readerStyles: Record<string, React.CSSProperties> = {
@@ -70,6 +91,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
   // Location changed handler
   const locationChanged = (epubcifi: string) => {
+    console.log('BookReader - Location changed:', epubcifi);
     // epubcifi is a string with the format: epubcfi(/6/4[chap01ref]!/4/2/1:0)
     // Here we save it to localStorage for persistence
     if (epubcifi) {
@@ -80,17 +102,19 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
   // Handle loading
   const handleReady = () => {
+    console.log('BookReader - Reader ready event fired');
     setIsLoading(false);
     // Try to get the saved progress from localStorage
     const savedLocation = localStorage.getItem(`book-progress-${title}`);
     if (savedLocation) {
+      console.log('BookReader - Found saved location:', savedLocation);
       setLocation(savedLocation);
     }
   };
 
   // Handle errors
   const handleError = (error: any) => {
-    console.error('Error loading book:', error);
+    console.error('BookReader - Error loading book:', error);
     setError('Failed to load the book. Please try again later.');
     setIsLoading(false);
   };
@@ -139,8 +163,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             title={title}
             location={location}
             locationChanged={locationChanged}
-            styles={readerStyles}
             getRendition={(rendition) => {
+              console.log('BookReader - Got rendition object');
               renditionRef.current = rendition;
               rendition.themes.default({
                 '::selection': {
@@ -149,6 +173,23 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 'a': {
                   color: '#660020 !important',
                 },
+              });
+              
+              // Add more debugging for rendition
+              rendition.on('rendered', (section: any) => {
+                console.log('BookReader - Section rendered:', section.href);
+              });
+              
+              rendition.on('relocated', (location: any) => {
+                console.log('BookReader - Relocated to:', location);
+              });
+              
+              rendition.on('resized', (size: any) => {
+                console.log('BookReader - Resized:', size);
+              });
+              
+              rendition.on('error', (err: any) => {
+                console.error('BookReader - Rendition error:', err);
               });
             }}
             epubInitOptions={{
@@ -166,7 +207,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 </div>
               )
             }
-            tocChanged={(toc) => console.log('Toc changed:', toc)}
+            tocChanged={(toc) => console.log('BookReader - TOC changed:', toc)}
             handleKeyPress={() => {}}
             showToc={true}
             swipeable={true}
