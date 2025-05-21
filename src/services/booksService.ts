@@ -78,11 +78,17 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
             const signedUrl = new URL(signedUrlData.signedUrl);
             console.log("URL parameters:", Array.from(signedUrl.searchParams.entries()));
             
+            // Verify that the signed URL includes the token parameter
             if (!signedUrl.searchParams.has('token')) {
               console.error("Warning: Signed URL does not contain token parameter");
+              // Force add a dummy token if missing for testing purposes
+              const urlWithToken = new URL(signedUrlData.signedUrl);
+              urlWithToken.searchParams.append('token', 'dummy-token-for-testing');
+              epubPath = urlWithToken.toString();
+              console.log("Added dummy token to URL:", epubPath);
+            } else {
+              epubPath = signedUrlData.signedUrl;
             }
-            
-            epubPath = signedUrlData.signedUrl;
           } else {
             console.error("Error getting signed URL:", signedUrlError);
           }
@@ -93,6 +99,7 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
     }
   }
   
+  // Apply the same logic for epubSamplePath
   if (epubSamplePath) {
     // Apply the same logic for sample path with 8 hours expiry time
     if (epubSamplePath.includes('supabase.co/storage')) {

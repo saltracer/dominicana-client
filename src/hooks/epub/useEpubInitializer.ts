@@ -16,12 +16,6 @@ interface UseEpubInitializerProps {
   setViewerReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// Define a more specific type for the EPUB.js request object
-interface EpubRequest {
-  withCredentials: (value: boolean) => void;
-  fetch: (url: string) => Promise<Response>;
-}
-
 export const useEpubInitializer = ({
   id,
   book,
@@ -98,39 +92,53 @@ export const useEpubInitializer = ({
           if (epubPath.includes('token=')) {
             console.log("URL already contains token, preserving it");
             
-            // Cast request to the proper type to avoid TypeScript errors
-            const request = book.request as unknown as EpubRequest;
-            
-            // We'll set this up in the book's request handler to ensure all requests include the token
-            request.withCredentials(false);
-            
-            // Add hooks to the book's request system to ensure the token is maintained
-            const originalFetch = request.fetch.bind(request);
-            
-            // Override the fetch method with our token-preserving version
-            (book.request as any).fetch = function(url: string) {
-              let modifiedUrl = url;
-              
-              // Extract token from original URL
-              try {
-                const originalUrl = new URL(epubPath);
-                const token = originalUrl.searchParams.get('token');
-                
-                if (token) {
-                  // If the URL already has parameters, append the token
-                  if (url.includes('?')) {
-                    modifiedUrl = `${url}&token=${encodeURIComponent(token)}`;
-                  } else {
-                    modifiedUrl = `${url}?token=${encodeURIComponent(token)}`;
-                  }
-                  console.log("Added token to resource URL");
+            try {
+              // Instead of cast approach, we'll take a more defensive approach
+              // First check if the request object has the expected structure
+              if (book.request && typeof book.request === 'object') {
+                // Check for withCredentials method
+                if (typeof book.request.withCredentials === 'function') {
+                  book.request.withCredentials(false);
                 }
-              } catch (e) {
-                console.warn("Error processing URL for token:", e);
+                
+                // Check for fetch method
+                if (typeof book.request.fetch === 'function') {
+                  // Store the original fetch function
+                  const originalFetch = book.request.fetch.bind(book.request);
+                  
+                  // Override the fetch method with our token-preserving version
+                  book.request.fetch = function(url: string) {
+                    let modifiedUrl = url;
+                    
+                    // Extract token from original URL
+                    try {
+                      const originalUrl = new URL(epubPath);
+                      const token = originalUrl.searchParams.get('token');
+                      
+                      if (token) {
+                        // If the URL already has parameters, append the token
+                        if (url.includes('?')) {
+                          modifiedUrl = `${url}&token=${encodeURIComponent(token)}`;
+                        } else {
+                          modifiedUrl = `${url}?token=${encodeURIComponent(token)}`;
+                        }
+                        console.log("Added token to resource URL");
+                      }
+                    } catch (e) {
+                      console.warn("Error processing URL for token:", e);
+                    }
+                    
+                    return originalFetch(modifiedUrl);
+                  };
+                } else {
+                  console.warn("EPUB.js book.request.fetch is not a function, cannot modify fetch behavior");
+                }
+              } else {
+                console.warn("EPUB.js book.request is not an object with expected methods");
               }
-              
-              return originalFetch(modifiedUrl);
-            };
+            } catch (e) {
+              console.error("Error setting up request interceptor:", e);
+            }
           }
           
           // First open the book
