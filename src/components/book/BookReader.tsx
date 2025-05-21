@@ -139,7 +139,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             title={title}
             location={location}
             locationChanged={locationChanged}
-            styles={readerStyles}
+            style={readerStyles} // Changed from "styles" to "style"
             getRendition={(rendition) => {
               renditionRef.current = rendition;
               rendition.themes.default({
