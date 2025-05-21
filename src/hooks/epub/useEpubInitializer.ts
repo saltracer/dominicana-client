@@ -86,6 +86,7 @@ export const useEpubInitializer = ({
             setLoading(false);
           });
           
+          console.log("Book instance created successfully and openFailed listener set");
           // Update ref safely
           bookInstanceRef.current = book;
           
@@ -93,108 +94,111 @@ export const useEpubInitializer = ({
           // The issue is likely that EPUB.js is trying to fetch resources within the EPUB
           // and losing the token parameter in subsequent requests
           let processedEpubPath = epubPath;
-          
+          console.log("processedEpubPath: ", processedEpubPath);
           // If URL contains a token parameter, ensure it's preserved for all requests
-          if (epubPath.includes('token=')) {
-            console.log("URL already contains token, preserving it");
+          // if (epubPath.includes('token=')) {
+          //   console.log("URL already contains token, preserving it");
             
-            try {
-              // Check if book.request exists and has expected methods
-              const request = book.request as unknown as EpubRequest | undefined;
+          //   try {
+          //     // Check if book.request exists and has expected methods
+          //     const request = book.request as EpubRequest;
               
-              if (request) {
-                // Safely check for withCredentials method
-                if (typeof request.withCredentials === 'function') {
-                  request.withCredentials(false);
-                  console.log("Set withCredentials to false");
-                } else {
-                  console.warn("withCredentials method not found on request object");
-                }
+          //     if (request) {
+          //       // Safely check for withCredentials method
+          //       // if (typeof request.withCredentials === 'function') {
+          //       //   request.withCredentials(false);
+          //       //   console.log("Set withCredentials to false");
+          //       // } else {
+          //       //   console.warn("withCredentials method not found on request object");
+          //       // }
                 
-                // Safely check for fetch method
-                if (typeof request.fetch === 'function') {
-                  // Store the original fetch function
-                  const originalFetch = request.fetch.bind(request);
+          //       // Safely check for fetch method
+          //       if (/*typeof request.fetch === 'function'*/ true) {
+          //         // Store the original fetch function
+          //         const originalFetch = request.fetch(epubPath);
                   
-                  // Override the fetch method with our token-preserving version
-                  request.fetch = function(url: string) {
-                    let modifiedUrl = url;
+          //         // Override the fetch method with our token-preserving version
+          //         // request.fetch = function(url: string) {
+          //         //   let modifiedUrl = url;
                     
-                    // Extract token from original URL
-                    try {
-                      const originalUrl = new URL(epubPath);
-                      const token = originalUrl.searchParams.get('token');
+          //         //   // Extract token from original URL
+          //         //   try {
+          //         //     const originalUrl = new URL(epubPath);
+          //         //     const token = originalUrl.searchParams.get('token');
                       
-                      if (token) {
-                        // If the URL already has parameters, append the token
-                        if (url.includes('?')) {
-                          modifiedUrl = `${url}&token=${encodeURIComponent(token)}`;
-                        } else {
-                          modifiedUrl = `${url}?token=${encodeURIComponent(token)}`;
-                        }
-                        console.log("Added token to resource URL");
-                      }
-                    } catch (e) {
-                      console.warn("Error processing URL for token:", e);
-                    }
+          //         //     if (token) {
+          //         //       // If the URL already has parameters, append the token
+          //         //       if (url.includes('?')) {
+          //         //         modifiedUrl = `${url}&token=${encodeURIComponent(token)}`;
+          //         //       } else {
+          //         //         modifiedUrl = `${url}?token=${encodeURIComponent(token)}`;
+          //         //       }
+          //         //       console.log("Added token to resource URL");
+          //         //     }
+          //         //   } catch (e) {
+          //         //     console.warn("Error processing URL for token:", e);
+          //         //   }
                     
-                    return originalFetch(modifiedUrl);
-                  };
-                } else {
-                  console.warn("fetch method not found on request object");
-                }
-              } else {
-                console.warn("EPUB.js book.request is not available");
-              }
-            } catch (e) {
-              console.error("Error setting up request interceptor:", e);
-            }
-          }
+          //         return originalFetch;
+          //         // };
+          //       } else {
+          //         console.warn("fetch method not found on request object");
+          //       }
+          //     } else {
+          //       console.warn("EPUB.js book.request is not available");
+          //     }
+          //   } catch (e) {
+          //     console.error("Error setting up request interceptor:", e);
+          //   }
+          // }
           
           // First open the book
           setLoadingStage("opening book");
-          book.open(processedEpubPath)
+          console.log("setLoadingStage(opening book)"); 
+          console.log("Opening EPUB with path:", epubPath);
+          const openedBook = book.open(epubPath);
+          openedBook
             .then(() => {
               console.log("EPUB book opened successfully");
               setLoadingStage("rendering book");
               
-              if (!viewerRef.current) {
-                console.error("Viewer element lost after opening book");
-                setError('Viewer element lost after opening book');
-                setLoading(false);
-                return;
-              }
+              // if (!viewerRef.current) {
+              //   console.error("Viewer element lost after opening book");
+              //   setError('Viewer element lost after opening book');
+              //   setLoading(false);
+              //   return;
+              // }
               
-              // Now the book is open, render it
-              console.log("Creating rendition, viewer ref:", viewerRef.current);
-              const rendition = book.renderTo(viewerRef.current, {
-                width: '100%',
-                height: '100%',
-                spread: 'none'
-              });
+              // // Now the book is open, render it
+              // console.log("Creating rendition, viewer ref:", viewerRef.current);
+              // const rendition = book.renderTo(viewerRef.current, {
+              //   width: '100%',
+              //   height: '100%',
+              //   spread: 'none'
+              // });
               
-              // Update ref safely
-              renditionInstanceRef.current = rendition;
+              // // Update ref safely
+              // renditionInstanceRef.current = rendition;
               
-              // Display the first page
-              console.log("Displaying first page");
-              rendition.display().then(() => {
-                console.log("EPUB first page displayed successfully");
-                setLoadingStage("complete");
-                setLoading(false);
+              // // Display the first page
+              // console.log("Displaying first page");
+              // rendition.display().then(() => {
+              //   console.log("EPUB first page displayed successfully");
+              //   setLoadingStage("complete");
+              //   setLoading(false);
                 
-                // Only show toast if successfully rendered
-                toast({
-                  title: "Book loaded successfully",
-                  description: book.packaging && book.packaging.metadata ? 
-                    `Now reading: ${book.packaging.metadata.title}` :
-                    "Your book is ready",
-                });
-              }).catch((err: any) => {
-                console.error("Error displaying EPUB content:", err);
-                setError(`Error displaying content: ${err.message || 'Unknown error'}`);
-                setLoading(false);
-              });
+              //   // Only show toast if successfully rendered
+              //   toast({
+              //     title: "Book loaded successfully",
+              //     description: book.packaging && book.packaging.metadata ? 
+              //       `Now reading: ${book.packaging.metadata.title}` :
+              //       "Your book is ready",
+              //   });
+              // }).catch((err: any) => {
+              //   console.error("Error displaying EPUB content:", err);
+              //   setError(`Error displaying content: ${err.message || 'Unknown error'}`);
+              //   setLoading(false);
+              // });
             })
             .catch((err: any) => {
               console.error("Error opening EPUB:", err);

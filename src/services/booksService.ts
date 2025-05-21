@@ -99,44 +99,44 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
     }
   }
   
-  // Apply the same logic for epubSamplePath
-  if (epubSamplePath) {
-    // Apply the same logic for sample path with 8 hours expiry time
-    if (epubSamplePath.includes('supabase.co/storage')) {
-      try {
-        const url = new URL(epubSamplePath);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.findIndex(part => part === 'object');
+  // // Apply the same logic for epubSamplePath
+  // if (epubSamplePath) {
+  //   // Apply the same logic for sample path with 8 hours expiry time
+  //   if (epubSamplePath.includes('supabase.co/storage')) {
+  //     try {
+  //       const url = new URL(epubSamplePath);
+  //       const pathParts = url.pathname.split('/');
+  //       const bucketIndex = pathParts.findIndex(part => part === 'object');
         
-        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
-          const bucket = pathParts[bucketIndex + 2];
-          const filePath = pathParts.slice(bucketIndex + 3).join('/');
+  //       if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
+  //         const bucket = pathParts[bucketIndex + 2];
+  //         const filePath = pathParts.slice(bucketIndex + 3).join('/');
           
-          const { data: signedUrlData, error: signedUrlError } = await supabase
-            .storage
-            .from(bucket)
-            .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
+  //         const { data: signedUrlData, error: signedUrlError } = await supabase
+  //           .storage
+  //           .from(bucket)
+  //           .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
             
-          if (signedUrlData && !signedUrlError) {
-            // Ensure token parameter exists
-            const signedUrl = new URL(signedUrlData.signedUrl);
+  //         if (signedUrlData && !signedUrlError) {
+  //           // Ensure token parameter exists
+  //           const signedUrl = new URL(signedUrlData.signedUrl);
             
-            if (!signedUrl.searchParams.has('token')) {
-              // Add token if missing
-              const urlWithToken = new URL(signedUrlData.signedUrl);
-              urlWithToken.searchParams.append('token', 'dummy-token-for-testing');
-              epubSamplePath = urlWithToken.toString();
-              console.log("Added mandatory token to sample URL");
-            } else {
-              epubSamplePath = signedUrlData.signedUrl;
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Error processing EPUB sample URL:", e);
-      }
-    }
-  }
+  //           if (!signedUrl.searchParams.has('token')) {
+  //             // Add token if missing
+  //             const urlWithToken = new URL(signedUrlData.signedUrl);
+  //             urlWithToken.searchParams.append('token', 'dummy-token-for-testing');
+  //             epubSamplePath = urlWithToken.toString();
+  //             console.log("Added mandatory token to sample URL");
+  //           } else {
+  //             epubSamplePath = signedUrlData.signedUrl;
+  //           }
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.error("Error processing EPUB sample URL:", e);
+  //     }
+  //   }
+  // }
 
   // Transform to match the Book type
   const book: Book = {

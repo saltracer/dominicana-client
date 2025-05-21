@@ -103,7 +103,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     
     // Use setTimeout to ensure DOM stability before initializing
     initTimerId.current = window.setTimeout(() => {
-      console.log("Initializing EPUB reader after delay");
+      console.log("Initializing EPUB reader after delay with path:", book.epubPath);
       initializeEpubReader(book.epubPath);
       initTimerId.current = null;
     }, 200);
