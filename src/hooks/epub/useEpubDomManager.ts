@@ -12,61 +12,77 @@ export const useEpubDomManager = ({ id, book, viewerRef }: UseEpubDomManagerProp
   const [viewerReady, setViewerReady] = useState(false);
   const [domCheckCounter, setDomCheckCounter] = useState(0);
   const domPollingActive = useRef(false);
+  const domChecksAttempted = useRef(0);
 
   // Check for DOM element once when book data changes
   useEffect(() => {
-    if (!book?.epubPath || viewerReady) return;
+    if (!book?.epubPath) return;
     
-    const viewerId = `epub-viewer-${id}`;
-    const viewerElement = viewerRef.current || document.getElementById(viewerId);
+    // Reset viewer ready when book changes
+    setViewerReady(false);
     
-    if (viewerElement) {
-      console.log("Initial check: Viewer element found:", viewerElement);
-      setViewerReady(true);
-    } else if (!domPollingActive.current) {
-      // Only set up polling if we haven't found the element yet and polling isn't active
-      console.log("Initial check: Viewer element not found, setting up polling");
-      setDomCheckCounter(c => c + 1);
-    }
-  }, [book?.epubPath, id, viewerRef, viewerReady]);
-
-  // Use a separate effect for polling to avoid recursive updates
-  useEffect(() => {
-    if (!book?.epubPath || viewerReady || domPollingActive.current) return;
-    
-    console.log("Setting up DOM polling...");
-    domPollingActive.current = true;
-    
-    const pollInterval = setInterval(() => {
+    const checkViewerElement = () => {
       const viewerId = `epub-viewer-${id}`;
       const viewerElement = viewerRef.current || document.getElementById(viewerId);
       
       if (viewerElement) {
-        console.log("DOM polling successful - viewer element found!");
-        clearInterval(pollInterval);
+        console.log("Viewer element found:", viewerElement);
+        
+        // Ensure the viewer element is properly prepared for rendering
+        if (viewerElement.dataset?.initialized !== 'true') {
+          viewerElement.dataset.initialized = 'true';
+          viewerElement.dataset.viewerId = viewerId;
+          
+          // Clear any previous content to ensure a clean slate
+          // But preserve the loading state if it's present
+          const hasLoadingContent = viewerElement.querySelectorAll('.animate-spin').length > 0;
+          if (!hasLoadingContent) {
+            console.log("Preparing viewer element for initialization");
+          }
+        }
+        
         setViewerReady(true);
         domPollingActive.current = false;
-      } else {
-        console.log("DOM polling - viewer element still not found");
-        // We don't update the counter here to avoid causing render loops
+        return true;
       }
-    }, 500); // Check every 500ms
-    
-    return () => {
-      clearInterval(pollInterval);
-      domPollingActive.current = false;
+      
+      return false;
     };
-  }, [book?.epubPath, viewerReady, id, viewerRef, domCheckCounter]);
-
-  // Reset viewer ready state when book changes
-  useEffect(() => {
-    setViewerReady(false);
-  }, [id, book]);
+    
+    // Try immediate check first
+    if (checkViewerElement()) return;
+    
+    // Set up polling if immediate check fails
+    if (!domPollingActive.current) {
+      console.log("Setting up DOM polling...");
+      domPollingActive.current = true;
+      
+      const pollInterval = setInterval(() => {
+        domChecksAttempted.current++;
+        
+        if (checkViewerElement()) {
+          clearInterval(pollInterval);
+        } else if (domChecksAttempted.current > 20) {
+          // After 20 attempts (10 seconds), give up polling
+          console.log("DOM polling timed out - viewer element not found after multiple attempts");
+          clearInterval(pollInterval);
+          domPollingActive.current = false;
+        } else {
+          console.log(`DOM polling - viewer element still not found (attempt ${domChecksAttempted.current})`);
+          setDomCheckCounter(c => c + 1);
+        }
+      }, 500); // Check every 500ms
+      
+      return () => {
+        clearInterval(pollInterval);
+        domPollingActive.current = false;
+      };
+    }
+  }, [book?.epubPath, id, viewerRef]);
 
   return {
     viewerReady,
     setViewerReady,
-    domCheckCounter,
-    setDomCheckCounter
+    domCheckCounter
   };
 };

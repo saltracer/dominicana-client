@@ -18,6 +18,7 @@ const BookReaderPage: React.FC = () => {
   const { user } = useAuth();
   const [showDebug, setShowDebug] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
+  const logThrottleCount = useRef(0);
   
   // Fetch book data using React Query
   const { data: book, isLoading: isBookLoading } = useQuery({
@@ -29,11 +30,11 @@ const BookReaderPage: React.FC = () => {
   });
 
   // Set a data attribute on the viewer element that we can check from the hook
-  // Move this to useLayoutEffect to happen before the render cycle
+  // Using useLayoutEffect to happen before the render cycle
   useLayoutEffect(() => {
     if (viewerRef.current && id) {
+      // Set data attributes without changing the element content
       viewerRef.current.dataset.viewerId = `epub-viewer-${id}`;
-      viewerRef.current.dataset.initialized = 'true';
     }
   }, [id]);
 
@@ -62,9 +63,9 @@ const BookReaderPage: React.FC = () => {
   // Show loading state when fetching the book
   const isLoading = isBookLoading || loading;
 
-  // Limit logging to prevent excessive console output
-  const shouldLog = useRef(0);
-  if (shouldLog.current % 10 === 0) {
+  // Throttle logging to prevent excessive console output  
+  logThrottleCount.current += 1;
+  if (logThrottleCount.current % 50 === 0) {
     console.log("BookReaderPage render state:", {
       id,
       bookLoaded: !!book,
@@ -72,10 +73,10 @@ const BookReaderPage: React.FC = () => {
       loading,
       viewerReady,
       errorState: error,
-      viewerRefExists: !!viewerRef.current
+      viewerRefExists: !!viewerRef.current,
+      loadingStage
     });
   }
-  shouldLog.current++;
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -111,42 +112,32 @@ const BookReaderPage: React.FC = () => {
         )}
         
         {/* Reader container */}
-        {isLoading ? (
-          <div 
-            ref={viewerRef} 
-            className="flex flex-1 items-center justify-center flex-col"
-            id={`epub-viewer-${id}`}
-            data-testid="epub-viewer"
-            data-viewer-id={`epub-viewer-${id}`}
-            data-ready={viewerReady ? "true" : "false"}
-            data-initialized="false"
-          >
-            <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy mb-4" />
-            <span className="text-dominican-burgundy font-medium">Loading book... ({loadingStage})</span>
-          </div>
-        ) : error ? (
-          <ReaderErrorDisplay
-            error={error}
-            book={book}
-            tryAlternativeLoad={tryAlternativeLoad}
-            forceRefresh={forceRefresh}
-            showDebug={showDebug}
-            setShowDebug={setShowDebug}
-          />
-        ) : (
-          <div 
-            ref={viewerRef} 
-            className="flex-1 w-full border rounded-md overflow-hidden bg-white"
-            id={`epub-viewer-${id}`}
-            data-testid="epub-viewer"
-            data-viewer-id={`epub-viewer-${id}`}
-            data-ready={viewerReady ? "true" : "false"}
-            data-initialized="false"
-          >
-             <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy mb-4" />
-             <span className="text-dominican-burgundy font-medium">Loading book... ({loadingStage})</span>
-          </div>
-        )}
+        <div 
+          ref={viewerRef} 
+          className={`flex-1 w-full border rounded-md overflow-hidden ${error ? 'bg-red-50' : 'bg-white'}`}
+          id={`epub-viewer-${id}`}
+          data-testid="epub-viewer"
+          data-viewer-id={`epub-viewer-${id}`}
+          data-ready={viewerReady ? "true" : "false"}
+        >
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy mb-4" />
+              <span className="text-dominican-burgundy font-medium">Loading book... ({loadingStage})</span>
+            </div>
+          )}
+          
+          {!isLoading && error && (
+            <ReaderErrorDisplay
+              error={error}
+              book={book}
+              tryAlternativeLoad={tryAlternativeLoad}
+              forceRefresh={forceRefresh}
+              showDebug={showDebug}
+              setShowDebug={setShowDebug}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

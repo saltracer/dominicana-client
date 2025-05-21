@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Book } from '@/lib/types';
 import { toast } from '@/components/ui/use-toast';
-import ePub from 'epubjs';
 import { useEpubDomManager } from './epub/useEpubDomManager';
 import { useEpubInitializer } from './epub/useEpubInitializer';
 import { useEpubControls } from './epub/useEpubControls';
@@ -21,6 +20,10 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
   // Use mutable refs that we can safely assign values to
   const bookInstanceRef = useRef<any>(null);
   const renditionInstanceRef = useRef<any>(null);
+  
+  // Track initialization attempts
+  const initAttempted = useRef(false);
+  const initTimerId = useRef<number | null>(null);
 
   // Split the functionality into separate hooks
   const { 
@@ -52,31 +55,63 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
     toggleTheme
   } = useEpubControls({ renditionInstanceRef });
   
-  // Initialize EPUB reader once when both book data and viewer are ready
-  // Use a ref to track if initialization has been attempted
-  const initAttempted = useRef(false);
-  
+  // Reset initialization state when book changes
   useEffect(() => {
-    // Reset initialization attempt flag when book changes
     if (book?.id) {
+      console.log("New book detected, resetting initialization state");
       initAttempted.current = false;
+      
+      // Clear any existing initialization timer
+      if (initTimerId.current !== null) {
+        clearTimeout(initTimerId.current);
+        initTimerId.current = null;
+      }
+      
+      // Reset error state
+      setError(null);
     }
+    
+    // Clean up function
+    return () => {
+      if (initTimerId.current !== null) {
+        clearTimeout(initTimerId.current);
+      }
+    };
   }, [book?.id]);
   
+  // Initialize EPUB reader once when both book data and viewer are ready
   useEffect(() => {
-    // Only attempt initialization once per book
+    // Skip if any required data is missing or if we've already attempted initialization
     if (!book?.epubPath || !viewerReady || !viewerRef.current || initAttempted.current) {
       return;
     }
 
-    console.log("Both book data and viewer are ready, initializing EPUB reader");
-    initAttempted.current = true;
-    initializeEpubReader(book.epubPath);
+    console.log("Both book data and viewer are ready, scheduling initialization");
     
-    // Clean up function to remove any existing EPUB reader instances
+    // Debounce initialization to prevent race conditions
+    if (initTimerId.current !== null) {
+      clearTimeout(initTimerId.current);
+    }
+    
+    // Set initialization flag to prevent multiple attempts
+    initAttempted.current = true;
+    
+    // Use setTimeout to ensure DOM stability before initializing
+    initTimerId.current = window.setTimeout(() => {
+      console.log("Initializing EPUB reader after delay");
+      initializeEpubReader(book.epubPath);
+      initTimerId.current = null;
+    }, 200);
+    
+    // Clean up function
     return () => {
+      if (initTimerId.current !== null) {
+        clearTimeout(initTimerId.current);
+        initTimerId.current = null;
+      }
+      
       if (bookInstanceRef.current) {
-        console.log("Cleaning up EPUB instance");
+        console.log("Cleaning up EPUB instance on unmount");
         try {
           bookInstanceRef.current.destroy();
         } catch (e) {
@@ -84,7 +119,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
         }
       }
     };
-  }, [book, viewerReady, initializeEpubReader, viewerRef]);
+  }, [book?.epubPath, viewerReady, initializeEpubReader, viewerRef]);
 
   // Set up keyboard event listeners
   useEffect(() => {
