@@ -19,7 +19,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const navigate = useNavigate();
 
   // Get styles for reader
-  const readerStyles: ReactReaderStyle = {
+  const readerStyles: Record<string, React.CSSProperties> = {
     container: {
       overflow: 'hidden',
       position: 'relative',
@@ -157,6 +157,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             epubOptions={{
               flow: 'scrolled',
               manager: 'continuous',
+              allowPopups: true,
             }}
             loadingView={
               isLoading && (
@@ -169,7 +170,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
             handleKeyPress={() => {}}
             showToc={true}
             swipeable={true}
-            loadingView={null}
             onReady={handleReady}
             onError={handleError}
           />
