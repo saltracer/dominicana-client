@@ -112,7 +112,15 @@ const BookReaderPage: React.FC = () => {
         
         {/* Reader container */}
         {isLoading ? (
-          <div className="flex flex-1 items-center justify-center flex-col">
+          <div 
+            ref={viewerRef} 
+            className="flex flex-1 items-center justify-center flex-col"
+            id={`epub-viewer-${id}`}
+            data-testid="epub-viewer"
+            data-viewer-id={`epub-viewer-${id}`}
+            data-ready={viewerReady ? "true" : "false"}
+            data-initialized="false"
+          >
             <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy mb-4" />
             <span className="text-dominican-burgundy font-medium">Loading book... ({loadingStage})</span>
           </div>
@@ -134,7 +142,10 @@ const BookReaderPage: React.FC = () => {
             data-viewer-id={`epub-viewer-${id}`}
             data-ready={viewerReady ? "true" : "false"}
             data-initialized="false"
-          ></div>
+          >
+             <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy mb-4" />
+             <span className="text-dominican-burgundy font-medium">Loading book... ({loadingStage})</span>
+          </div>
         )}
       </div>
     </div>
