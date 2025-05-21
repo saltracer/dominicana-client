@@ -8,8 +8,8 @@ interface UseEpubInitializerProps {
   id: string | undefined;
   book: Book | null;
   viewerRef: React.RefObject<HTMLDivElement>;
-  bookInstanceRef: React.RefObject<any>;
-  renditionInstanceRef: React.RefObject<any>;
+  bookInstanceRef: React.MutableRefObject<any>; // Changed from RefObject to MutableRefObject
+  renditionInstanceRef: React.MutableRefObject<any>; // Changed from RefObject to MutableRefObject
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   setLoadingStage: React.Dispatch<React.SetStateAction<string>>;
@@ -51,15 +51,8 @@ export const useEpubInitializer = ({
       console.log("Creating EPUB.js Book instance");
       const book = ePub(epubPath);
       
-      // Ensure the ref is properly initialized before assignment
-      if (bookInstanceRef && bookInstanceRef.current) {
-        bookInstanceRef.current = book;
-      } else {
-        console.error('Book instance ref not properly initialized');
-        setError('Failed to initialize EPUB reader');
-        setLoading(false);
-        return;
-      } // This is actually correct, but we need to ensure the ref is properly initialized
+      // Update ref safely
+      bookInstanceRef.current = book;
       
       // Add a listener for book open failure
       book.on('openFailed', (error: any) => {
@@ -89,10 +82,8 @@ export const useEpubInitializer = ({
           spread: 'none'
         });
         
-        // Only assign to ref.current if it exists
-        if (renditionInstanceRef && renditionInstanceRef.current !== null) {
-          renditionInstanceRef.current = rendition;
-        }
+        // Update ref safely
+        renditionInstanceRef.current = rendition;
         
         // Log book metadata
         book.loaded.metadata.then((metadata: any) => {
@@ -167,11 +158,11 @@ export const useEpubInitializer = ({
     // Clean up any existing instances
     if (bookInstanceRef.current) {
       bookInstanceRef.current.destroy();
-      bookInstanceRef.current = undefined;
+      bookInstanceRef.current = null; // Use null instead of undefined
     }
-    if (renditionInstanceRef.current) {
-      renditionInstanceRef.current = undefined;
-    }
+    
+    // Reset rendition ref
+    renditionInstanceRef.current = null; // Use null instead of undefined
     
     // Reset viewer ready state
     setViewerReady(false);

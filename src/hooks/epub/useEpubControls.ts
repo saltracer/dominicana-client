@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 
 interface UseEpubControlsProps {
-  renditionInstanceRef: React.RefObject<any>;
+  renditionInstanceRef: React.MutableRefObject<any>; // Changed from RefObject to MutableRefObject
 }
 
 export const useEpubControls = ({ renditionInstanceRef }: UseEpubControlsProps) => {

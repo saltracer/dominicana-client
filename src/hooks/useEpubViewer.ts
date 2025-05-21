@@ -18,7 +18,7 @@ export const useEpubViewer = ({ id, book, viewerRef }: UseEpubViewerProps) => {
   const [error, setError] = useState<string | null>(null);
   const [loadingStage, setLoadingStage] = useState<string>("initializing");
   
-  // Use mutable refs that we can safely reassign
+  // Use mutable refs that we can safely assign values to
   const bookInstanceRef = useRef<any>(null);
   const renditionInstanceRef = useRef<any>(null);
 
