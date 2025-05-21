@@ -16,6 +16,12 @@ interface UseEpubInitializerProps {
   setViewerReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Define an interface for the EPUB.js request object
+interface EpubRequest {
+  withCredentials?: (value: boolean) => void;
+  fetch?: (url: string) => Promise<any>;
+}
+
 export const useEpubInitializer = ({
   id,
   book,
@@ -93,21 +99,25 @@ export const useEpubInitializer = ({
             console.log("URL already contains token, preserving it");
             
             try {
-              // Instead of cast approach, we'll take a more defensive approach
-              // First check if the request object has the expected structure
-              if (book.request && typeof book.request === 'object') {
-                // Check for withCredentials method
-                if (typeof book.request.withCredentials === 'function') {
-                  book.request.withCredentials(false);
+              // Check if book.request exists and has expected methods
+              const request = book.request as unknown as EpubRequest | undefined;
+              
+              if (request) {
+                // Safely check for withCredentials method
+                if (typeof request.withCredentials === 'function') {
+                  request.withCredentials(false);
+                  console.log("Set withCredentials to false");
+                } else {
+                  console.warn("withCredentials method not found on request object");
                 }
                 
-                // Check for fetch method
-                if (typeof book.request.fetch === 'function') {
+                // Safely check for fetch method
+                if (typeof request.fetch === 'function') {
                   // Store the original fetch function
-                  const originalFetch = book.request.fetch.bind(book.request);
+                  const originalFetch = request.fetch.bind(request);
                   
                   // Override the fetch method with our token-preserving version
-                  book.request.fetch = function(url: string) {
+                  request.fetch = function(url: string) {
                     let modifiedUrl = url;
                     
                     // Extract token from original URL
@@ -131,10 +141,10 @@ export const useEpubInitializer = ({
                     return originalFetch(modifiedUrl);
                   };
                 } else {
-                  console.warn("EPUB.js book.request.fetch is not a function, cannot modify fetch behavior");
+                  console.warn("fetch method not found on request object");
                 }
               } else {
-                console.warn("EPUB.js book.request is not an object with expected methods");
+                console.warn("EPUB.js book.request is not available");
               }
             } catch (e) {
               console.error("Error setting up request interceptor:", e);

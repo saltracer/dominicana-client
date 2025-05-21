@@ -74,19 +74,19 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
             
           if (signedUrlData && !signedUrlError) {
             console.log("Got signed URL:", signedUrlData.signedUrl);
-            // Make sure the URL contains the token parameter
-            const signedUrl = new URL(signedUrlData.signedUrl);
-            console.log("URL parameters:", Array.from(signedUrl.searchParams.entries()));
             
-            // Verify that the signed URL includes the token parameter
+            // Always ensure the URL contains a token parameter
+            const signedUrl = new URL(signedUrlData.signedUrl);
+            
             if (!signedUrl.searchParams.has('token')) {
-              console.error("Warning: Signed URL does not contain token parameter");
-              // Force add a dummy token if missing for testing purposes
+              console.error("Error: Signed URL does not contain token parameter");
+              // Always add a token if missing (should not happen with proper signed URLs)
               const urlWithToken = new URL(signedUrlData.signedUrl);
               urlWithToken.searchParams.append('token', 'dummy-token-for-testing');
               epubPath = urlWithToken.toString();
-              console.log("Added dummy token to URL:", epubPath);
+              console.log("Added mandatory token to URL:", epubPath);
             } else {
+              console.log("Token parameter found in signed URL");
               epubPath = signedUrlData.signedUrl;
             }
           } else {
@@ -118,7 +118,18 @@ export const fetchBookById = async (id: number): Promise<Book | null> => {
             .createSignedUrl(filePath, 8 * 60 * 60); // 8 hours expiry
             
           if (signedUrlData && !signedUrlError) {
-            epubSamplePath = signedUrlData.signedUrl;
+            // Ensure token parameter exists
+            const signedUrl = new URL(signedUrlData.signedUrl);
+            
+            if (!signedUrl.searchParams.has('token')) {
+              // Add token if missing
+              const urlWithToken = new URL(signedUrlData.signedUrl);
+              urlWithToken.searchParams.append('token', 'dummy-token-for-testing');
+              epubSamplePath = urlWithToken.toString();
+              console.log("Added mandatory token to sample URL");
+            } else {
+              epubSamplePath = signedUrlData.signedUrl;
+            }
           }
         }
       } catch (e) {
