@@ -46,9 +46,38 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
           setAlternativeEvents([]);
         }
         
-        // Determine the liturgical season based on the current event
-        // This is a simplified example - actual determination may be more complex
-        const season = celebrations[0]?.season?.toLowerCase() || 'ordinary';
+        // Determine the liturgical season based on the current event's color
+        // Since Celebration doesn't have a direct 'season' property, we'll infer from color
+        const color = celebrations[0]?.color?.toLowerCase() || 'green';
+        let season = 'ordinary';
+        
+        // Map liturgical colors to seasons
+        switch(color) {
+          case 'purple':
+          case 'violet':
+            season = 'lent'; // Could be either Advent or Lent
+            // Additional logic could be added here to determine if it's Advent or Lent
+            // based on date ranges
+            break;
+          case 'white':
+          case 'gold':
+            // Could be Christmas or Easter season
+            // For now, defaulting to 'christmas' if in December/January
+            const month = selectedDate.getMonth();
+            if (month === 11 || month === 0) { // December (11) or January (0)
+              season = 'christmas';
+            } else {
+              season = 'easter';
+            }
+            break;
+          case 'red':
+            season = 'pentecost';
+            break;
+          case 'green':
+          default:
+            season = 'ordinary';
+        }
+        
         setCurrentSeason(season);
       } else {
         setCurrentEvent(null);
