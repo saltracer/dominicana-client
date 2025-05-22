@@ -414,8 +414,18 @@ export const createOrUpdateUserPreferences = async (
 /**
  * Get all components for a specific template
  */
-export const getComponentsForTemplate = async (template: LiturgyTemplate): Promise<Record<string, LiturgyComponent[]>> => {
+export const getComponentsForTemplate = async (templateId: string): Promise<Record<string, LiturgyComponent[]>> => {
   try {
+    // First, fetch the template to get the component IDs
+    const { data: templateData, error: templateError } = await supabase
+      .from('liturgy_templates')
+      .select('*')
+      .eq('id', templateId)
+      .single();
+      
+    if (templateError) throw templateError;
+    
+    const template = templateData as LiturgyTemplate;
     const componentsByType: Record<string, LiturgyComponent[]> = {};
     
     // Process each component type in the template
