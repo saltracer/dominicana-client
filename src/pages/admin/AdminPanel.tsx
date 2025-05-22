@@ -3,7 +3,29 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import { 
+  BookOpen, Users, Settings, Library, 
+  Calendar, BookText, Server, Shield 
+} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import BooksManager from '@/components/admin/BooksManager';
+
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarInset,
+} from "@/components/ui/sidebar";
+
 import { 
   Select, 
   SelectContent, 
@@ -11,12 +33,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
-import { BookOpen, Bookmark, Settings } from 'lucide-react';
-
-import BooksManager from '@/components/admin/BooksManager';
 
 interface UserData {
   id: string;
@@ -35,23 +51,28 @@ const AdminPanel: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Determine active tab based on URL
-  const getInitialTab = () => {
+  // Determine active section based on URL
+  const getActiveSection = () => {
     if (location.pathname.includes('/admin/books')) {
       return 'books';
+    }
+    if (location.pathname.includes('/admin/liturgy')) {
+      return 'liturgy';
     }
     return 'users';
   };
   
-  const [activeTab, setActiveTab] = useState(getInitialTab());
+  const [activeSection, setActiveSection] = useState(getActiveSection());
   
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (activeSection === 'users') {
+      fetchUsers();
+    }
+  }, [activeSection]);
 
-  // Set active tab when location changes
+  // Set active section when location changes
   useEffect(() => {
-    setActiveTab(getInitialTab());
+    setActiveSection(getActiveSection());
   }, [location]);
 
   const fetchUsers = async () => {
@@ -126,15 +147,15 @@ const AdminPanel: React.FC = () => {
     await handleRoleUpdate(userEmail, selectedRole);
   };
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
     
-    // Update URL based on selected tab without full page reload
-    if (value === 'books') {
+    // Update URL based on selected section without full page reload
+    if (section === 'books') {
       navigate('/admin/books', { replace: true });
-    } else if (value === 'users') {
-      navigate('/admin', { replace: true });
-    } else if (value === 'settings') {
+    } else if (section === 'liturgy') {
+      navigate('/admin/liturgy', { replace: true });
+    } else {
       navigate('/admin', { replace: true });
     }
   };
@@ -156,156 +177,219 @@ const AdminPanel: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
-        Admin Panel
-      </h1>
-      <div className="text-center mb-6">
-        <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
-      </div>
-      
-      <div className="flex flex-wrap gap-4 mb-6">
-        <Button asChild variant="outline" className="flex items-center">
-          <Link to="/admin/liturgy">
-            <BookOpen className="mr-2 h-4 w-4" />
-            Liturgy of Hours Admin
-          </Link>
-        </Button>
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-6">
-          <TabsTrigger value="users">User Management</TabsTrigger>
-          <TabsTrigger value="books">Library Management</TabsTrigger>
-          <TabsTrigger value="settings">Site Settings</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="users" className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">User Management</h2>
+    <div className="h-full min-h-screen bg-gray-50">
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex w-full min-h-screen">
+          <Sidebar>
+            <SidebarHeader className="flex items-center justify-between p-4">
+              <h2 className="text-lg font-semibold">Admin Panel</h2>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Administration</SidebarGroupLabel>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      isActive={activeSection === 'users'} 
+                      onClick={() => handleSectionChange('users')}
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      <span>User Management</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      isActive={activeSection === 'books'} 
+                      onClick={() => handleSectionChange('books')}
+                    >
+                      <Library className="h-4 w-4 mr-2" />
+                      <span>Library Management</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      isActive={activeSection === 'liturgy'} 
+                      onClick={() => handleSectionChange('liturgy')}
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      <span>Liturgy Manager</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroup>
+              
+              <SidebarGroup>
+                <SidebarGroupLabel>System</SidebarGroupLabel>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      isActive={activeSection === 'settings'} 
+                      onClick={() => handleSectionChange('settings')}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      <span>Site Settings</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter className="p-4">
+              <div className="text-xs text-muted-foreground">
+                Admin Dashboard v1.0
+              </div>
+            </SidebarFooter>
+          </Sidebar>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Update User Role</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">User Email</label>
-                  <Input
-                    type="email"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    placeholder="user@example.com"
-                    required
-                  />
+          <SidebarInset className="p-6 overflow-y-auto">
+            {/* Users Section */}
+            {activeSection === 'users' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h1 className="text-2xl font-bold">User Management</h1>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium mb-1">Role</label>
-                  <Select 
-                    value={selectedRole} 
-                    onValueChange={(value) => setSelectedRole(value as UserRole)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="authenticated">Authenticated</SelectItem>
-                      <SelectItem value="subscribed">Subscribed</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* User Role Update Form */}
+                  <div className="bg-white p-6 rounded-lg shadow">
+                    <h2 className="text-xl font-semibold mb-4">Update User Role</h2>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">User Email</label>
+                        <Input
+                          type="email"
+                          value={userEmail}
+                          onChange={(e) => setUserEmail(e.target.value)}
+                          placeholder="user@example.com"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Role</label>
+                        <Select 
+                          value={selectedRole} 
+                          onValueChange={(value) => setSelectedRole(value as UserRole)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="authenticated">Authenticated</SelectItem>
+                            <SelectItem value="subscribed">Subscribed</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
+                      >
+                        Update Role
+                      </Button>
+                    </form>
+                  </div>
+                  
+                  {/* Users List */}
+                  <div className="bg-white p-6 rounded-lg shadow">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold">Users</h2>
+                      <Button 
+                        variant="outline" 
+                        onClick={fetchUsers}
+                        size="sm"
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+                    <div className="border rounded-md overflow-hidden">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Email
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Role
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {loading ? (
+                            <tr>
+                              <td colSpan={3} className="px-4 py-4 text-center">Loading...</td>
+                            </tr>
+                          ) : users.length === 0 ? (
+                            <tr>
+                              <td colSpan={3} className="px-4 py-4 text-center">No users found</td>
+                            </tr>
+                          ) : (
+                            users.map((user) => (
+                              <tr key={user.id}>
+                                <td className="px-4 py-3 whitespace-nowrap">{user.email}</td>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    {user.role}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 whitespace-nowrap">
+                                  <div className="flex space-x-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => {
+                                        setUserEmail(user.email);
+                                        setSelectedRole(user.role);
+                                      }}
+                                    >
+                                      Edit
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-                
-                <Button 
-                  type="submit" 
-                  className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
-                >
-                  Update Role
-                </Button>
-              </form>
-            </div>
+              </div>
+            )}
             
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Users</h3>
-              <div className="border rounded-md overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Role
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={3} className="px-4 py-4 text-center">Loading...</td>
-                      </tr>
-                    ) : users.length === 0 ? (
-                      <tr>
-                        <td colSpan={3} className="px-4 py-4 text-center">No users found</td>
-                      </tr>
-                    ) : (
-                      users.map((user) => (
-                        <tr key={user.id}>
-                          <td className="px-4 py-3 whitespace-nowrap">{user.email}</td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              {user.role}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <div className="flex space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => {
-                                  setUserEmail(user.email);
-                                  setSelectedRole(user.role);
-                                }}
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+            {/* Books Section */}
+            {activeSection === 'books' && (
+              <div>
+                <h1 className="text-2xl font-bold mb-6">Library Management</h1>
+                <BooksManager editBookId={id ? parseInt(id) : undefined} />
               </div>
-              <div className="mt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={fetchUsers}
-                  className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                >
-                  Refresh Users
-                </Button>
+            )}
+            
+            {/* Liturgy Section - Just redirect */}
+            {activeSection === 'liturgy' && (
+              <div className="text-center py-12">
+                <div className="animate-pulse">
+                  <BookOpen className="h-12 w-12 mx-auto mb-4 text-dominican-burgundy" />
+                  <p className="text-lg">Redirecting to Liturgy Management...</p>
+                </div>
               </div>
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="content" className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Content Management</h2>
-          <p className="text-gray-600">Content management features will be available in future updates.</p>
-        </TabsContent>
-		
-        <TabsContent value="books">
-          <BooksManager editBookId={id ? parseInt(id) : undefined} />
-        </TabsContent>
-        
-        <TabsContent value="settings" className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Site Settings</h2>
-          <p className="text-gray-600">Site configuration settings will be available in future updates.</p>
-        </TabsContent>
-      </Tabs>
+            )}
+            
+            {/* Settings Section */}
+            {activeSection === 'settings' && (
+              <div className="space-y-6">
+                <h1 className="text-2xl font-bold">Site Settings</h1>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <p className="text-gray-600">Site configuration settings will be available in future updates.</p>
+                </div>
+              </div>
+            )}
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
     </div>
   );
 };

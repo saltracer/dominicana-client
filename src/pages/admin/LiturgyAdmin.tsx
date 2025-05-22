@@ -5,10 +5,15 @@ import { useAuth } from '@/context/AuthContext';
 import ComponentsManager from '@/components/admin/liturgy/ComponentsManager';
 import TemplatesManager from '@/components/admin/liturgy/TemplatesManager';
 import DailyOfficeManager from '@/components/admin/liturgy/DailyOfficeManager';
+import { Card } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const LiturgyAdmin: React.FC = () => {
   const { userRole } = useAuth();
   const [activeTab, setActiveTab] = React.useState('components');
+  const navigate = useNavigate();
 
   if (userRole !== 'admin') {
     return (
@@ -25,32 +30,47 @@ const LiturgyAdmin: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
-        Liturgy Management
-      </h1>
-      <div className="text-center mb-6">
-        <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
+      <div className="flex items-center mb-6">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="mr-4" 
+          onClick={() => navigate('/admin')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back to Admin
+        </Button>
+        <div>
+          <h1 className="font-garamond text-3xl font-bold text-dominican-burgundy">
+            Liturgy Management
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage liturgical components, templates, and daily offices
+          </p>
+        </div>
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-6">
-          <TabsTrigger value="components">Prayer Components</TabsTrigger>
-          <TabsTrigger value="templates">Hour Templates</TabsTrigger>
-          <TabsTrigger value="dailyOffices">Daily Offices</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="components" className="bg-white rounded-lg shadow-md p-6">
-          <ComponentsManager />
-        </TabsContent>
-        
-        <TabsContent value="templates" className="bg-white rounded-lg shadow-md p-6">
-          <TemplatesManager />
-        </TabsContent>
-        
-        <TabsContent value="dailyOffices" className="bg-white rounded-lg shadow-md p-6">
-          <DailyOfficeManager />
-        </TabsContent>
-      </Tabs>
+      <Card className="border-none shadow-md">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-muted/50">
+            <TabsTrigger value="components">Prayer Components</TabsTrigger>
+            <TabsTrigger value="templates">Hour Templates</TabsTrigger>
+            <TabsTrigger value="dailyOffices">Daily Offices</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="components" className="p-6">
+            <ComponentsManager />
+          </TabsContent>
+          
+          <TabsContent value="templates" className="p-6">
+            <TemplatesManager />
+          </TabsContent>
+          
+          <TabsContent value="dailyOffices" className="p-6">
+            <DailyOfficeManager />
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 };

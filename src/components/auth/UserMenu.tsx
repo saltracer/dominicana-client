@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut, Settings, LayoutDashboard } from 'lucide-react';
 
 const UserMenu: React.FC = () => {
   const { user, signOut, userRole } = useAuth();
@@ -69,6 +69,7 @@ const UserMenu: React.FC = () => {
         {userRole === 'admin' && (
           <DropdownMenuItem asChild>
             <Link to="/admin" className="flex items-center w-full cursor-pointer">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
               <span>Admin Panel</span>
             </Link>
           </DropdownMenuItem>

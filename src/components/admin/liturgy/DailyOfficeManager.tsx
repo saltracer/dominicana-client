@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -31,33 +32,51 @@ const DailyOfficeManager: React.FC = () => {
     : [];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Daily Office Manager</h2>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Daily Office Manager</h2>
       </div>
 
       {/* Date Selection */}
-      <div className="mb-4">
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-[300px] justify-start text-left font-normal"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {formattedDate || "Pick a date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Select Date</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="min-w-[240px] justify-start text-left"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formattedDate || "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setCalendarOpen(false);
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            
+            {selectedDate && (
+              <div className="text-sm text-muted-foreground">
+                {format(selectedDate, 'EEEE')}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Celebration Selection */}
       {currentEvent && (
@@ -66,9 +85,9 @@ const DailyOfficeManager: React.FC = () => {
             <CardTitle>Celebration for {formattedDate}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="celebration">Celebration</Label>
+                <Label htmlFor="celebration">Select Celebration</Label>
                 <Select 
                   value={selectedCelebration?.id || ''}
                   onValueChange={(value) => {
@@ -76,7 +95,7 @@ const DailyOfficeManager: React.FC = () => {
                     setSelectedCelebration(selected || null);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select celebration" />
                   </SelectTrigger>
                   <SelectContent>
@@ -90,17 +109,37 @@ const DailyOfficeManager: React.FC = () => {
               </div>
               
               {selectedCelebration && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {selectedCelebration.name}
-                  </h3>
-                  <p>Rank: {selectedCelebration.rank}</p>
-                  <p>Color: {selectedCelebration.color}</p>
-                  {selectedCelebration.description && (
-                    <p>Description: {selectedCelebration.description}</p>
-                  )}
-                </div>
+                <Card className="bg-gray-50 border border-gray-200">
+                  <CardContent className="pt-4">
+                    <h3 className="text-lg font-semibold mb-2">
+                      {selectedCelebration.name}
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="font-medium">Rank:</span> {selectedCelebration.rank}
+                      </div>
+                      <div>
+                        <span className="font-medium">Color:</span> {selectedCelebration.color}
+                      </div>
+                    </div>
+                    {selectedCelebration.description && (
+                      <div className="mt-2 text-sm">
+                        <span className="font-medium">Description:</span> {selectedCelebration.description}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               )}
+              
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline">Cancel</Button>
+                <Button 
+                  className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
+                  disabled={!selectedCelebration}
+                >
+                  Save Configuration
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
