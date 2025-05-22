@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Celebration } from '@/lib/liturgical/celebrations/celebrations-types';
 import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 
@@ -32,23 +32,32 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
   const [alternativeEvents, setAlternativeEvents] = useState<Celebration[]>([]);
   const [currentSeason, setCurrentSeason] = useState<string>('ordinary'); // Default season
 
-  // Initialize with today's event if available
-  React.useEffect(() => {
-    const celebrations = getCelebrationsForDate(new Date());
-    
-    if (celebrations.length > 0) {
-      setCurrentEvent(celebrations[0]);
-      // Store additional celebrations as alternatives
-      if (celebrations.length > 1) {
-        setAlternativeEvents(celebrations.slice(1));
+  // Update events whenever the date changes
+  useEffect(() => {
+    const updateEvents = () => {
+      const celebrations = getCelebrationsForDate(selectedDate);
+      
+      if (celebrations.length > 0) {
+        setCurrentEvent(celebrations[0]);
+        // Store additional celebrations as alternatives
+        if (celebrations.length > 1) {
+          setAlternativeEvents(celebrations.slice(1));
+        } else {
+          setAlternativeEvents([]);
+        }
+        
+        // Determine the liturgical season based on the current event
+        // This is a simplified example - actual determination may be more complex
+        const season = celebrations[0]?.season?.toLowerCase() || 'ordinary';
+        setCurrentSeason(season);
       } else {
+        setCurrentEvent(null);
         setAlternativeEvents([]);
       }
-    } else {
-      setCurrentEvent(null);
-      setAlternativeEvents([]);
-    }
-  }, []);
+    };
+    
+    updateEvents();
+  }, [selectedDate]);
 
   const value = {
     selectedDate,

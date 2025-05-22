@@ -1,7 +1,12 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { LiturgyComponent, LiturgyHour, LiturgyPreferences, LiturgyTemplate } from '@/lib/types/liturgy';
-import { fetchLiturgyComponentById, fetchLiturgyTemplate, fetchUserPreferences, getComponentsForTemplate } from '@/services/liturgyService';
+import { 
+  fetchLiturgyComponentById, 
+  fetchLiturgyTemplate, 
+  fetchUserPreferences, 
+  getComponentsForTemplate,
+  getTemplateForDateAndHour 
+} from '@/services/liturgyService';
 import { useAuth } from './AuthContext';
 import { useLiturgicalDay } from './LiturgicalDayContext';
 import { Celebration } from '@/lib/liturgical/celebrations/celebrations-types';
@@ -38,7 +43,7 @@ interface LiturgyProviderProps {
 
 export const LiturgyProvider: React.FC<LiturgyProviderProps> = ({ children }) => {
   const { user } = useAuth();
-  const { currentSeason, currentEvent } = useLiturgicalDay();
+  const { currentSeason, currentEvent, selectedDate } = useLiturgicalDay();
   
   const [currentHour, setCurrentHour] = useState<LiturgyHour | null>(null);
   const [currentTemplate, setCurrentTemplate] = useState<LiturgyTemplate | null>(null);
@@ -70,6 +75,38 @@ export const LiturgyProvider: React.FC<LiturgyProviderProps> = ({ children }) =>
     
     loadPreferences();
   }, [user]);
+
+  // Update template when the hour or date changes
+  useEffect(() => {
+    const loadTemplate = async () => {
+      if (!currentHour) {
+        // Default to a common hour
+        setCurrentHour('compline');
+        return;
+      }
+      
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Get the template based on the current date and hour
+        const template = await getTemplateForDateAndHour(selectedDate, currentHour);
+        
+        if (template) {
+          await handleTemplateChange(template);
+        } else {
+          setError(`No template available for ${currentHour} on ${selectedDate.toLocaleDateString()}`);
+        }
+      } catch (err) {
+        console.error('Error loading template for date and hour:', err);
+        setError('Failed to load the prayer template');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadTemplate();
+  }, [currentHour, selectedDate]);
 
   // Handle template changes and load components
   const handleTemplateChange = async (template: LiturgyTemplate | string) => {

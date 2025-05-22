@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ import {
 } from '@/services/liturgyService';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CelebrationRank } from '@/lib/liturgical/celebrations/celebrations-types';
+import DaySpecificTemplateHelper from './DaySpecificTemplateHelper';
 
 const hourOptions = {
   'office_of_readings': 'Office of Readings',
@@ -252,6 +254,11 @@ const TemplatesManager: React.FC = () => {
         <Button onClick={openCreateDialog}>
           <Plus className="w-4 h-4 mr-2" /> Add Template
         </Button>
+      </div>
+      
+      {/* Day-specific Template Helper */}
+      <div className="mb-6">
+        <DaySpecificTemplateHelper />
       </div>
       
       {/* Filters */}

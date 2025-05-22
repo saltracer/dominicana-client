@@ -1,8 +1,8 @@
-
 // Fix the type instantiation is excessively deep error by simplifying the recursion
 import { LiturgyComponent, LiturgyComponentType, LiturgicalUseType, LiturgyHour, LiturgyTemplate, DailyOffice, LiturgyPreferences } from '@/lib/types/liturgy';
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
+import { format } from 'date-fns';
 
 /**
  * Liturgy Services - Handles database interactions for liturgical components
@@ -440,5 +440,79 @@ export const getComponentsForTemplate = async (template: LiturgyTemplate): Promi
   } catch (error) {
     console.error('Error fetching components for template:', error);
     return {};
+  }
+};
+
+/**
+ * Get the appropriate template for a specific date and hour
+ * This function selects templates based on day of week for compline
+ */
+export const getTemplateForDateAndHour = async (
+  date: Date,
+  hour: LiturgyHour
+): Promise<LiturgyTemplate | null> => {
+  try {
+    // First check if there's a specific daily office for this date
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    const dailyOffice = await fetchDailyOffice(formattedDate);
+    
+    if (dailyOffice && dailyOffice.templates && dailyOffice.templates[hour]) {
+      // If we have a specific template for this date and hour, use it
+      return await fetchLiturgyTemplate(dailyOffice.templates[hour]);
+    }
+    
+    // If no specific daily office template, use day of week logic for compline
+    if (hour === 'compline') {
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      // Get the appropriate compline template based on day of week
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const templateName = `${dayNames[dayOfWeek]} Compline`;
+      
+      const { data, error } = await supabase
+        .from('liturgy_templates')
+        .select('*')
+        .eq('hour', 'compline')
+        .ilike('name', `%${templateName}%`)
+        .limit(1)
+        .single();
+        
+      if (!error && data) {
+        return data as LiturgyTemplate;
+      }
+      
+      // If specific day template not found, fall back to generic templates
+      // Try to find a generic template for the day type (Sunday vs Weekday)
+      const genericType = dayOfWeek === 0 ? 'Sunday' : 'Weekday';
+      const { data: genericData, error: genericError } = await supabase
+        .from('liturgy_templates')
+        .select('*')
+        .eq('hour', 'compline')
+        .ilike('name', `%${genericType} Compline%`)
+        .limit(1)
+        .single();
+        
+      if (!genericError && genericData) {
+        return genericData as LiturgyTemplate;
+      }
+    }
+    
+    // For other hours or if no day-specific template found, get a default template
+    const { data, error } = await supabase
+      .from('liturgy_templates')
+      .select('*')
+      .eq('hour', hour)
+      .limit(1)
+      .single();
+      
+    if (error) {
+      console.error('Error fetching default template:', error);
+      return null;
+    }
+    
+    return data as LiturgyTemplate;
+  } catch (error) {
+    console.error('Error getting template for date and hour:', error);
+    return null;
   }
 };
