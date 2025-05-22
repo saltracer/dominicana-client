@@ -116,13 +116,13 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     console.log('BookReader - Location changed:', epubcifi);
     
     // Check if epubcifi is valid before setting it
-    if (epubcifi && typeof epubcifi === 'string' && epubcifi.includes('epubcfi')) {
-      console.log('BookReader - Setting new location and saving to localStorage');
+    //if (epubcifi && typeof epubcifi === 'string' && epubcifi.includes('epubcfi')) {
+    //  console.log('BookReader - Setting new location and saving to localStorage');
       setLocation(epubcifi);
       localStorage.setItem(`book-progress-${title}`, epubcifi);
-    } else {
-      console.warn('BookReader - Invalid location received:', epubcifi);
-    }
+    //} else {
+    //  console.warn('BookReader - Invalid location received:', epubcifi);
+    //}
   };
 
   // Load null locations after initialization to avoid the error
@@ -181,6 +181,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       // Wait a bit before applying to ensure book is fully loaded
       setTimeout(() => {
         try {
+          console.log('BookReader - Attempting to display saved location:', savedLocation);
           rendition.display(savedLocation);
         } catch (err) {
           console.error('BookReader - Error applying saved location:', err);
