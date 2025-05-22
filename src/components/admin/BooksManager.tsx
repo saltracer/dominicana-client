@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +9,11 @@ import BookCard from './BookCard';
 import BookFilters from './BookFilters';
 import BookFormDialog from './BookFormDialog';
 
-const BooksManager = () => {
+interface BooksManagerProps {
+  editBookId?: number;
+}
+
+const BooksManager: React.FC<BooksManagerProps> = ({ editBookId }) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -26,7 +29,7 @@ const BooksManager = () => {
   const [sortField, setSortField] = useState<keyof Book | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Fetch books from Supabase
+  // Fetch books from Supabase and handle editBookId
   const fetchBooks = async () => {
     setLoading(true);
     try {
@@ -51,6 +54,21 @@ const BooksManager = () => {
       }));
       
       setBooks(transformedBooks);
+      
+      // If editBookId is provided, find the book and open the edit dialog
+      if (editBookId) {
+        const bookToEdit = transformedBooks.find(book => book.id === editBookId);
+        if (bookToEdit) {
+          setSelectedBook(bookToEdit);
+          setDialogOpen(true);
+        } else {
+          toast({
+            title: 'Error',
+            description: `Book with ID ${editBookId} not found`,
+            variant: 'destructive',
+          });
+        }
+      }
     } catch (error) {
       console.error('Error fetching books:', error);
       toast({
@@ -65,7 +83,7 @@ const BooksManager = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [editBookId]);
 
   const handleMigrateBooks = async () => {
     setMigrationStatus('loading');

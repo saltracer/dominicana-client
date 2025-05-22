@@ -21,6 +21,7 @@ import RosaryPage from "./pages/prayer/RosaryPage";
 
 // Study Pages
 import LibraryPage from "./pages/study/LibraryPage";
+import BookPage from "./pages/study/BookPage";
 
 // Community Pages
 import LiturgicalCalendarPage from "./pages/community/LiturgicalCalendarPage";
@@ -66,6 +67,11 @@ const App = () => {
                     <LibraryPage />
                   </RoleGuard>
                 } />
+                <Route path="/books/:id" element={
+                  <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
+                    <BookPage />
+                  </RoleGuard>
+                } />
                 
                 {/* Community Routes - All community pages are public */}
                 <Route path="/community/liturgical-calendar" element={
@@ -93,6 +99,19 @@ const App = () => {
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={
+                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
+                    <AdminPanel />
+                  </RoleGuard>
+                } />
+                
+                {/* Add routes for books management and book editing */}
+                <Route path="/admin/books" element={
+                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
+                    <AdminPanel />
+                  </RoleGuard>
+                } />
+                
+                <Route path="/admin/books/edit/:id" element={
                   <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
                     <AdminPanel />
                   </RoleGuard>

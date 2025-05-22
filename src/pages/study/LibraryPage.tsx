@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Edit } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Book } from '@/lib/types';
@@ -17,14 +17,19 @@ const LibraryPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { userRole } = useAuth();
   
+  // Check if user is admin
+  const isAdmin = userRole === 'admin';
+  
   useEffect(() => {
     const loadBooks = async () => {
       setLoading(true);
       try {
+        console.log('LibraryPage - Fetching books');
         const data = await fetchBooks();
+        console.log('LibraryPage - Books data received:', data);
         setBooks(data);
       } catch (error) {
-        console.error('Failed to load books:', error);
+        console.error('LibraryPage - Failed to load books:', error);
         toast({
           title: 'Error',
           description: 'Failed to load library books',
@@ -48,6 +53,12 @@ const LibraryPage: React.FC = () => {
   
   const categories = ['all', ...new Set(books.map(book => book.category.toLowerCase()))];
   const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
+  
+  // Add a debug function for book links
+  const handleBookClick = (book: Book) => {
+    console.log('LibraryPage - Book clicked:', book);
+    console.log('LibraryPage - Book epubPath:', book.epubPath);
+  };
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -139,16 +150,34 @@ const LibraryPage: React.FC = () => {
                     <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
                       {book.category}
                     </span>
-                    <Button 
-                      asChild 
-                      variant="outline" 
-                      size="sm" 
-                      className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                    >
-                      <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
-                        {canReadBooks ? "Read Book" : "Login to Read"}
-                      </Link>
-                    </Button>
+                    <div className="flex gap-2">
+                      {isAdmin && (
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                          title="Edit book"
+                        >
+                          <Link to={`/admin/books/edit/${book.id}`}>
+                            <Edit className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      )}
+                      <Button 
+                        asChild 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                        disabled={!book.epubPath && canReadBooks}
+                        title={!book.epubPath ? "No digital version available" : undefined}
+                        onClick={() => handleBookClick(book)}
+                      >
+                        <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                          {canReadBooks ? (book.epubPath ? "Read Book" : "No Digital Version") : "Login to Read"}
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -177,6 +206,18 @@ const LibraryPage: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Admin controls */}
+      {isAdmin && (
+        <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+          <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">Admin Controls</h2>
+          <Button asChild className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
+            <Link to="/admin/books">
+              Manage Books
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
