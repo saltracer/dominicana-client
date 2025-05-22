@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,8 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import { BookOpen, Bookmark, Settings } from 'lucide-react';
 
 import BooksManager from '@/components/admin/BooksManager';
 
@@ -132,7 +134,7 @@ const AdminPanel: React.FC = () => {
       navigate('/admin/books', { replace: true });
     } else if (value === 'users') {
       navigate('/admin', { replace: true });
-    } else {
+    } else if (value === 'settings') {
       navigate('/admin', { replace: true });
     }
   };
@@ -160,6 +162,15 @@ const AdminPanel: React.FC = () => {
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
+      </div>
+      
+      <div className="flex flex-wrap gap-4 mb-6">
+        <Button asChild variant="outline" className="flex items-center">
+          <Link to="/admin/liturgy">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Liturgy of Hours Admin
+          </Link>
+        </Button>
       </div>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
