@@ -54,7 +54,7 @@ const DailyOfficeManager: React.FC = () => {
                   {formattedDate || "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -65,6 +65,7 @@ const DailyOfficeManager: React.FC = () => {
                     }
                   }}
                   initialFocus
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -89,7 +90,7 @@ const DailyOfficeManager: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="celebration">Select Celebration</Label>
                 <Select 
-                  value={selectedCelebration?.id || ''}
+                  value={selectedCelebration?.id || "default"}
                   onValueChange={(value) => {
                     const selected = celebrations.find(c => c.id === value);
                     setSelectedCelebration(selected || null);
@@ -100,7 +101,7 @@ const DailyOfficeManager: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {celebrations.map((celebration) => (
-                      <SelectItem key={celebration.id} value={celebration.id}>
+                      <SelectItem key={celebration.id} value={celebration.id || "default-celebration"}>
                         {celebration.name} ({celebration.rank})
                       </SelectItem>
                     ))}
