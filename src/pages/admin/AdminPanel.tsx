@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 import BooksManager from '@/components/admin/BooksManager';
 
@@ -30,10 +29,28 @@ const AdminPanel: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [userEmail, setUserEmail] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<UserRole>('authenticated');
+  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Determine active tab based on URL
+  const getInitialTab = () => {
+    if (location.pathname.includes('/admin/books')) {
+      return 'books';
+    }
+    return 'users';
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Set active tab when location changes
+  useEffect(() => {
+    setActiveTab(getInitialTab());
+  }, [location]);
 
   const fetchUsers = async () => {
     try {
@@ -107,6 +124,19 @@ const AdminPanel: React.FC = () => {
     await handleRoleUpdate(userEmail, selectedRole);
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    
+    // Update URL based on selected tab without full page reload
+    if (value === 'books') {
+      navigate('/admin/books', { replace: true });
+    } else if (value === 'users') {
+      navigate('/admin', { replace: true });
+    } else {
+      navigate('/admin', { replace: true });
+    }
+  };
+
   if (userRole !== 'admin') {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
@@ -132,7 +162,7 @@ const AdminPanel: React.FC = () => {
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
       
-      <Tabs defaultValue="users" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-6">
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="books">Library Management</TabsTrigger>
@@ -257,7 +287,7 @@ const AdminPanel: React.FC = () => {
         </TabsContent>
 		
         <TabsContent value="books">
-          <BooksManager />
+          <BooksManager editBookId={id ? parseInt(id) : undefined} />
         </TabsContent>
         
         <TabsContent value="settings" className="bg-white rounded-lg shadow-md p-6">

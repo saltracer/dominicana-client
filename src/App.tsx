@@ -104,6 +104,19 @@ const App = () => {
                   </RoleGuard>
                 } />
                 
+                {/* Add routes for books management and book editing */}
+                <Route path="/admin/books" element={
+                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
+                    <AdminPanel />
+                  </RoleGuard>
+                } />
+                
+                <Route path="/admin/books/edit/:id" element={
+                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
+                    <AdminPanel />
+                  </RoleGuard>
+                } />
+                
                 {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Route>
