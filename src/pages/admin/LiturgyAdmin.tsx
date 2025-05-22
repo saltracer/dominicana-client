@@ -5,7 +5,6 @@ import { useAuth } from '@/context/AuthContext';
 import ComponentsManager from '@/components/admin/liturgy/ComponentsManager';
 import TemplatesManager from '@/components/admin/liturgy/TemplatesManager';
 import DailyOfficeManager from '@/components/admin/liturgy/DailyOfficeManager';
-import CreateComplineTemplate from '@/components/admin/liturgy/CreateComplineTemplate';
 import { Card } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -53,11 +52,10 @@ const LiturgyAdmin: React.FC = () => {
       
       <Card className="border-none shadow-md">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-muted/50">
             <TabsTrigger value="components">Prayer Components</TabsTrigger>
             <TabsTrigger value="templates">Hour Templates</TabsTrigger>
             <TabsTrigger value="dailyOffices">Daily Offices</TabsTrigger>
-            <TabsTrigger value="compline">Sunday Compline</TabsTrigger>
           </TabsList>
           
           <TabsContent value="components" className="p-6">
@@ -70,10 +68,6 @@ const LiturgyAdmin: React.FC = () => {
           
           <TabsContent value="dailyOffices" className="p-6">
             <DailyOfficeManager />
-          </TabsContent>
-          
-          <TabsContent value="compline" className="p-6">
-            <CreateComplineTemplate />
           </TabsContent>
         </Tabs>
       </Card>

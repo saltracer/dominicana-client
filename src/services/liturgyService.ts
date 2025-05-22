@@ -1,3 +1,4 @@
+
 // Fix the type instantiation is excessively deep error by simplifying the recursion
 import { LiturgyComponent, LiturgyComponentType, LiturgicalUseType, LiturgyHour, LiturgyTemplate, DailyOffice, LiturgyPreferences } from '@/lib/types/liturgy';
 import { supabase } from '@/integrations/supabase/client';
@@ -303,36 +304,6 @@ export const deleteLiturgyTemplate = async (id: string): Promise<boolean> => {
   } catch (error) {
     console.error('Error deleting liturgy template:', error);
     throw error;
-  }
-};
-
-/**
- * Create the Sunday Compline template
- */
-export const createSundayComplineTemplate = async (
-  componentIds: Record<LiturgyComponentType, string>
-): Promise<LiturgyTemplate | null> => {
-  try {
-    const template: Omit<LiturgyTemplate, 'id' | 'created_at' | 'updated_at'> = {
-      name: 'Sunday Compline',
-      hour: 'compline',
-      rank: 'SOLEMNITY',
-      components: componentIds,
-      season_overrides: {}
-    };
-    
-    const { data, error } = await supabase
-      .from('liturgy_templates')
-      .insert(template)
-      .select()
-      .single();
-      
-    if (error) throw error;
-    
-    return data as LiturgyTemplate;
-  } catch (error) {
-    console.error('Error creating Sunday Compline template:', error);
-    return null;
   }
 };
 
