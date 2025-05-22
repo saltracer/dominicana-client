@@ -290,54 +290,54 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               handleKeyPress={() => {}}
               showToc={true}
               swipeable={true}
-              styles={{
-                container: {
-                  overflow: 'hidden',
-                  position: 'relative',
-                  height: '100%',
-                },
-                readerArea: {
-                  position: 'relative',
-                  zIndex: 1,
-                  height: '100%',
-                  width: '100%',
-                  backgroundColor: '#fff',
-                  color: '#000',
-                },
-                tocArea: {
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 0,
-                  width: '16rem',
-                  backgroundColor: '#f5f5f5',
-                  overflowY: 'auto',
-                  transition: 'transform .25s ease-out',
-                  transform: 'translateX(-100%)',
-                  boxShadow: '0 0 10px rgba(0,0,0,.1)',
-                },
-                tocAreaButton: {
-                  position: 'absolute',
-                  top: '0.5rem',
-                  right: '-2rem',
-                  border: 'none',
-                  background: '#660020',
-                  color: '#fff',
-                  width: '2rem',
-                  height: '2rem',
-                  borderRadius: '0 4px 4px 0',
-                },
-                tocButton: {
-                  backgroundColor: '#660020',
-                  margin: '0.5rem',
-                  padding: '0.5rem',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.25rem',
-                  cursor: 'pointer',
-                },
-              }}
+              // readerStyles={{
+              //   container: {
+              //     overflow: 'hidden',
+              //     position: 'relative',
+              //     height: '100%',
+              //   },
+              //   readerArea: {
+              //     position: 'relative',
+              //     zIndex: 1,
+              //     height: '100%',
+              //     width: '100%',
+              //     backgroundColor: '#fff',
+              //     color: '#000',
+              //   },
+              //   tocArea: {
+              //     position: 'absolute',
+              //     left: 0,
+              //     top: 0,
+              //     bottom: 0,
+              //     zIndex: 0,
+              //     width: '16rem',
+              //     backgroundColor: '#f5f5f5',
+              //     overflowY: 'auto',
+              //     transition: 'transform .25s ease-out',
+              //     transform: 'translateX(-100%)',
+              //     boxShadow: '0 0 10px rgba(0,0,0,.1)',
+              //   },
+              //   tocAreaButton: {
+              //     position: 'absolute',
+              //     top: '0.5rem',
+              //     right: '-2rem',
+              //     border: 'none',
+              //     background: '#660020',
+              //     color: '#fff',
+              //     width: '2rem',
+              //     height: '2rem',
+              //     borderRadius: '0 4px 4px 0',
+              //   },
+              //   tocButton: {
+              //     backgroundColor: '#660020',
+              //     margin: '0.5rem',
+              //     padding: '0.5rem',
+              //     color: 'white',
+              //     border: 'none',
+              //     borderRadius: '0.25rem',
+              //     cursor: 'pointer',
+              //   },
+              // }}
             />
           </div>
           
