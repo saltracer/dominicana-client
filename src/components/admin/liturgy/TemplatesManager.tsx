@@ -408,7 +408,7 @@ const TemplatesManager: React.FC = () => {
                         <div key={componentType} className="space-y-1">
                           <Label>{componentType.replace('_', ' ')}</Label>
                           <Select 
-                            value={selectedId || ''} 
+                            value={selectedId || "none"}
                             onValueChange={(value) => handleComponentSelection(componentType, value)}
                             disabled={availableComponents.length === 0}
                           >
@@ -420,7 +420,7 @@ const TemplatesManager: React.FC = () => {
                               />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">None</SelectItem>
+                              <SelectItem value="none">None</SelectItem>
                               {availableComponents.map(comp => (
                                 <SelectItem key={comp.id} value={comp.id}>
                                   {comp.title || `${comp.type} (${comp.id.slice(0, 8)})`}

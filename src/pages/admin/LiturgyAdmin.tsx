@@ -30,23 +30,25 @@ const LiturgyAdmin: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="mr-4" 
-          onClick={() => navigate('/admin')}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to Admin
-        </Button>
-        <div>
-          <h1 className="font-garamond text-3xl font-bold text-dominican-burgundy">
-            Liturgy Management
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage liturgical components, templates, and daily offices
-          </p>
+      <div className="flex justify-end mb-6">
+        <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="mr-4" 
+            onClick={() => navigate('/admin')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Admin
+          </Button>
+          <div>
+            <h1 className="font-garamond text-3xl font-bold text-dominican-burgundy">
+              Liturgy Management
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Manage liturgical components, templates, and daily offices
+            </p>
+          </div>
         </div>
       </div>
       
