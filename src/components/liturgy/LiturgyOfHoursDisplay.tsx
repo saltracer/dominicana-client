@@ -64,6 +64,7 @@ const LiturgyOfHoursDisplay: React.FC = () => {
       <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
         {currentHour ? hourLabels[currentHour] : "Liturgy of the Hours"}
       </h1>
+
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
