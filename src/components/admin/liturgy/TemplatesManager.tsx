@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,7 +36,7 @@ import {
   fetchLiturgyComponents
 } from '@/services/liturgyService';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CelebrationRank } from '@/lib/liturgical/liturgical-types';
+import { CelebrationRank } from '@/lib/liturgical/celebrations/celebrations-types';
 
 const hourOptions = {
   'office_of_readings': 'Office of Readings',

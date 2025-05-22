@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { LiturgyComponent, LiturgyTemplate, DailyOffice, LiturgyPreferences } from '@/lib/types/liturgy';
 
@@ -18,7 +17,7 @@ export const fetchLiturgyComponent = async (id: string): Promise<LiturgyComponen
   return data as LiturgyComponent;
 };
 
-export const fetchLiturgyComponents = async (filters?: Partial<LiturgyComponent>): Promise<LiturgyComponent[]> => {
+export const fetchLiturgyComponents = async (filters?: Partial<Omit<LiturgyComponent, 'content' | 'components'>>): Promise<LiturgyComponent[]> => {
   let query = supabase.from('liturgy_components').select('*');
 
   // Apply any filters if provided
@@ -101,7 +100,7 @@ export const fetchLiturgyTemplate = async (id: string): Promise<LiturgyTemplate 
   return data as LiturgyTemplate;
 };
 
-export const fetchLiturgyTemplates = async (filters?: Partial<LiturgyTemplate>): Promise<LiturgyTemplate[]> => {
+export const fetchLiturgyTemplates = async (filters?: Partial<Omit<LiturgyTemplate, 'components' | 'season_overrides'>>): Promise<LiturgyTemplate[]> => {
   let query = supabase.from('liturgy_templates').select('*');
 
   if (filters) {

@@ -388,26 +388,38 @@ const ComponentsManager: React.FC = () => {
             <Pagination className="mt-4">
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
                     onClick={() => setPage(prev => Math.max(prev - 1, 1))}
                     disabled={page === 1}
-                  />
+                    className="cursor-pointer"
+                  >
+                    <span>Previous</span>
+                  </Button>
                 </PaginationItem>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
                   <PaginationItem key={pageNum}>
-                    <PaginationLink
+                    <Button
+                      variant={page === pageNum ? "default" : "outline"}
+                      size="sm"
                       onClick={() => setPage(pageNum)}
-                      isActive={page === pageNum}
+                      className="cursor-pointer"
                     >
                       {pageNum}
-                    </PaginationLink>
+                    </Button>
                   </PaginationItem>
                 ))}
                 <PaginationItem>
-                  <PaginationNext 
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
                     onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={page === totalPages}
-                  />
+                    className="cursor-pointer"
+                  >
+                    <span>Next</span>
+                  </Button>
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

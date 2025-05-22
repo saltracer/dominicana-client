@@ -1,5 +1,5 @@
-
-import { LiturgicalSeason, CelebrationRank } from '@/lib/liturgical/liturgical-types';
+import { LiturgicalRank, LiturgicalColor } from '@/lib/liturgical/liturgical-types';
+import { CelebrationRank } from '@/lib/liturgical/celebrations/celebrations-types';
 
 export type LiturgyComponentType = 
   | 'invitatory'

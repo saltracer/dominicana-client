@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LiturgyComponent } from '@/lib/types/liturgy';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,7 +43,7 @@ const ContentRenderer = ({ content }: { content: any }) => {
 };
 
 const ComponentRenderer: React.FC<ComponentRendererProps> = ({ type, component }) => {
-  const { userPreferences } = useLiturgy();
+  const { userPreferences, currentHour } = useLiturgy();
   
   // Handle array of components (options)
   if (Array.isArray(component)) {

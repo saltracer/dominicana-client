@@ -41,7 +41,7 @@ const LiturgyOfHoursDisplay: React.FC = () => {
     selectedDate, 
     setSelectedDate, 
     currentEvent, 
-    alternativeEvents 
+    alternativeEvents = [] // Provide default empty array 
   } = useLiturgicalDay();
   
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -50,7 +50,7 @@ const LiturgyOfHoursDisplay: React.FC = () => {
   const celebrationOptions = useMemo(() => {
     const options: Celebration[] = [];
     if (currentEvent) options.push(currentEvent);
-    if (alternativeEvents) options.push(...alternativeEvents);
+    if (alternativeEvents && alternativeEvents.length > 0) options.push(...alternativeEvents);
     return options;
   }, [currentEvent, alternativeEvents]);
   
