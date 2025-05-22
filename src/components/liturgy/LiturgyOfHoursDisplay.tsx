@@ -29,11 +29,11 @@ const LiturgyOfHoursDisplay: React.FC = () => {
   const { 
     currentHour, 
     setCurrentHour, 
-    selectedCelebration, 
+    selectedCelebration,
     setSelectedCelebration,
-    activeTemplate,
+    activeTemplate, // Using the alias we created
     components,
-    loading,
+    loading, // Using the alias we created
     error
   } = useLiturgy();
   
@@ -62,7 +62,7 @@ const LiturgyOfHoursDisplay: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
-        {hourLabels[currentHour]}
+        {currentHour ? hourLabels[currentHour] : "Liturgy of the Hours"}
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
@@ -126,7 +126,7 @@ const LiturgyOfHoursDisplay: React.FC = () => {
       </div>
       
       {/* Hour selection tabs */}
-      <Tabs value={currentHour} onValueChange={(value) => setCurrentHour(value as LiturgyHour)} className="mt-6">
+      <Tabs value={currentHour || 'lauds'} onValueChange={(value) => setCurrentHour(value as LiturgyHour)} className="mt-6">
         <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full">
           <TabsTrigger value="office_of_readings">Office of Readings</TabsTrigger>
           <TabsTrigger value="lauds">Lauds</TabsTrigger>

@@ -8,7 +8,8 @@ interface LiturgicalDayContextType {
   setSelectedDate: (date: Date) => void;
   currentEvent: Celebration | null;
   setCurrentEvent: (event: Celebration | null) => void;
-  alternativeEvents?: Celebration[];  // Add this property
+  alternativeEvents?: Celebration[];
+  currentSeason?: string;  // Add this property
 }
 
 export const LiturgicalDayContext = createContext<LiturgicalDayContextType | undefined>(undefined);
@@ -29,6 +30,7 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentEvent, setCurrentEvent] = useState<Celebration | null>(null);
   const [alternativeEvents, setAlternativeEvents] = useState<Celebration[]>([]);
+  const [currentSeason, setCurrentSeason] = useState<string>('ordinary'); // Default season
 
   // Initialize with today's event if available
   React.useEffect(() => {
@@ -54,6 +56,7 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
     currentEvent,
     setCurrentEvent,
     alternativeEvents,
+    currentSeason,
   };
 
   return (
