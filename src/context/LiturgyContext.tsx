@@ -115,12 +115,14 @@ export const LiturgyProvider: React.FC<{ children: React.ReactNode }> = ({ child
           
           // Load template for current hour
           if (office.templates[currentHour]) {
-            const template = await fetchLiturgyTemplate(office.templates[currentHour]);
+            // Fix: Get the template ID first, then fetch the template object
+            const templateId = office.templates[currentHour];
+            const template = await fetchLiturgyTemplate(templateId);
             if (template) {
               setActiveTemplate(template);
               
               // Load components for this template
-              const templateComponents = await getComponentsForTemplate(template.id);
+              const templateComponents = await getComponentsForTemplate(template);
               setComponents(templateComponents);
             }
           }
