@@ -7,7 +7,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
-import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import CelebrationDetailsDialog from '@/components/calendar/CelebrationDetailsDialog';
 
@@ -20,15 +19,8 @@ const FeastBanner: React.FC = () => {
   const handleDateChange = (date: Date | undefined) => {
     if (!date) return;
     
+    // Simply update the selected date - let the LiturgicalDayContext handle the rest
     setSelectedDate(date);
-    
-    const celebrations = getCelebrationsForDate(date);
-    
-    if (celebrations.length > 0) {
-      setCurrentEvent(celebrations[0]);
-    } else {
-      setCurrentEvent(null);
-    }
   };
 
   const navigateDay = (direction: 'prev' | 'next') => {
