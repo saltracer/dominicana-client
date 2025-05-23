@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { ComplineService } from '@/lib/liturgical/hours/compline/compline-service';
-import { ComplineComponent, ComplineTemplate } from '@/lib/liturgical/hours/compline/compline-data';
+import { ComplineComponent, ComplineTemplate } from '@/lib/liturgical/hours/hour-types';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { cn } from '@/lib/utils';
 
