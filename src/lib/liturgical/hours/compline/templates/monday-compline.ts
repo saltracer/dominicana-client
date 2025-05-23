@@ -6,6 +6,7 @@ export const mondayCompline: ComplineTemplate = {
     title: "Night Prayer - Monday",
     introduction: {
       type: "introduction",
+      language: "en",
       content: [
         "O God, come to our aid.",
         "O Lord, make haste to help us.",
@@ -16,6 +17,7 @@ export const mondayCompline: ComplineTemplate = {
     },
     hymn: {
       type: "hymn",
+      language: "en",
       title: "Monday Hymn",
       content: [
         "Now that the daylight dies away,",
@@ -37,6 +39,7 @@ export const mondayCompline: ComplineTemplate = {
     psalmody: [
       {
         type: "psalm",
+        language: "en",
         title: "Psalm 86",
         antiphon: {
           before: "Lord, you have been our refuge from one generation to the next.",
@@ -52,6 +55,7 @@ export const mondayCompline: ComplineTemplate = {
     ],
     reading: {
       type: "reading",
+      language: "en",
       title: "1 Thessalonians 5:9-10",
       content: [
         "God destined us not for wrath but for obtaining salvation through our Lord Jesus Christ, who died for us, so that whether we are awake or asleep we may live with him."
@@ -59,6 +63,7 @@ export const mondayCompline: ComplineTemplate = {
     },
     responsory: {
       type: "responsory",
+      language: "en",
       content: [
         "Into your hands, Lord, I commend my spirit.",
         "Into your hands, Lord, I commend my spirit.",
@@ -70,6 +75,7 @@ export const mondayCompline: ComplineTemplate = {
     },
     canticle: {
       type: "canticle",
+      language: "en",
       title: "Nunc Dimittis",
       antiphon: {
         before: "Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace.",
@@ -83,6 +89,7 @@ export const mondayCompline: ComplineTemplate = {
     },
     concludingPrayer: {
       type: "prayer",
+      language: "en",
       content: [
         "Lord our God,",
         "be gracious and forgive the sins of your people.",

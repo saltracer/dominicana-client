@@ -6,6 +6,7 @@ export const fridayCompline: ComplineTemplate = {
     title: "Night Prayer - Friday",
     introduction: {
         type: "introduction",
+        language: "en",
         content: [
             "O God, come to our aid.",
             "O Lord, make haste to help us.",
@@ -16,18 +17,21 @@ export const fridayCompline: ComplineTemplate = {
     },
     hymn: {
         type: "hymn",
+        language: "en",
         title: "",
         content: []
     },
     psalmody: [
         {
             type: "psalm",
+            language: "en",
             title: "",
             content: []
         }
     ],
     reading: {
         type: "reading",
+        language: "en",
         content: []
     },
     responsory: {

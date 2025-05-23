@@ -6,10 +6,12 @@ export const tuesdayCompline: ComplineTemplate = {
     title: 'Tuesday Compline',
     introduction: {
       type: 'introduction',
+      language: "en",
       content: ['In the name of the Father, and of the Son, and of the Holy Spirit.', 'Amen.']
     },
     hymn: {
       type: 'hymn',
+      language: "en",
       title: 'Nunc Dimittis',
       content: [
         'Lord, now lettest thou thy servant depart in peace, *',
@@ -23,6 +25,7 @@ export const tuesdayCompline: ComplineTemplate = {
     psalmody: [
       {
         type: 'psalm',
+        language: "en",
         title: 'Psalm 4',
         content: [
           'Answer me when I call, O God, defender of my cause; *',
@@ -36,6 +39,7 @@ export const tuesdayCompline: ComplineTemplate = {
       },
       {
         type: 'psalm',
+        language: "en",
         title: 'Psalm 31',
         content: [
           'In you, O Lord, have I taken refuge;',
@@ -50,6 +54,8 @@ export const tuesdayCompline: ComplineTemplate = {
     ],
     reading: {
       type: 'reading',
+      language: "en",
+      title: "Matthew 11:28-30",
       content: ['Come to me, all who labor and are heavy-laden, and I will give you rest. Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.'],
       rubric: 'Matthew 11:28-30'
     },
