@@ -1,41 +1,12 @@
 import type {ComplineTemplate} from "../../hour-types"
+import { introduction, nowThatTheDaylightDiesAway } from "../components"
 
 export const sundayCompline: ComplineTemplate = {
     id: "sunday-compline",
     dayOfWeek: 0,
     title: "Night Prayer - Sunday",
-    introduction: {
-        type: "introduction",
-        language: "en",
-        content: [
-        "O God, come to our assistance.",
-        "O Lord, make haste to help us.",
-        "Glory be to the Father and to the Son and to the Holy Spirit,",
-        "as it was in the beginning, is now, and ever shall be, world without end. Amen. Alleluia."
-        ],
-        rubric: "The Alleluia is omitted during Lent."
-    },
-    hymn: {
-        type: "hymn",
-        language: "en",
-        title: "Sunday Hymn",
-        content: [
-        "Before the ending of the day,",
-        "Creator of the world, we pray",
-        "That you, with steadfast love, would keep",
-        "Your watch around us while we sleep.",
-        "",
-        "From evil dreams defend our sight,",
-        "From fears and terrors of the night;",
-        "Tread underfoot our deadly foe",
-        "That we no sinful thoughts may know.",
-        "",
-        "O Father, that we ask be done",
-        "Through Jesus Christ, your only Son;",
-        "Who, with the Holy Ghost and you,",
-        "Doth live and reign for ever true."
-        ]
-    },
+    introduction: introduction,
+    hymn: nowThatTheDaylightDiesAway,
     psalmody: [
         {
         type: "psalm",

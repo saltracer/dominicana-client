@@ -1,26 +1,12 @@
 import type {ComplineTemplate} from "../../hour-types"
+import { introduction, nowThatTheDaylightDiesAway } from "../components"
 
 export const thursdayCompline: ComplineTemplate = {
     id: "thursday-compline",
     dayOfWeek: 4,
     title: "Night Prayer - Thursday",
-    introduction: {
-        type: "introduction",
-        language: "en",
-        content: [
-            "O God, come to our aid.",
-            "O Lord, make haste to help us.",
-            "Glory be to the Father and to the Son and to the Holy Spirit,",
-            "as it was in the beginning, is now, and ever shall be, world without end. Amen. Alleluia."
-        ],
-        rubric: "The Alleluia is omitted during Lent."
-    },
-    hymn: {
-        type: "hymn",
-        language: "en",
-        title: "",
-        content: []
-    },
+    introduction: introduction,
+    hymn: nowThatTheDaylightDiesAway,
     psalmody: [
         {
             type: "psalm",

@@ -1,5 +1,6 @@
 
 export interface ComplineComponent {
+  id?: string;
   type: string;
   title?: string;
   language: string;

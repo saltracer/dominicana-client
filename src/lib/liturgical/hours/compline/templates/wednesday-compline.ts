@@ -1,28 +1,26 @@
 import type {ComplineTemplate} from "../../hour-types"
+import { introduction, nowThatTheDaylightDiesAway } from "../components"    
 
 export const wednesdayCompline: ComplineTemplate = {
     id: 'wednesday-compline',
     dayOfWeek: 3, // Wednesday
-    title: 'Wednesday Compline',
-    introduction: {
-      type: 'introduction',
-      language: "en",
-      content: ['In the name of the Father, and of the Son, and of the Holy Spirit.', 'Amen.']
-    },
-    hymn: {
-      type: 'hymn',
-      language: "en",
-      title: 'Nunc Dimittis',
-      content: [
-        'Lord, now lettest thou thy servant depart in peace, *',
-        'according to thy word;',
-        'For mine eyes have seen thy salvation, *',
-        'which thou hast prepared before the face of all people,',
-        'To be a light to lighten the Gentiles, *',
-        'and to be the glory of thy people Israel.'
-      ]
-    },
+    title: "Night Prayer - Wednesday",
+    introduction: introduction,
+    hymn: nowThatTheDaylightDiesAway,
     psalmody: [
+      {
+        type: 'psalm',
+        language: "en",
+        title: 'Psalm 4',
+        content: [
+          'Answer me when I call, O God, defender of my cause; *',
+          'according to thy word;',
+          'For mine eyes have seen thy salvation, *',
+          'which thou hast prepared before the face of all people,',
+          'To be a light to lighten the Gentiles, *',
+          'and to be the glory of thy people Israel.'
+        ]
+      },
       {
         type: 'psalm',
         language: "en",
