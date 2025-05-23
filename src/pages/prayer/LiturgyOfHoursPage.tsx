@@ -29,12 +29,12 @@ const LiturgyOfHoursPage: React.FC = () => {
         <div className="flex items-center justify-between p-4 border-b border-dominican-light-gray">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-dominican-burgundy" />
-            <span className="font-medium">Today: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
+            <span className="font-medium">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
           </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm">
-                Change Date
+                Select Prayers
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
