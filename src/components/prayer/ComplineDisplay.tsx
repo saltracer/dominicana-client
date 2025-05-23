@@ -40,19 +40,14 @@ const ComplinePart: React.FC<{
   );
 };
 
-interface ComplineDisplayProps {
-  date?: Date;
-}
-
-const ComplineDisplay: React.FC<ComplineDisplayProps> = ({ date }) => {
+const ComplineDisplay: React.FC = () => {
   const { selectedDate } = useLiturgicalDay();
-  const currentDate = date || selectedDate;
   
   const { compline, info } = useMemo(() => {
-    const compline = ComplineService.getCompline(currentDate);
-    const info = ComplineService.getComplineInfo(currentDate);
+    const compline = ComplineService.getCompline(selectedDate);
+    const info = ComplineService.getComplineInfo(selectedDate);
     return { compline, info };
-  }, [currentDate]);
+  }, [selectedDate]);
   
   if (!compline) {
     return <div className="text-center py-10">Loading Compline...</div>;
