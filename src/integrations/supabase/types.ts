@@ -51,6 +51,129 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_offices: {
+        Row: {
+          alternative_celebrations: Json | null
+          celebration_id: string
+          component_overrides: Json | null
+          created_at: string
+          date: string
+          id: string
+          templates: Json
+          updated_at: string
+        }
+        Insert: {
+          alternative_celebrations?: Json | null
+          celebration_id: string
+          component_overrides?: Json | null
+          created_at?: string
+          date: string
+          id?: string
+          templates: Json
+          updated_at?: string
+        }
+        Update: {
+          alternative_celebrations?: Json | null
+          celebration_id?: string
+          component_overrides?: Json | null
+          created_at?: string
+          date?: string
+          id?: string
+          templates?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      liturgy_components: {
+        Row: {
+          antiphon: string | null
+          author: string | null
+          citation: string | null
+          content: Json
+          created_at: string
+          has_gloria: boolean | null
+          id: string
+          language: string
+          liturgical_use: Database["public"]["Enums"]["liturgical_use_type"]
+          meter: string | null
+          psalm_number: number | null
+          rank: number | null
+          rubrics: string | null
+          title: string | null
+          type: Database["public"]["Enums"]["liturgy_component_type"]
+          updated_at: string
+        }
+        Insert: {
+          antiphon?: string | null
+          author?: string | null
+          citation?: string | null
+          content: Json
+          created_at?: string
+          has_gloria?: boolean | null
+          id?: string
+          language?: string
+          liturgical_use: Database["public"]["Enums"]["liturgical_use_type"]
+          meter?: string | null
+          psalm_number?: number | null
+          rank?: number | null
+          rubrics?: string | null
+          title?: string | null
+          type: Database["public"]["Enums"]["liturgy_component_type"]
+          updated_at?: string
+        }
+        Update: {
+          antiphon?: string | null
+          author?: string | null
+          citation?: string | null
+          content?: Json
+          created_at?: string
+          has_gloria?: boolean | null
+          id?: string
+          language?: string
+          liturgical_use?: Database["public"]["Enums"]["liturgical_use_type"]
+          meter?: string | null
+          psalm_number?: number | null
+          rank?: number | null
+          rubrics?: string | null
+          title?: string | null
+          type?: Database["public"]["Enums"]["liturgy_component_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      liturgy_templates: {
+        Row: {
+          components: Json
+          created_at: string
+          hour: string
+          id: string
+          name: string
+          rank: string
+          season_overrides: Json | null
+          updated_at: string
+        }
+        Insert: {
+          components: Json
+          created_at?: string
+          hour: string
+          id?: string
+          name: string
+          rank: string
+          season_overrides?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          components?: Json
+          created_at?: string
+          hour?: string
+          id?: string
+          name?: string
+          rank?: string
+          season_overrides?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -75,6 +198,36 @@ export type Database = {
           id?: string
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      user_liturgy_preferences: {
+        Row: {
+          calendar_type: string
+          created_at: string
+          display_options: Json
+          language: string
+          memorial_preference: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calendar_type?: string
+          created_at?: string
+          display_options?: Json
+          language?: string
+          memorial_preference?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calendar_type?: string
+          created_at?: string
+          display_options?: Json
+          language?: string
+          memorial_preference?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -128,6 +281,24 @@ export type Database = {
         | "Mysticism"
         | "Science"
         | "Natural History"
+      liturgical_use_type:
+        | "ordinary"
+        | "proper_of_seasons"
+        | "proper_of_saints"
+        | "common_of_saints"
+        | "special"
+      liturgy_component_type:
+        | "invitatory"
+        | "hymn"
+        | "antiphon"
+        | "psalm"
+        | "canticle"
+        | "reading"
+        | "responsory"
+        | "gospel_canticle"
+        | "intercessions"
+        | "concluding_prayer"
+        | "blessing"
       user_role: "free" | "authenticated" | "subscribed" | "admin"
     }
     CompositeTypes: {
@@ -251,6 +422,26 @@ export const Constants = {
         "Mysticism",
         "Science",
         "Natural History",
+      ],
+      liturgical_use_type: [
+        "ordinary",
+        "proper_of_seasons",
+        "proper_of_saints",
+        "common_of_saints",
+        "special",
+      ],
+      liturgy_component_type: [
+        "invitatory",
+        "hymn",
+        "antiphon",
+        "psalm",
+        "canticle",
+        "reading",
+        "responsory",
+        "gospel_canticle",
+        "intercessions",
+        "concluding_prayer",
+        "blessing",
       ],
       user_role: ["free", "authenticated", "subscribed", "admin"],
     },
