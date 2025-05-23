@@ -1,89 +1,57 @@
 import type {ComplineTemplate} from "../../hour-types"
 
 export const tuesdayCompline: ComplineTemplate = {
-    id: "tuesday_compline_001",
-    dayOfWeek: 1, // 1 = Tuesday
-    title: "Tuesday Compline",
+    id: 'tuesday-compline',
+    dayOfWeek: 2, // Tuesday
+    title: 'Tuesday Compline',
     introduction: {
-      type: "introduction",
-      title: "Introduction to Tuesday Compline",
-      language: "en",
-      content: [
-        "O God, come to my assistance.",
-        "O Lord, make haste to help me.",
-        "Glory be to the Father, and to the Son, and to the Holy Spirit.",
-        "As it was in the beginning, is now, and ever shall be, world without end. Amen."
-      ],
-      rubric: "Make the sign of the cross."
+      type: 'introduction',
+      content: ['In the name of the Father, and of the Son, and of the Holy Spirit.', 'Amen.']
     },
     hymn: {
-      type: "hymn",
-      title: "Hymn for Tuesday Compline",
-      language: "en",
+      type: 'hymn',
+      title: 'Nunc Dimittis',
       content: [
-        "Now the day is over,",
-        "Night is drawing nigh;",
-        "Shadows of the evening",
-        "Steal across the sky.",
-        "Jesus, give the weary",
-        "Calm and sweet repose;",
-        "With Thy tenderest blessing",
-        "May our eyelids close."
+        'Lord, now lettest thou thy servant depart in peace, *',
+        'according to thy word;',
+        'For mine eyes have seen thy salvation, *',
+        'which thou hast prepared before the face of all people,',
+        'To be a light to lighten the Gentiles, *',
+        'and to be the glory of thy people Israel.'
       ]
     },
     psalmody: [
       {
-        type: "psalm",
-        title: "Psalm 4",
-        language: "en",
+        type: 'psalm',
+        title: 'Psalm 4',
         content: [
-          "Answer me when I call, O God of my righteousness!",
-          "You have given me relief when I was in distress;",
-          "Be gracious to me and hear my prayer.",
-          "O men, how long shall my honor be turned into shame?",
-          "How long will you love vain words and seek after lies?",
-          "But know that the Lord has set apart the godly for himself;",
-          "The Lord hears when I call to him.",
-          "Be angry, and do not sin; ponder in your own hearts on your beds, and be silent.",
-          "Offer right sacrifices, and put your trust in the Lord."
+          'Answer me when I call, O God, defender of my cause; *',
+          'you set me free when I am hard-pressed;',
+          'have mercy on me and hear my prayer.'
         ],
-        rubric: "Recite the psalm with antiphon.",
         antiphon: {
-          before: "When I call, answer me, O God of justice;",
-          after: "You set me free when I was beset by danger; have mercy on me and hear my prayer."
+          before: 'Into your hands, O Lord, I commend my spirit.',
+          after: 'Into your hands, O Lord, I commend my spirit.'
         }
       },
       {
-        type: "psalm",
-        title: "Psalm 91",
-        language: "en",
+        type: 'psalm',
+        title: 'Psalm 31',
         content: [
-          "He who dwells in the secret place of the Most High",
-          "Shall abide under the shadow of the Almighty.",
-          "I will say of the Lord, 'He is my refuge and my fortress,",
-          "My God, in whom I trust.'",
-          "For he will deliver you from the snare of the fowler",
-          "And from the deadly pestilence.",
-          "He will cover you with his pinions,",
-          "And under his wings you will find refuge;"
+          'In you, O Lord, have I taken refuge;',
+          'let me never be put to shame; *',
+          'deliver me in your righteousness.'
         ],
-        rubric: "Recite the psalm with antiphon.",
         antiphon: {
-          before: "You, O Lord, are my refuge!",
-          after: "You have made the Most High your dwelling place."
+          before: 'Into your hands, O Lord, I commend my spirit.',
+          after: 'Into your hands, O Lord, I commend my spirit.'
         }
       }
     ],
     reading: {
-      type: "reading",
-      title: "Reading from Scripture",
-      language: "en",
-      content: [
-        "The Lord is my light and my salvation; whom shall I fear?",
-        "The Lord is the stronghold of my life; of whom shall I be afraid?",
-        "When evildoers assail me to eat up my flesh,",
-        "My adversaries and foes, it is they who stumble and fall."
-      ]
+      type: 'reading',
+      content: ['Come to me, all who labor and are heavy-laden, and I will give you rest. Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.'],
+      rubric: 'Matthew 11:28-30'
     },
     responsory: {
         type: "responsory",
@@ -161,4 +129,5 @@ export const tuesdayCompline: ComplineTemplate = {
         "O clement, O loving, O sweet Virgin Mary."
         ]
     }
-}
+  };
+  
