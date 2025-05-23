@@ -33,7 +33,7 @@ const LiturgyOfHoursPage: React.FC = () => {
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="default" size="sm">
                 Select Prayers
               </Button>
             </PopoverTrigger>
