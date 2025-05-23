@@ -1,32 +1,8 @@
 
-import { addDays, format, isBefore, isEqual, parseISO } from "date-fns";
+import { addDays, format, isBefore, isEqual, isSameDay,parseISO } from "date-fns";
 import { calculateEaster, isEaster } from "@/lib/liturgical/liturgical-seasons";
+import {ComplineComponent, ComplineTemplate} from "../hour-types"
 
-export interface ComplineComponent {
-  type: string;
-  title?: string;
-  content: string[];
-  rubric?: string;
-  antiphon?: {
-    before?: string;
-    after?: string;
-  };
-}
-
-export interface ComplineTemplate {
-  id: string;
-  dayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
-  title: string;
-  introduction: ComplineComponent;
-  hymn: ComplineComponent;
-  psalmody: ComplineComponent[];
-  reading: ComplineComponent;
-  responsory: ComplineComponent;
-  canticle: ComplineComponent;
-  concludingPrayer: ComplineComponent;
-  conclusion: ComplineComponent;
-  marian?: ComplineComponent;
-}
 
 // Base templates for each day of the week
 const complineTemplates: ComplineTemplate[] = [
