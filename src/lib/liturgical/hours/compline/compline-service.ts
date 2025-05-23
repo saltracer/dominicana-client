@@ -1,7 +1,7 @@
 
 import { format } from 'date-fns';
 import { ComplineTemplate, getComplineForDate, isEasterOctave } from './compline-data';
-import { getLiturgicalSeason } from '../liturgical-seasons';
+import { getLiturgicalSeason } from '../../liturgical-seasons';
 
 export class ComplineService {
   // Get the complete Compline for a specific date
