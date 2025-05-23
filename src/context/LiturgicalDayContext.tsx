@@ -36,14 +36,14 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
   // Update events and season whenever the selected date changes
   useEffect(() => {
     try {
-      console.log('LiturgicalDayContext: Date changed to', selectedDate.toISOString());
+      //console.log('LiturgicalDayContext: Date changed to', selectedDate.toISOString());
       const celebrations = getCelebrationsForDate(selectedDate);
-      console.log('LiturgicalDayContext: Found celebrations', celebrations);
+      //console.log('LiturgicalDayContext: Found celebrations', celebrations);
       
       if (celebrations.length > 0) {
         // Set the main celebration
         const mainCelebration = celebrations[0];
-        console.log('LiturgicalDayContext: Setting main celebration', mainCelebration.name);
+        //console.log('LiturgicalDayContext: Setting main celebration', mainCelebration.name);
         setCurrentEvent(mainCelebration);
         
         // Store alternative celebrations if there are more than one
@@ -83,7 +83,7 @@ export const LiturgicalDayProvider = ({ children }: LiturgicalDayProviderProps) 
         
         setCurrentSeason(season);
       } else {
-        console.log('LiturgicalDayContext: No celebrations found, clearing current event');
+        //console.log('LiturgicalDayContext: No celebrations found, clearing current event');
         setCurrentEvent(null);
         setAlternativeEvents([]);
         

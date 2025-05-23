@@ -12,20 +12,17 @@ import { moveableDominicanCelebrations } from "./celebrations-moveable-dominican
 
 // Combined functions for convenience
 export function getAllFixedCelebrations(): FixedCelebration[] {
-  //const { fixedGeneralCelebrations } = require("./celebrations-fixed-general")
-  //const { fixedDominicanCelebrations } = require("./celebrations-fixed-dominican")
-
+  //console.log("getAllFixedCelebrations, which includes General and Dominican")
   return [...fixedGeneralCelebrations(), ...fixedDominicanCelebrations()]
 }
 
 export function getAllMoveableCelebrations(year: number): FixedCelebration[] {
-  //const { moveableGeneralCelebrations } = require("./celebrations-moveable-general")
-  //const { moveableDominicanCelebrations } = require("./celebrations-moveable-dominican")
-
+  //console.log("getAllMoveableCelebrations, which includes General and Dominican")
   return [...moveableGeneralCelebrations(year), ...moveableDominicanCelebrations(year)]
 }
 
 export function getAllCelebrations(year: number): FixedCelebration[] {
+  //console.log("getAllCelebrations, which includes Fixed and Moveable")
   return [...getAllFixedCelebrations(), ...getAllMoveableCelebrations(year)]
 }
 
