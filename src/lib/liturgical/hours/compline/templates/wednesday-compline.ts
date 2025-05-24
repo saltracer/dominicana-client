@@ -12,11 +12,11 @@ export const wednesdayCompline: ComplineTemplate = {
         type: 'psalm',
         language: "en",
         title: 'Psalm 4',
-        content: [
+        content: {en:[
           'Answer me when I call, O God, defender of my cause; *',
           'you set me free when I am hard-pressed;',
           'have mercy on me and hear my prayer.'
-        ],
+        ]},
         antiphon: {
           before: 'Into your hands, O Lord, I commend my spirit.',
           after: 'Into your hands, O Lord, I commend my spirit.'
@@ -26,11 +26,11 @@ export const wednesdayCompline: ComplineTemplate = {
         type: 'psalm',
         language: "en",
         title: 'Psalm 31',
-        content: [
+        content: {en:[
           'In you, O Lord, have I taken refuge;',
           'let me never be put to shame; *',
           'deliver me in your righteousness.'
-        ],
+        ]},
         antiphon: {
           before: 'Into your hands, O Lord, I commend my spirit.',
           after: 'Into your hands, O Lord, I commend my spirit.'
@@ -41,7 +41,7 @@ export const wednesdayCompline: ComplineTemplate = {
       type: 'reading',
       language: "en",
       title: "Ephesians 4:26-27",
-      content: ["Be angry but do not sin; do not let the sun go down on your anger, and give no opportunity to the devil."],
+      content: {en:["Be angry but do not sin; do not let the sun go down on your anger, and give no opportunity to the devil."]},
       rubric: "Ephesians 4:26-27"
     },
     responsory: complineShortResponsory,
@@ -49,15 +49,15 @@ export const wednesdayCompline: ComplineTemplate = {
     concludingPrayer: {
         type: "prayer",
         language: "en",
-        content: [
-        "Lord our God,",
-        "restore us again by the repose of sleep",
-        "after the fatigue of our daily work,",
-        "so that, continually renewed by your help,",
-        "we may serve you in body and soul.",
-        "Through Christ our Lord.",
-        "Amen."
-        ]
+        content: {en:[
+          "Lord our God,",
+          "restore us again by the repose of sleep",
+          "after the fatigue of our daily work,",
+          "so that, continually renewed by your help,",
+          "we may serve you in body and soul.",
+          "Through Christ our Lord.",
+          "Amen."
+        ]}
     },
     conclusion: complineConclusion,
     marian: salveRegina
