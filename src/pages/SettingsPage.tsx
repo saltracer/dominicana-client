@@ -11,15 +11,29 @@ import { Loader2 } from 'lucide-react';
 
 type LatinDisplayOption = 'off' | 'alongside' | 'only';
 
+interface DisplayOptions {
+  textSize: string;
+  showRubrics: boolean;
+  useNightMode: boolean;
+  showLatinTexts: boolean;
+  latinDisplay?: LatinDisplayOption;
+}
+
 interface UserPreferences {
-  latin_display: LatinDisplayOption;
+  display_options: DisplayOptions;
 }
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [preferences, setPreferences] = useState<UserPreferences>({
-    latin_display: 'off'
+    display_options: {
+      textSize: 'medium',
+      showRubrics: true,
+      useNightMode: false,
+      showLatinTexts: false,
+      latinDisplay: 'off'
+    }
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -36,7 +50,7 @@ const SettingsPage: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('user_liturgy_preferences')
-        .select('latin_display')
+        .select('display_options')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -47,7 +61,11 @@ const SettingsPage: React.FC = () => {
 
       if (data) {
         setPreferences({
-          latin_display: data.latin_display as LatinDisplayOption
+          display_options: {
+            ...preferences.display_options,
+            ...data.display_options,
+            latinDisplay: data.display_options?.latinDisplay || 'off'
+          }
         });
       }
     } catch (error) {
@@ -66,7 +84,7 @@ const SettingsPage: React.FC = () => {
         .from('user_liturgy_preferences')
         .upsert({
           user_id: user.id,
-          latin_display: preferences.latin_display,
+          display_options: preferences.display_options,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
@@ -95,7 +113,10 @@ const SettingsPage: React.FC = () => {
   const handleLatinDisplayChange = (value: LatinDisplayOption) => {
     setPreferences(prev => ({
       ...prev,
-      latin_display: value
+      display_options: {
+        ...prev.display_options,
+        latinDisplay: value
+      }
     }));
   };
 
@@ -144,7 +165,7 @@ const SettingsPage: React.FC = () => {
             <div className="space-y-4">
               <Label className="text-base font-medium">Latin Text Display</Label>
               <RadioGroup
-                value={preferences.latin_display}
+                value={preferences.display_options.latinDisplay}
                 onValueChange={handleLatinDisplayChange}
                 className="space-y-3"
               >
