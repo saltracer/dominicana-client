@@ -14,19 +14,6 @@ export const wednesdayCompline: ComplineTemplate = {
         title: 'Psalm 4',
         content: [
           'Answer me when I call, O God, defender of my cause; *',
-          'according to thy word;',
-          'For mine eyes have seen thy salvation, *',
-          'which thou hast prepared before the face of all people,',
-          'To be a light to lighten the Gentiles, *',
-          'and to be the glory of thy people Israel.'
-        ]
-      },
-      {
-        type: 'psalm',
-        language: "en",
-        title: 'Psalm 4',
-        content: [
-          'Answer me when I call, O God, defender of my cause; *',
           'you set me free when I am hard-pressed;',
           'have mercy on me and hear my prayer.'
         ],
@@ -54,7 +41,9 @@ export const wednesdayCompline: ComplineTemplate = {
       type: 'reading',
       language: "en",
       title: "Matthew 11:28-30",
-      content: ['Come to me, all who labor and are heavy-laden, and I will give you rest. Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.'],
+      content: ["Come to me, all who labor and are heavy-laden, and I will give you rest. ",
+        "Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, ",
+        "and you will find rest for your souls. For my yoke is easy, and my burden is light."],
       rubric: 'Matthew 11:28-30'
     },
     responsory: complineShortResponsory,
