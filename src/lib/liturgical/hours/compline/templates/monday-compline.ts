@@ -1,5 +1,5 @@
 import type {ComplineTemplate} from "../../hour-types"
-import { introduction, nowThatTheDaylightDiesAway } from "../components"
+import { introduction, nowThatTheDaylightDiesAway, nuncDimittis, salveRegina, complineShortResponsory, complineConclusion } from "../components"
 
 export const mondayCompline: ComplineTemplate = {
     id: "monday-compline",
@@ -32,32 +32,8 @@ export const mondayCompline: ComplineTemplate = {
         "God destined us not for wrath but for obtaining salvation through our Lord Jesus Christ, who died for us, so that whether we are awake or asleep we may live with him."
       ]
     },
-    responsory: {
-      type: "responsory",
-      language: "en",
-      content: [
-        "Into your hands, Lord, I commend my spirit.",
-        "Into your hands, Lord, I commend my spirit.",
-        "You have redeemed us, Lord God of truth.",
-        "I commend my spirit.",
-        "Glory be to the Father and to the Son and to the Holy Spirit.",
-        "Into your hands, Lord, I commend my spirit."
-      ]
-    },
-    canticle: {
-      type: "canticle",
-      language: "en",
-      title: "Nunc Dimittis",
-      antiphon: {
-        before: "Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace.",
-        after: "Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."
-      },
-      content: [
-        "At last, all-powerful Master,",
-        "you give leave to your servant to go in peace,",
-        "according to your promise."
-      ]
-    },
+    responsory: complineShortResponsory,
+    canticle: nuncDimittis,
     concludingPrayer: {
       type: "prayer",
       language: "en",
@@ -72,30 +48,6 @@ export const mondayCompline: ComplineTemplate = {
         "Amen."
       ]
     },
-    conclusion: {
-        type: "conclusion",
-        language: "en",
-        content: [
-        "The Lord grant us a quiet night and a perfect end.",
-        "Amen.",
-        "",
-        ]
-    },
-    marian: {
-        type: "marian",
-        language: "en",
-        title: "Salve Regina",
-        content: [
-        "Hail, holy Queen, mother of mercy,",
-        "our life, our sweetness, and our hope.",
-        "To you we cry, the children of Eve;",
-        "to you we send up our sighs,",
-        "mourning and weeping in this land of exile.",
-        "Turn, then, most gracious advocate,",
-        "your eyes of mercy toward us;",
-        "lead us home at last",
-        "and show us the blessed fruit of your womb, Jesus.",
-        "O clement, O loving, O sweet Virgin Mary."
-        ]
-    }
+    conclusion: complineConclusion,
+    marian: salveRegina
 }
