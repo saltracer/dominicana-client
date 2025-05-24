@@ -4,7 +4,10 @@ export interface ComplineComponent {
   type: string;
   title?: string;
   language: string;
-  content: string[];
+  content: {
+    en: string[];
+    la?: string[];
+  };
   rubric?: string;
   antiphon?: {
     before?: string;
