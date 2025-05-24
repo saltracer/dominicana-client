@@ -40,11 +40,9 @@ export const wednesdayCompline: ComplineTemplate = {
     reading: {
       type: 'reading',
       language: "en",
-      title: "Matthew 11:28-30",
-      content: ["Come to me, all who labor and are heavy-laden, and I will give you rest. ",
-        "Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, ",
-        "and you will find rest for your souls. For my yoke is easy, and my burden is light."],
-      rubric: 'Matthew 11:28-30'
+      title: "Ephesians 4:26-27",
+      content: ["Be angry but do not sin; do not let the sun go down on your anger, and give no opportunity to the devil."],
+      rubric: "Ephesians 4:26-27"
     },
     responsory: complineShortResponsory,
     canticle: nuncDimittis,
