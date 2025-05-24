@@ -63,8 +63,8 @@ const SettingsPage: React.FC = () => {
         setPreferences({
           display_options: {
             ...preferences.display_options,
-            ...data.display_options,
-            latinDisplay: data.display_options?.latinDisplay || 'off'
+            ...data.display_options as DisplayOptions,
+            latinDisplay: (data.display_options as DisplayOptions)?.latinDisplay || 'off'
           }
         });
       }
@@ -84,7 +84,7 @@ const SettingsPage: React.FC = () => {
         .from('user_liturgy_preferences')
         .upsert({
           user_id: user.id,
-          display_options: preferences.display_options,
+          display_options: preferences.display_options as any,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
