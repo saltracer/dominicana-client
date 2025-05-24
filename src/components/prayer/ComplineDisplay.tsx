@@ -26,7 +26,7 @@ const ComplinePart: React.FC<{
       )}
       
       <div className="space-y-2">
-        {component.content.map((line, index) => (
+        {component.content["en"].map((line, index) => (
           <p key={index} className={line === "" ? "my-2" : ""}>
             {line}
           </p>
