@@ -25,6 +25,7 @@ const complineTemplates: ComplineTemplate[] = [
 // Easter season overrides
 const easterOverrides = {
   responsory: {
+    language: "en",
     type: "responsory",
     content: {en:[
       "Into your hands, Lord, I commend my spirit, alleluia, alleluia.",
