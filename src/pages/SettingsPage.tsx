@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,8 +62,8 @@ const SettingsPage: React.FC = () => {
         setPreferences({
           display_options: {
             ...preferences.display_options,
-            ...data.display_options as DisplayOptions,
-            latinDisplay: (data.display_options as DisplayOptions)?.latinDisplay || 'off'
+            ...(data.display_options as unknown as DisplayOptions),
+            latinDisplay: (data.display_options as unknown as DisplayOptions)?.latinDisplay || 'off'
           }
         });
       }
