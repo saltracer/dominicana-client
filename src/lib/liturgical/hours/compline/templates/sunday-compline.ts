@@ -16,7 +16,7 @@ export const sundayCompline: ComplineTemplate = {
             before: "Night holds no terrors for me sleeping under God's wings.",
             after: "Night holds no terrors for me sleeping under God's wings."
         },
-        content: [
+        content: {en:[
             "He who dwells in the shelter of the Most High",
             "and abides in the shade of the Almighty",
             "says to the Lord: 'My refuge,",
@@ -42,23 +42,23 @@ export const sundayCompline: ComplineTemplate = {
             "as it was in the beginning,",
             "is now, and ever shall be,",
             "world without end. Amen."
-        ]
+        ]}
         }
     ],
     reading: {
         type: "reading",
         language: "en",
         title: "Apocalypse 22:4-5",
-        content: [
+        content: {en:[
         "They will see the Lord face to face, and his name will be written on their foreheads. It will never be night again and they will not need lamplight or sunlight, because the Lord God will be shining on them. They will reign for ever and ever."
-        ]
+        ]}
     },
     responsory: complineShortResponsory,
     canticle: nuncDimittis,
     concludingPrayer: {
         type: "prayer",
         language: "en",
-        content: [
+        content: {en:[
         "Lord our God,",
         "restore us again by the repose of sleep",
         "after the fatigue of our daily work,",
@@ -66,7 +66,7 @@ export const sundayCompline: ComplineTemplate = {
         "we may serve you in body and soul.",
         "Through Christ our Lord.",
         "Amen."
-        ]
+        ]}
     },
     conclusion: complineConclusion,
     marian: salveRegina

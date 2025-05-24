@@ -12,20 +12,20 @@ export const fridayCompline: ComplineTemplate = {
             type: "psalm",
             language: "en",
             title: "",
-            content: []
+            content: {en:[]}
         }
     ],
     reading: {
         type: "reading",
         language: "en",
-        content: []
+        content: {en:[]}
     },
     responsory: complineShortResponsory,
     canticle: nuncDimittis,
     concludingPrayer: {
         type: "prayer",
         language: "en",
-        content: [
+        content: {en:[
         "Lord our God,",
         "restore us again by the repose of sleep",
         "after the fatigue of our daily work,",
@@ -33,7 +33,7 @@ export const fridayCompline: ComplineTemplate = {
         "we may serve you in body and soul.",
         "Through Christ our Lord.",
         "Amen."
-        ]
+        ]}
     },
     conclusion: complineConclusion,
     marian: salveRegina

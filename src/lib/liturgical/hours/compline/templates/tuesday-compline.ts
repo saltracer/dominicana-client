@@ -12,11 +12,11 @@ export const tuesdayCompline: ComplineTemplate = {
         type: 'psalm',
         language: "en",
         title: 'Psalm 4',
-        content: [
+        content: {en:[
           'Answer me when I call, O God, defender of my cause; *',
           'you set me free when I am hard-pressed;',
           'have mercy on me and hear my prayer.'
-        ],
+        ]},
         antiphon: {
           before: 'Into your hands, O Lord, I commend my spirit.',
           after: 'Into your hands, O Lord, I commend my spirit.'
@@ -26,11 +26,11 @@ export const tuesdayCompline: ComplineTemplate = {
         type: 'psalm',
         language: "en",
         title: 'Psalm 31',
-        content: [
+        content: {en:[
           'In you, O Lord, have I taken refuge;',
           'let me never be put to shame; *',
           'deliver me in your righteousness.'
-        ],
+        ]},
         antiphon: {
           before: 'Into your hands, O Lord, I commend my spirit.',
           after: 'Into your hands, O Lord, I commend my spirit.'
@@ -41,7 +41,7 @@ export const tuesdayCompline: ComplineTemplate = {
       type: 'reading',
       language: "en",
       title: "Matthew 11:28-30",
-      content: ['Come to me, all who labor and are heavy-laden, and I will give you rest. Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.'],
+      content: {en:['Come to me, all who labor and are heavy-laden, and I will give you rest. Take my yoke upon you, and learn from me; for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.']},
       rubric: 'Matthew 11:28-30'
     },
     responsory: complineShortResponsory,
@@ -49,7 +49,7 @@ export const tuesdayCompline: ComplineTemplate = {
     concludingPrayer: {
         type: "prayer",
         language: "en",
-        content: [
+        content: {en:[
         "Lord our God,",
         "restore us again by the repose of sleep",
         "after the fatigue of our daily work,",
@@ -57,7 +57,7 @@ export const tuesdayCompline: ComplineTemplate = {
         "we may serve you in body and soul.",
         "Through Christ our Lord.",
         "Amen."
-        ]
+        ]}
     },
     conclusion: complineConclusion,
     marian: salveRegina
