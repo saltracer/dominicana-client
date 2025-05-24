@@ -26,6 +26,7 @@ export const nowThatTheDaylightDiesAway: ComplineComponent = {
 export const salveRegina: ComplineComponent = {
     id: "salve-regina",
     type: "marian",
+    language: "en",
     title: "Salve Regina",
     content: {
       "en": [
