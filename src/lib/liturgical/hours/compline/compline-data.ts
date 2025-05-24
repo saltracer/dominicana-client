@@ -13,9 +13,7 @@ import {saturdayCompline} from "./templates/saturday-compline"
 
 // Base templates for each day of the week
 const complineTemplates: ComplineTemplate[] = [
-  // Sunday Compline
   sundayCompline,
-  // Monday Compline
   mondayCompline,
   tuesdayCompline,
   wednesdayCompline,
@@ -28,34 +26,20 @@ const complineTemplates: ComplineTemplate[] = [
 const easterOverrides = {
   responsory: {
     type: "responsory",
-    content: [
+    content: {en:[
       "Into your hands, Lord, I commend my spirit, alleluia, alleluia.",
       "Into your hands, Lord, I commend my spirit, alleluia, alleluia.",
       "You have redeemed us, Lord God of truth.",
       "Alleluia, alleluia.",
       "Glory be to the Father and to the Son and to the Holy Spirit.",
       "Into your hands, Lord, I commend my spirit, alleluia, alleluia."
-    ]
+    ]}
   },
   // Additional Easter overrides as needed
 };
 
 // Easter Octave special template
-const easterOctaveTemplate: Partial<ComplineTemplate> = {
-  id: "easter-octave-compline",
-  title: "Night Prayer - Easter Octave",
-  introduction: {
-    type: "introduction",
-    content: [
-      "O God, come to our aid.",
-      "O Lord, make haste to help us.",
-      "Glory be to the Father and to the Son and to the Holy Spirit,",
-      "as it was in the beginning, is now, and ever shall be, world without end. Amen. Alleluia."
-    ]
-  },
-  // Special components for Easter Octave
-  // ...
-};
+const easterOctaveTemplate: Partial<ComplineTemplate> = sundayCompline;
 
 // In-memory cache for compiled templates
 const templateCache = new Map<string, ComplineTemplate>();
