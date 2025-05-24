@@ -1,0 +1,57 @@
+
+{
+  "sunday-compline": {
+    "id": "sunday-compline",
+    "type": "compline",
+    "dayOfWeek": 0,
+    "title": {
+      "en": ["Night Prayer - Sunday"],
+      "la": ["Completorium - Dominica"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-91"],
+      "reading": "sunday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "sunday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  },
+  "monday-compline": {
+    "id": "monday-compline",
+    "type": "compline",
+    "dayOfWeek": 1,
+    "title": {
+      "en": ["Night Prayer - Monday"],
+      "la": ["Completorium - Feria secunda"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-86"],
+      "reading": "monday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "monday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  }
+}

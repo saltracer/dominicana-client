@@ -1,0 +1,53 @@
+
+{
+  "sunday-prayer": {
+    "id": "sunday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Lord our God,",
+        "restore us again by the repose of sleep",
+        "after the fatigue of our daily work,",
+        "so that, continually renewed by your help,",
+        "we may serve you in body and soul.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Domine Deus noster,",
+        "quiete nos rursum per soporem recreare",
+        "post laborem quotidianum,",
+        "ut, continenter renovati tuo auxilio,",
+        "tibi servire possimus corpore et anima.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  },
+  "monday-prayer": {
+    "id": "monday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Lord our God,",
+        "be gracious and forgive the sins of your people.",
+        "Free us from the bonds of darkness",
+        "that hold us tight,",
+        "and let us enter into your light",
+        "to rest in your peace.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Domine Deus noster,",
+        "propitius esto et dimitte peccata populi tui.",
+        "Libera nos a vinculis tenebrarum",
+        "quae nos constringunt,",
+        "et fac nos introire in lucem tuam",
+        "ut requiescamus in pace tua.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  }
+}

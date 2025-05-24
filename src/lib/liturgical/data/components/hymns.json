@@ -1,0 +1,61 @@
+
+{
+  "now-that-the-daylight-dies-away": {
+    "id": "now-that-the-daylight-dies-away",
+    "type": "hymn",
+    "title": {
+      "en": ["Now that the daylight dies away"],
+      "la": ["Te lucis ante terminum"]
+    },
+    "content": {
+      "en": [
+        "Now that the daylight dies away,",
+        "By all thy grace and love,",
+        "Thee, Maker of the world, we pray",
+        "To watch our bed above.",
+        "",
+        "Let dreams depart and phantoms fly,",
+        "The offspring of the night,",
+        "Keep us, like shrines, beneath thine eye,",
+        "Pure in our foe's despite.",
+        "",
+        "This grace on thy redeemed confer,",
+        "Father, co-equal Son,",
+        "And Holy Ghost, the Comforter,",
+        "Eternal Three in One."
+      ],
+      "la": [
+        "Te lucis ante terminum,",
+        "rerum Creator, poscimus",
+        "ut pro tua clementia",
+        "sis praesul et custodia.",
+        "",
+        "Procul recedant somnia",
+        "et noctium phantasmata,",
+        "hostemque nostrum comprime,",
+        "ne polluantur corpora.",
+        "",
+        "Praesta, Pater piissime,",
+        "Patrique compar Unice,",
+        "cum Spiritu Paraclito",
+        "regnans per omne saeculum."
+      ]
+    },
+    "chant": [
+      {
+        "id": "te-lucis-gregorian",
+        "notation": "gregorian",
+        "data": "(c4) Te(f) lu(g)cis(h) an(g)te(f) tér(g)mi(f)num,(f.) (,) re(f)rum(g) Cre(h)á(g)tor(f) pós(g)ci(f)mus,(f.) (:) ut(f) pro(g) tu(h)a(g) cle(f)mén(g)ti(f)a,(f.) (,) sis(f) præ(g)sul(h) et(g) cus(f)tó(g)di(f)a.(f.) (::)",
+        "description": "Traditional Gregorian chant notation"
+      }
+    ],
+    "audio": [
+      {
+        "id": "te-lucis-solesmes",
+        "type": "chant",
+        "url": "/audio/chant/te-lucis-ante-terminum.mp3",
+        "description": "Solesmes Monks"
+      }
+    ]
+  }
+}

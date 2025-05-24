@@ -1,0 +1,150 @@
+
+{
+  "psalm-91": {
+    "id": "psalm-91",
+    "type": "psalm",
+    "title": {
+      "en": ["Psalm 91"],
+      "la": ["Psalmus 90"]
+    },
+    "antiphon": {
+      "before": {
+        "en": ["Night holds no terrors for me sleeping under God's wings."],
+        "la": ["Non timebo a timore nocturno sub umbra alarum tuarum."]
+      },
+      "after": {
+        "en": ["Night holds no terrors for me sleeping under God's wings."],
+        "la": ["Non timebo a timore nocturno sub umbra alarum tuarum."]
+      }
+    },
+    "content": {
+      "en": [
+        "He who dwells in the shelter of the Most High",
+        "and abides in the shade of the Almighty",
+        "says to the Lord: 'My refuge,",
+        "my stronghold, my God in whom I trust!'",
+        "",
+        "It is he who will free you from the snare",
+        "of the fowler who seeks to destroy you;",
+        "he will conceal you with his pinions",
+        "and under his wings you will find refuge.",
+        "",
+        "You will not fear the terror of the night",
+        "nor the arrow that flies by day,",
+        "nor the plague that prowls in the darkness",
+        "nor the scourge that lays waste at noon.",
+        "",
+        "A thousand may fall at your side,",
+        "ten thousand fall at your right,",
+        "you, it will never approach;",
+        "his faithfulness is buckler and shield.",
+        "",
+        "Glory be to the Father and to the Son",
+        "and to the Holy Spirit,",
+        "as it was in the beginning,",
+        "is now, and ever shall be,",
+        "world without end. Amen."
+      ],
+      "la": [
+        "Qui habitat in adjutorio Altissimi,",
+        "in protectione Dei caeli commorabitur.",
+        "Dicet Domino: Susceptor meus es tu et refugium meum,",
+        "Deus meus, sperabo in eum.",
+        "",
+        "Quoniam ipse liberavit me de laqueo venantium",
+        "et a verbo aspero.",
+        "Scapulis suis obumbrabit tibi,",
+        "et sub pennis ejus sperabis.",
+        "",
+        "Non timebis a timore nocturno,",
+        "a sagitta volante in die,",
+        "a negotio perambulante in tenebris,",
+        "ab incursu et daemonio meridiano.",
+        "",
+        "Cadent a latere tuo mille,",
+        "et decem millia a dextris tuis;",
+        "ad te autem non appropinquabit.",
+        "Verumtamen oculis tuis considerabis,",
+        "et retributionem peccatorum videbis.",
+        "",
+        "Gloria Patri et Filio",
+        "et Spiritui Sancto,",
+        "sicut erat in principio,",
+        "et nunc, et semper,",
+        "et in saecula saeculorum. Amen."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Psalms",
+      "chapter": 91,
+      "verse": "1-16",
+      "translation": "NRSV",
+      "content": {
+        "en": ["You who live in the shelter of the Most High, who abide in the shadow of the Almighty..."]
+      }
+    }
+  },
+  "psalm-86": {
+    "id": "psalm-86",
+    "type": "psalm",
+    "title": {
+      "en": ["Psalm 86"],
+      "la": ["Psalmus 85"]
+    },
+    "antiphon": {
+      "before": {
+        "en": ["Lord, you have been our refuge from one generation to the next."],
+        "la": ["Domine, refugium factus es nobis a generatione in generationem."]
+      },
+      "after": {
+        "en": ["Lord, you have been our refuge from one generation to the next."],
+        "la": ["Domine, refugium factus es nobis a generatione in generationem."]
+      }
+    },
+    "content": {
+      "en": [
+        "Turn your ear, O Lord, and give answer",
+        "for I am poor and needy.",
+        "Preserve my life, for I am faithful:",
+        "save the servant who trusts in you.",
+        "",
+        "You are my God, have mercy on me, Lord,",
+        "for I cry to you all the day long.",
+        "Give joy to your servant, O Lord,",
+        "for to you I lift up my soul.",
+        "",
+        "Glory be to the Father and to the Son",
+        "and to the Holy Spirit,",
+        "as it was in the beginning,",
+        "is now, and ever shall be,",
+        "world without end. Amen."
+      ],
+      "la": [
+        "Inclina, Domine, aurem tuam et exaudi me,",
+        "quoniam inops et pauper sum ego.",
+        "Custodi animam meam, quoniam sanctus sum;",
+        "salvum fac servum tuum, Deus meus, sperantem in te.",
+        "",
+        "Miserere mei, Domine,",
+        "quoniam ad te clamavi tota die.",
+        "Laetifica animam servi tui,",
+        "quoniam ad te, Domine, animam meam levavi.",
+        "",
+        "Gloria Patri et Filio",
+        "et Spiritui Sancto,",
+        "sicut erat in principio,",
+        "et nunc, et semper,",
+        "et in saecula saeculorum. Amen."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Psalms",
+      "chapter": 86,
+      "verse": "1-7",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Incline your ear, O Lord, and answer me, for I am poor and needy..."]
+      }
+    }
+  }
+}
