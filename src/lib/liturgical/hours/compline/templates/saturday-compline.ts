@@ -12,13 +12,13 @@ export const saturdayCompline: ComplineTemplate = {
             type: "psalm",
             language: "en",
             title: "",
-            content: {[]}
+            content: {}
         }
     ],
     reading: {
         type: "reading",
         language: "en",
-        content: {[]}
+        content: {}
     },
     responsory: complineShortResponsory,
     canticle: nuncDimittis,
