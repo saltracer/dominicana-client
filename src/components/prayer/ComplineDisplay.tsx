@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
@@ -14,6 +14,8 @@ interface LiturgyPartProps {
 }
 
 const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, className }) => {
+  const [showChant, setShowChant] = useState(false);
+  
   if (!component) return null;
   
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
@@ -28,6 +30,10 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
   const hasAudio = component.audio && component.audio.length > 0;
   const hasChant = component.chant && component.chant.length > 0;
   
+  const handleChantToggle = () => {
+    setShowChant(!showChant);
+  };
+  
   return (
     <div className={cn("mb-6", className)}>
       {title.length > 0 && (
@@ -39,7 +45,12 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
             </Button>
           )}
           {hasChant && (
-            <Button size="sm" variant="outline" className="p-1 h-7 w-7">
+            <Button 
+              size="sm" 
+              variant={showChant ? "default" : "outline"} 
+              className="p-1 h-7 w-7"
+              onClick={handleChantToggle}
+            >
               <Music className="h-3 w-3" />
             </Button>
           )}
@@ -77,6 +88,22 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
           </p>
         ))}
       </div>
+      
+      {showChant && hasChant && (
+        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
+          <h5 className="font-medium text-amber-800 mb-2">Chant Notation</h5>
+          {component.chant?.map((chant, index) => (
+            <div key={index} className="mb-3">
+              {chant.description && (
+                <p className="text-sm text-amber-700 mb-1">{chant.description}</p>
+              )}
+              <div className="font-mono text-sm bg-white p-3 rounded border border-amber-300">
+                {chant.data}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       
       {antiphonAfter.length > 0 && (
         <div className="text-dominican-burgundy mt-2 font-medium">
