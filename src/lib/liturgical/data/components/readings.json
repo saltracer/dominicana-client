@@ -49,5 +49,130 @@
         "en": ["For God has destined us not for wrath but for obtaining salvation through our Lord Jesus Christ, who died for us, so that whether we are awake or asleep we may live with him."]
       }
     }
+  },
+  "tuesday-reading": {
+    "id": "tuesday-reading",
+    "type": "reading",
+    "title": {
+      "en": ["1 Peter 5:8-9"],
+      "la": ["1 Petri 5:8-9"]
+    },
+    "content": {
+      "en": [
+        "Discipline yourselves, keep alert. Like a roaring lion your adversary the devil prowls around, looking for someone to devour. Resist him, steadfast in your faith."
+      ],
+      "la": [
+        "Sobrii estote, vigilate. Adversarius vester diabolus tamquam leo rugiens circuit, quaerens quem devoret; cui resistite fortes in fide."
+      ]
+    },
+    "scriptureRef": {
+      "book": "1 Peter",
+      "chapter": 5,
+      "verse": "8-9",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Discipline yourselves, keep alert. Like a roaring lion your adversary the devil prowls around, looking for someone to devour. Resist him, steadfast in your faith."]
+      }
+    }
+  },
+  "wednesday-reading": {
+    "id": "wednesday-reading",
+    "type": "reading",
+    "title": {
+      "en": ["Ephesians 4:26-27"],
+      "la": ["Ephesios 4:26-27"]
+    },
+    "content": {
+      "en": [
+        "Be angry but do not sin; do not let the sun go down on your anger, and do not make room for the devil."
+      ],
+      "la": [
+        "Irascimini, et nolite peccare: sol non occidat super iracundiam vestram. Nolite locum dare diabolo."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Ephesians",
+      "chapter": 4,
+      "verse": "26-27",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Be angry but do not sin; do not let the sun go down on your anger, and do not make room for the devil."]
+      }
+    }
+  },
+  "thursday-reading": {
+    "id": "thursday-reading",
+    "type": "reading",
+    "title": {
+      "en": ["Isaiah 26:3-4"],
+      "la": ["Isaias 26:3-4"]
+    },
+    "content": {
+      "en": [
+        "Those of steadfast mind you keep in peace—in peace because they trust in you. Trust in the Lord forever, for in the Lord God you have an everlasting rock."
+      ],
+      "la": [
+        "Vetus cogitatio permanebit; pax, pax, quia in te speravimus. Sperate in Domino usque in aeternum, in Domino Deo fortitudine saeculorum."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Isaiah",
+      "chapter": 26,
+      "verse": "3-4",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Those of steadfast mind you keep in peace—in peace because they trust in you. Trust in the Lord forever, for in the Lord God you have an everlasting rock."]
+      }
+    }
+  },
+  "friday-reading": {
+    "id": "friday-reading",
+    "type": "reading",
+    "title": {
+      "en": ["Jeremiah 14:9"],
+      "la": ["Jeremias 14:9"]
+    },
+    "content": {
+      "en": [
+        "Yet you, O Lord, are in the midst of us, and we are called by your name; do not forsake us!"
+      ],
+      "la": [
+        "Tu autem in nobis es, Domine, et nomen tuum invocatum est super nos; ne derelinquas nos."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Jeremiah",
+      "chapter": 14,
+      "verse": "9",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Yet you, O Lord, are in the midst of us, and we are called by your name; do not forsake us!"]
+      }
+    }
+  },
+  "saturday-reading": {
+    "id": "saturday-reading",
+    "type": "reading",
+    "title": {
+      "en": ["1 John 3:1-2"],
+      "la": ["1 Joannis 3:1-2"]
+    },
+    "content": {
+      "en": [
+        "See what love the Father has given us, that we should be called children of God; and that is what we are. Beloved, we are God's children now; what we will be has not yet been revealed."
+      ],
+      "la": [
+        "Videte qualem caritatem dedit nobis Pater, ut filii Dei nominemur et simus. Carissimi, nunc filii Dei sumus; et nondum apparuit quid erimus."
+      ]
+    },
+    "scriptureRef": {
+      "book": "1 John",
+      "chapter": 3,
+      "verse": "1-2",
+      "translation": "NRSV",
+      "content": {
+        "en": ["See what love the Father has given us, that we should be called children of God; and that is what we are. Beloved, we are God's children now; what we will be has not yet been revealed."]
+      }
+    }
   }
 }

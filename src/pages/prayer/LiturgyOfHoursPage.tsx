@@ -8,10 +8,10 @@ import EnhancedComplineDisplay from '@/components/prayer/EnhancedComplineDisplay
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
+import { LiturgicalDayProvider, useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const LiturgyOfHoursPage: React.FC = () => {
+const LiturgyContent: React.FC = () => {
   const { selectedDate, setSelectedDate } = useLiturgicalDay();
   const isMobile = useIsMobile();
   const [selectedHour, setSelectedHour] = useState("night-prayer");
@@ -403,6 +403,14 @@ const LiturgyOfHoursPage: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const LiturgyOfHoursPage: React.FC = () => {
+  return (
+    <LiturgicalDayProvider>
+      <LiturgyContent />
+    </LiturgicalDayProvider>
   );
 };
 

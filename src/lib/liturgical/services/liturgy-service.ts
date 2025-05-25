@@ -58,7 +58,7 @@ export class LiturgyService {
     const templateIds = [
       'sunday-compline',
       'monday-compline',
-      'tuesday-compline', // You'll need to create these
+      'tuesday-compline',
       'wednesday-compline',
       'thursday-compline',
       'friday-compline',

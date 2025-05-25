@@ -49,5 +49,141 @@
         "Amen."
       ]
     }
+  },
+  "tuesday-prayer": {
+    "id": "tuesday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Lord God almighty,",
+        "grant that we who have been renewed",
+        "by the mystery of this evening's prayer",
+        "may sleep in peace",
+        "and rise tomorrow to serve you with joy.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Domine Deus omnipotens,",
+        "concede ut qui mysterio vespertinae orationis",
+        "renovati sumus,",
+        "in pace dormiamus",
+        "et cras ad te serviendum laeti surgamus.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  },
+  "wednesday-prayer": {
+    "id": "wednesday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Lord,",
+        "watch over your family",
+        "and keep in your care",
+        "those who trust in you,",
+        "that they may be protected",
+        "from all anxiety",
+        "and live in your peace.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Domine,",
+        "custodi familiam tuam",
+        "et in tua pietate conserva",
+        "qui in te sperant,",
+        "ut ab omni anxietate",
+        "liberati",
+        "in pace tua vivant.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  },
+  "thursday-prayer": {
+    "id": "thursday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Merciful God,",
+        "you have made this day",
+        "and brought it to its close.",
+        "Watch over us through the darkness",
+        "of this night,",
+        "and bring us safely",
+        "to the morning light.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Deus misericors,",
+        "qui hanc diem fecisti",
+        "et ad finem perduxisti,",
+        "custodi nos per tenebras",
+        "hujus noctis,",
+        "et salvi perducas",
+        "ad lucem matutinarn.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  },
+  "friday-prayer": {
+    "id": "friday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "Father of mercy,",
+        "from the beginning of time",
+        "your Word has been at work",
+        "in our world.",
+        "Sanctify us now by that same Word",
+        "made flesh,",
+        "and keep us in your love.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Pater misericordiarum,",
+        "ab initio temporis",
+        "Verbum tuum operatum est",
+        "in mundo nostro.",
+        "Sanctifica nos nunc per idem Verbum",
+        "caro factum,",
+        "et conserva nos in amore tuo.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
+  },
+  "saturday-prayer": {
+    "id": "saturday-prayer",
+    "type": "prayer",
+    "content": {
+      "en": [
+        "God of love,",
+        "as we end another week",
+        "of serving you,",
+        "grant us peaceful rest",
+        "and prepare our hearts",
+        "to welcome the Lord's Day",
+        "with renewed joy.",
+        "Through Christ our Lord.",
+        "Amen."
+      ],
+      "la": [
+        "Deus caritatis,",
+        "cum aliam hebdomadam",
+        "tibi serviendi finimus,",
+        "concede nobis requiem pacificam",
+        "et corda nostra praepara",
+        "ut Diem Domini",
+        "renovato gaudio suscipiamus.",
+        "Per Christum Dominum nostrum.",
+        "Amen."
+      ]
+    }
   }
 }

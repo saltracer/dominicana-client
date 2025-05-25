@@ -53,5 +53,140 @@
       "lastModified": "2024-01-01",
       "version": "1.0"
     }
+  },
+  "tuesday-compline": {
+    "id": "tuesday-compline",
+    "type": "compline",
+    "dayOfWeek": 2,
+    "title": {
+      "en": ["Night Prayer - Tuesday"],
+      "la": ["Completorium - Feria tertia"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-91"],
+      "reading": "tuesday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "tuesday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  },
+  "wednesday-compline": {
+    "id": "wednesday-compline",
+    "type": "compline",
+    "dayOfWeek": 3,
+    "title": {
+      "en": ["Night Prayer - Wednesday"],
+      "la": ["Completorium - Feria quarta"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-86"],
+      "reading": "wednesday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "wednesday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  },
+  "thursday-compline": {
+    "id": "thursday-compline",
+    "type": "compline",
+    "dayOfWeek": 4,
+    "title": {
+      "en": ["Night Prayer - Thursday"],
+      "la": ["Completorium - Feria quinta"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-91"],
+      "reading": "thursday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "thursday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  },
+  "friday-compline": {
+    "id": "friday-compline",
+    "type": "compline",
+    "dayOfWeek": 5,
+    "title": {
+      "en": ["Night Prayer - Friday"],
+      "la": ["Completorium - Feria sexta"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-86"],
+      "reading": "friday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "friday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
+  },
+  "saturday-compline": {
+    "id": "saturday-compline",
+    "type": "compline",
+    "dayOfWeek": 6,
+    "title": {
+      "en": ["Night Prayer - Saturday"],
+      "la": ["Completorium - Sabbato"]
+    },
+    "season": ["ordinary"],
+    "rank": "ferial",
+    "components": {
+      "introduction": "compline-introduction",
+      "hymn": "now-that-the-daylight-dies-away",
+      "psalmody": ["psalm-91"],
+      "reading": "saturday-reading",
+      "responsory": "compline-short-responsory",
+      "canticle": "nunc-dimittis",
+      "prayer": "saturday-prayer",
+      "conclusion": "compline-conclusion",
+      "marian": "salve-regina"
+    },
+    "metadata": {
+      "created": "2024-01-01",
+      "lastModified": "2024-01-01",
+      "version": "1.0"
+    }
   }
 }
