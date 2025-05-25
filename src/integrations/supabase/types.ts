@@ -203,30 +203,60 @@ export type Database = {
       }
       user_liturgy_preferences: {
         Row: {
+          audio_enabled: boolean | null
+          audio_types: Json | null
+          bible_translation: string | null
           calendar_type: string
+          chant_notation: string | null
           created_at: string
+          display_mode: string | null
           display_options: Json
+          font_size: string | null
           language: string
           memorial_preference: string
+          primary_language: string | null
+          secondary_language: string | null
+          show_rubrics: boolean | null
           updated_at: string
+          use_night_mode: boolean | null
           user_id: string
         }
         Insert: {
+          audio_enabled?: boolean | null
+          audio_types?: Json | null
+          bible_translation?: string | null
           calendar_type?: string
+          chant_notation?: string | null
           created_at?: string
+          display_mode?: string | null
           display_options?: Json
+          font_size?: string | null
           language?: string
           memorial_preference?: string
+          primary_language?: string | null
+          secondary_language?: string | null
+          show_rubrics?: boolean | null
           updated_at?: string
+          use_night_mode?: boolean | null
           user_id: string
         }
         Update: {
+          audio_enabled?: boolean | null
+          audio_types?: Json | null
+          bible_translation?: string | null
           calendar_type?: string
+          chant_notation?: string | null
           created_at?: string
+          display_mode?: string | null
           display_options?: Json
+          font_size?: string | null
           language?: string
           memorial_preference?: string
+          primary_language?: string | null
+          secondary_language?: string | null
+          show_rubrics?: boolean | null
           updated_at?: string
+          use_night_mode?: boolean | null
           user_id?: string
         }
         Relationships: []

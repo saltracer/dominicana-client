@@ -1,16 +1,15 @@
-
 import React, { useMemo } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
-import { LiturgyComponent, UserLiturgyPreferences } from '@/lib/liturgical/types/liturgy-types';
+import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
-import { useAuth } from '@/context/AuthContext';
+import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface LiturgyPartProps {
   component: LiturgyComponent;
-  preferences: UserLiturgyPreferences;
+  preferences: any;
   className?: string;
 }
 
@@ -99,25 +98,11 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
 
 const ComplineDisplay: React.FC = () => {
   const { selectedDate } = useLiturgicalDay();
-  const { user } = useAuth();
-  
-  // Default preferences - in a real implementation, load from user settings
-  const defaultPreferences: UserLiturgyPreferences = {
-    primaryLanguage: 'en',
-    secondaryLanguage: 'la',
-    displayMode: 'primary-only',
-    bibleTranslation: 'NRSV',
-    audioEnabled: true,
-    audioTypes: ['chant', 'spoken'],
-    chantNotation: 'gregorian',
-    fontSize: 'medium',
-    showRubrics: true,
-    useNightMode: false
-  };
+  const { preferences, loading: preferencesLoading } = useLiturgyPreferences();
   
   const { compline, info, renderedComponents } = useMemo(() => {
     const compline = LiturgyService.getComplineForDate(selectedDate);
-    const info = LiturgyService.getComplineInfo(selectedDate, defaultPreferences);
+    const info = LiturgyService.getComplineInfo(selectedDate, preferences);
     
     const renderedComponents = compline ? {
       introduction: compline.components.introduction ? LiturgyService.getComponent(compline.components.introduction) : null,
@@ -132,15 +117,15 @@ const ComplineDisplay: React.FC = () => {
     } : null;
     
     return { compline, info, renderedComponents };
-  }, [selectedDate]);
+  }, [selectedDate, preferences]);
   
-  if (!compline || !renderedComponents) {
+  if (preferencesLoading || !compline || !renderedComponents) {
     return <div className="text-center py-10">Loading Compline...</div>;
   }
   
   return (
     <div className={cn(`space-y-6 ${info.seasonClass}`, {
-      'bg-gray-900 text-white': defaultPreferences.useNightMode
+      'bg-gray-900 text-white': preferences.useNightMode
     })}>
       <div className="mb-6">
         <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
@@ -157,7 +142,7 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.introduction && (
         <LiturgyPart 
           component={renderedComponents.introduction} 
-          preferences={defaultPreferences}
+          preferences={preferences}
           className="bg-dominican-light-gray/30 p-4 rounded-md" 
         />
       )}
@@ -165,7 +150,7 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.hymn && (
         <LiturgyPart 
           component={renderedComponents.hymn} 
-          preferences={defaultPreferences}
+          preferences={preferences}
         />
       )}
       
@@ -176,7 +161,7 @@ const ComplineDisplay: React.FC = () => {
             <LiturgyPart 
               key={i} 
               component={psalm!} 
-              preferences={defaultPreferences}
+              preferences={preferences}
               className="bg-dominican-light-gray/20 p-4 rounded-md" 
             />
           ))}
@@ -186,14 +171,14 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.reading && (
         <LiturgyPart 
           component={renderedComponents.reading} 
-          preferences={defaultPreferences}
+          preferences={preferences}
         />
       )}
       
       {renderedComponents.responsory && (
         <LiturgyPart 
           component={renderedComponents.responsory} 
-          preferences={defaultPreferences}
+          preferences={preferences}
           className="font-medium" 
         />
       )}
@@ -201,7 +186,7 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.canticle && (
         <LiturgyPart 
           component={renderedComponents.canticle} 
-          preferences={defaultPreferences}
+          preferences={preferences}
           className="bg-dominican-light-gray/20 p-4 rounded-md" 
         />
       )}
@@ -209,14 +194,14 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.prayer && (
         <LiturgyPart 
           component={renderedComponents.prayer} 
-          preferences={defaultPreferences}
+          preferences={preferences}
         />
       )}
       
       {renderedComponents.conclusion && (
         <LiturgyPart 
           component={renderedComponents.conclusion} 
-          preferences={defaultPreferences}
+          preferences={preferences}
         />
       )}
       
@@ -224,7 +209,7 @@ const ComplineDisplay: React.FC = () => {
         <div className="mt-8 pt-4 border-t border-dominican-light-gray">
           <LiturgyPart 
             component={renderedComponents.marian} 
-            preferences={defaultPreferences}
+            preferences={preferences}
           />
         </div>
       )}
