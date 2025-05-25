@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import ComplineDisplay from '@/components/prayer/ComplineDisplay';
-import EnhancedComplineDisplay from '@/components/prayer/EnhancedComplineDisplay';
+//import EnhancedComplineDisplay from '@/components/prayer/EnhancedComplineDisplay';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -237,7 +237,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "night-prayer" && (
               <div>
-                <EnhancedComplineDisplay />
+                <ComplineDisplay />
               </div>
             )}
           </div>
@@ -398,7 +398,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {/* Our enhanced Night Prayer (Compline) tab */}
             <TabsContent value="night-prayer" className="p-6">
-              <EnhancedComplineDisplay />
+              <ComplineDisplay />
             </TabsContent>
           </Tabs>
         )}
