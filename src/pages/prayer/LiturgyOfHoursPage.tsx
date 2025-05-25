@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,10 +9,10 @@ import EnhancedComplineDisplay from '@/components/prayer/EnhancedComplineDisplay
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { LiturgicalDayProvider, useLiturgicalDay } from '@/context/LiturgicalDayContext';
+import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const LiturgyContent: React.FC = () => {
+const LiturgyOfHoursPage: React.FC = () => {
   const { selectedDate, setSelectedDate } = useLiturgicalDay();
   const isMobile = useIsMobile();
   const [selectedHour, setSelectedHour] = useState("night-prayer");
@@ -403,14 +404,6 @@ const LiturgyContent: React.FC = () => {
         )}
       </div>
     </div>
-  );
-};
-
-const LiturgyOfHoursPage: React.FC = () => {
-  return (
-    <LiturgicalDayProvider>
-      <LiturgyContent />
-    </LiturgicalDayProvider>
   );
 };
 
