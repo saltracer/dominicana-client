@@ -21,8 +21,35 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [libraryLoaded, setLibraryLoaded] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
+    const loadLibrary = async () => {
+      if (!window.exsurge) {
+        return new Promise<void>((resolve) => {
+          const script = document.createElement('script');
+          script.src = '/exsurge/exsurge.min.js';
+          script.onload = () => {
+            if (mounted) {
+              setLibraryLoaded(true);
+              resolve();
+            }
+          };
+          script.onerror = () => {
+            if (mounted) {
+              setError('Failed to load Exsurge library');
+              setLoading(false);
+            }
+          };
+          document.body.appendChild(script);
+        });
+      }
+      return Promise.resolve();
+    };
+
+
     const renderChant = async () => {
       if (!containerRef.current || !gabc) {
         setLoading(false);  
@@ -31,6 +58,8 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
       try {
         setLoading(true);
+        await loadLibrary();
+        if (!mounted) return;
         setError(null);
 console.log("Trying to render a chant");
         // Clear previous content
@@ -74,10 +103,14 @@ console.log("Exsurge is loaded");
         console.error('Error rendering chant notation:', err);
         setError(err instanceof Error ? err.message : 'Failed to render chant notation');
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
+    renderChant();
+    
     // Load exsurge if not already loaded
     if (!window.exsurge) {
       const script = document.createElement('script');
