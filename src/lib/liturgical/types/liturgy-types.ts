@@ -24,6 +24,10 @@ export interface ChantResource {
   description?: string;
 }
 
+export interface MultiLanguageChantResource {
+  [key: string]: ChantResource;
+}
+
 export interface ScriptureReference {
   book: string;
   chapter: number;
@@ -44,7 +48,7 @@ export interface LiturgyComponent {
   };
   scriptureRef?: ScriptureReference;
   audio?: AudioResource[];
-  chant?: ChantResource[];
+  chant?: MultiLanguageChantResource;
   metadata?: {
     composer?: string;
     century?: string;
