@@ -159,7 +159,7 @@ console.log("Exsurge is loaded");
   // }
   if (loading) {
     return (
-      <div className={className}>
+      <div ref={containerRef} className={className}>
         {description && (
           <p className="text-sm text-amber-700 mb-2">{description}</p>
         )}
