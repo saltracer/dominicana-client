@@ -3,6 +3,10 @@
   "sunday-prayer": {
     "id": "sunday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Sunday Prayer"],
+      "la": ["Sunday Prayer"]
+    },
     "content": {
       "en": [
         "Lord our God,",
@@ -27,6 +31,10 @@
   "monday-prayer": {
     "id": "monday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Monday Prayer"],
+      "la": ["Monday Prayer"]
+    },
     "content": {
       "en": [
         "Lord our God,",
@@ -53,6 +61,10 @@
   "tuesday-prayer": {
     "id": "tuesday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Tuesday Prayer"],
+      "la": ["Tuesday Prayer"]
+    },
     "content": {
       "en": [
         "Lord God almighty,",
@@ -77,6 +89,10 @@
   "wednesday-prayer": {
     "id": "wednesday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Wednesday Prayer"],
+      "la": ["Wednesday Prayer"]
+    },
     "content": {
       "en": [
         "Lord,",
@@ -105,6 +121,10 @@
   "thursday-prayer": {
     "id": "thursday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Thursday Prayer"],
+      "la": ["Thursday Prayer"]
+    },
     "content": {
       "en": [
         "Merciful God,",
@@ -133,6 +153,10 @@
   "friday-prayer": {
     "id": "friday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Friday Prayer"],
+      "la": ["Friday Prayer"]
+    },
     "content": {
       "en": [
         "Father of mercy,",
@@ -161,6 +185,10 @@
   "saturday-prayer": {
     "id": "saturday-prayer",
     "type": "prayer",
+    "title": {
+      "en": ["Saturday Prayer"],
+      "la": ["Saturday Prayer"]
+    },
     "content": {
       "en": [
         "God of love,",
