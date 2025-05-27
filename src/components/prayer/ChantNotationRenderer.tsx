@@ -53,7 +53,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
     const renderChant = async () => {
       // Initial check - if we don't have the ref or gabc, don't proceed
       // if (!containerRef.current || !gabc) {
-      //   console.log("Container ref or gabc not available", containerRef, gabc);
+      //   console.error("Container ref or gabc not available", containerRef, gabc);
       //   return;
       // }
 
@@ -170,18 +170,20 @@ console.log("Exsurge is loaded");
     );
   }
 
-  if (error) {
-    return (
-      <div className={`p-4 text-center text-red-600 ${className}`}>
-        <p className="text-sm">Unable to display chant notation</p>
-        {description && <p className="text-xs mt-1">{description}</p>}
-        <details className="text-xs mt-2">
-          <summary>Error details</summary>
-          <p className="mt-1 font-mono">{error}</p>
-        </details>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+      
+  //     <div 
+  //       className={`p-4 text-center text-red-600 ${className}`}>
+  //       <p className="text-sm">Unable to display chant notation</p>
+  //       {description && <p className="text-xs mt-1">{description}</p>}
+  //       <details className="text-xs mt-2">
+  //         <summary>Error details</summary>
+  //         <p className="mt-1 font-mono">{error}</p>
+  //       </details>
+  //     </div>
+  //   );
+  // }
 
   // return (
   //   <div className={className}>
