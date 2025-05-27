@@ -3,6 +3,10 @@
   "compline-introduction": {
     "id": "compline-introduction",
     "type": "introduction",
+    "title": {
+      "en": ["O God, come to my assistance"],
+      "la": ["Deus, in adjutorium"]
+    },
     "content": {
       "en": [
         "O God, come to my assistance.",

@@ -108,7 +108,7 @@ console.log("Exsurge is loaded");
         console.log("Layout complete");
         // Create SVG element
         const svgElement = score.createSvg(ctxt);
-        console.log("SVG element created", svgElement);
+        //console.log("SVG element created", svgElement);
         console.log("SVG element created, type:", typeof svgElement);
         // Append to container
         console.log("Applying the SVG element to the container", containerRef.current);
