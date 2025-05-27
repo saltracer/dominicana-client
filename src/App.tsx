@@ -14,6 +14,7 @@ import RoleGuard from "./components/auth/RoleGuard";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import AdminPanel from "./pages/admin/AdminPanel";
+import SettingsPage from "./pages/SettingsPage";
 
 // Prayer Pages
 import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
@@ -48,6 +49,13 @@ const App = () => {
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 <Route path="/subscription" element={<SubscriptionPage />} />
+                
+                {/* Settings Route - Requires Authentication */}
+                <Route path="/settings" element={
+                  <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
+                    <SettingsPage />
+                  </RoleGuard>
+                } />
                 
                 {/* Prayer Routes - Free User Access to Pages, Authentication for Features */}
                 <Route path="/prayer/liturgy-of-the-hours" element={

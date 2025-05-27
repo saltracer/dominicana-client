@@ -1,4 +1,4 @@
-import { addDays, format, getYear, isEqual, isSunday, parseISO } from "date-fns"
+import { addDays, format, getYear, isEqual, isSunday, parseISO, isSameDay } from "date-fns"
 import { type Celebration, CelebrationRank } from "./celebrations/celebrations-types"
 import { getLiturgicalSeason, getLiturgicalWeek } from "./liturgical-seasons"
 import { getAllCelebrations } from "./celebrations"
@@ -28,7 +28,7 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
       try {
         // Convert celebration date to ISO format
         const celebrationDate = parseISO(`${year}-${celebration.date}`)
-        return isEqual(celebrationDate, date)
+        return isSameDay(celebrationDate, date)
       } catch (error) {
         console.error("Error parsing celebration date:", error)
         return false
@@ -47,7 +47,6 @@ export function getCelebrationsForDate(date: Date): Celebration[] {
 
     // Combine all celebrations
     let celebrations = [...saints, ...moveable]
-
     // If no celebrations, add a ferial day
     if (celebrations.length === 0) {
       const season = getLiturgicalSeason(date)

@@ -1,0 +1,62 @@
+
+/* Liturgical Season Stylings for Compline */
+
+.ordinary h3,
+.ordinary h4 {
+  color: #2c614f; /* Green - Ordinary Time */
+}
+
+.lent h3,
+.lent h4 {
+  color: #5d2a75; /* Purple - Lent */
+}
+
+.advent h3,
+.advent h4 {
+  color: #5d2a75; /* Purple - Advent */
+}
+
+.easter h3,
+.easter h4 {
+  color: #c8922f; /* Gold - Easter */
+}
+
+.christmas h3,
+.christmas h4 {
+  color: #c8922f; /* Gold - Christmas */
+}
+
+.pentecost h3, 
+.pentecost h4 {
+  color: #9a3333; /* Red - Pentecost */
+}
+
+/* Add left border to prayers based on season */
+.ordinary .concludingPrayer {
+  border-left: 3px solid #2c614f;
+  padding-left: 1rem;
+}
+
+.lent .concludingPrayer, 
+.advent .concludingPrayer {
+  border-left: 3px solid #5d2a75;
+  padding-left: 1rem;
+}
+
+.easter .concludingPrayer,
+.christmas .concludingPrayer {
+  border-left: 3px solid #c8922f;
+  padding-left: 1rem;
+}
+
+.pentecost .concludingPrayer {
+  border-left: 3px solid #9a3333;
+  padding-left: 1rem;
+}
+
+/* Responsive styling */
+@media (max-width: 640px) {
+  .compline-container {
+    padding: 1rem;
+  }
+}

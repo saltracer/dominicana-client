@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserMenu from "../auth/UserMenu";
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Popover,
   PopoverContent,
@@ -54,6 +56,7 @@ const mainMenu: MenuItem[] = [
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <header className="bg-white border-b border-dominican-light-gray shadow-sm relative z-10">
@@ -101,20 +104,23 @@ const Header: React.FC = () => {
               </div>
             ))}
             
-        <UserMenu />
+            <UserMenu />
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-dominican-black hover:text-dominican-burgundy"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile Menu Controls */}
+          <div className="md:hidden flex items-center space-x-2">
+            <UserMenu />
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-dominican-black hover:text-dominican-burgundy"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -158,7 +164,6 @@ const Header: React.FC = () => {
             </div>
           ))}
         </div>
-        <UserMenu />
       </div>
     </header>
   );

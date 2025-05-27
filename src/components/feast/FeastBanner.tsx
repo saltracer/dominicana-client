@@ -7,7 +7,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
-import { getCelebrationsForDate } from '@/lib/liturgical/calendar-data';
 import { useIsMobile } from '@/hooks/use-mobile';
 import CelebrationDetailsDialog from '@/components/calendar/CelebrationDetailsDialog';
 
@@ -20,15 +19,8 @@ const FeastBanner: React.FC = () => {
   const handleDateChange = (date: Date | undefined) => {
     if (!date) return;
     
+    // Simply update the selected date - let the LiturgicalDayContext handle the rest
     setSelectedDate(date);
-    
-    const celebrations = getCelebrationsForDate(date);
-    
-    if (celebrations.length > 0) {
-      setCurrentEvent(celebrations[0]);
-    } else {
-      setCurrentEvent(null);
-    }
   };
 
   const navigateDay = (direction: 'prev' | 'next') => {
@@ -71,7 +63,8 @@ const FeastBanner: React.FC = () => {
         <div className="container mx-auto px-2 sm:px-4">
           <div className={cn(
             "flex flex-col sm:flex-row sm:items-center sm:justify-between",
-            "gap-2 sm:gap-0"
+            "gap-2 sm:gap-0",
+            "items-center sm:items-start" // Center on mobile, align start on desktop
           )}>
             <div className="flex items-center space-x-2 sm:space-x-3 flex-wrap sm:flex-nowrap">
               <Button 
@@ -124,7 +117,7 @@ const FeastBanner: React.FC = () => {
             </div>
           
             {currentEvent && (
-              <div className="flex items-center sm:justify-end flex-wrap sm:flex-nowrap gap-2">
+              <div className="flex items-center justify-center sm:justify-end flex-wrap sm:flex-nowrap gap-2">
                 <div className={cn(
                   "px-3 py-1.5 rounded text-sm font-medium",
                   getColorClasses(currentEvent.color)

@@ -1,0 +1,163 @@
+
+{
+  "compline-introduction": {
+    "id": "compline-introduction",
+    "type": "introduction",
+    "content": {
+      "en": [
+        "O God, come to my assistance.",
+        "O Lord, make haste to help me.",
+        "Glory be to the Father and to the Son and to the Holy Spirit,",
+        "as it was in the beginning, is now, and ever shall be, world without end. Amen."
+      ],
+      "la": [
+        "Deus, in adjutorium meum intende.",
+        "Domine, ad adjuvandum me festina.",
+        "Gloria Patri et Filio et Spiritui Sancto,",
+        "sicut erat in principio, et nunc, et semper, et in saecula saeculorum. Amen."
+      ]
+    },
+    "rubric": {
+      "en": ["The Alleluia is omitted during Lent."],
+      "la": ["Alleluia omittitur tempore Quadragesimae."]
+    }
+  },
+  "compline-short-responsory": {
+    "id": "compline-short-responsory",
+    "type": "responsory",
+    "content": {
+      "en": [
+        "Into your hands, Lord, I commend my spirit.",
+        "Into your hands, Lord, I commend my spirit.",
+        "You have redeemed us, Lord God of truth.",
+        "I commend my spirit.",
+        "Glory be to the Father and to the Son and to the Holy Spirit.",
+        "Into your hands, Lord, I commend my spirit."
+      ],
+      "la": [
+        "In manus tuas, Domine, commendo spiritum meum.",
+        "In manus tuas, Domine, commendo spiritum meum.",
+        "Redemisti nos, Domine Deus veritatis.",
+        "Commendo spiritum meum.",
+        "Gloria Patri et Filio et Spiritui Sancto.",
+        "In manus tuas, Domine, commendo spiritum meum."
+      ]
+    }
+  },
+  "nunc-dimittis": {
+    "id": "nunc-dimittis",
+    "type": "canticle",
+    "title": {
+      "en": ["Nunc Dimittis"],
+      "la": ["Nunc Dimittis"]
+    },
+    "antiphon": {
+      "before": {
+        "en": ["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."],
+        "la": ["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]
+      },
+      "after": {
+        "en": ["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."],
+        "la": ["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]
+      }
+    },
+    "content": {
+      "en": [
+        "At last, all-powerful Master,",
+        "you give leave to your servant to go in peace,",
+        "according to your promise.",
+        "",
+        "For my eyes have seen your salvation",
+        "which you have prepared for all nations,",
+        "the light to enlighten the Gentiles",
+        "and give glory to Israel, your people.",
+        "",
+        "Glory be to the Father and to the Son",
+        "and to the Holy Spirit,",
+        "as it was in the beginning,",
+        "is now, and ever shall be,",
+        "world without end. Amen."
+      ],
+      "la": [
+        "Nunc dimittis servum tuum, Domine,",
+        "secundum verbum tuum in pace,",
+        "quia viderunt oculi mei salutare tuum,",
+        "",
+        "quod parasti ante faciem omnium populorum,",
+        "lumen ad revelationem gentium",
+        "et gloriam plebis tuae Israel.",
+        "",
+        "Gloria Patri et Filio",
+        "et Spiritui Sancto,",
+        "sicut erat in principio,",
+        "et nunc, et semper,",
+        "et in saecula saeculorum. Amen."
+      ]
+    },
+    "scriptureRef": {
+      "book": "Luke",
+      "chapter": 2,
+      "verse": "29-32",
+      "translation": "NRSV",
+      "content": {
+        "en": ["Master, now you are dismissing your servant in peace, according to your word; for my eyes have seen your salvation, which you have prepared in the presence of all peoples, a light for revelation to the Gentiles and for glory to your people Israel."]
+      }
+    }
+  },
+  "compline-conclusion": {
+    "id": "compline-conclusion",
+    "type": "conclusion",
+    "content": {
+      "en": [
+        "The Lord grant us a quiet night and a perfect death.",
+        "Amen."
+      ],
+      "la": [
+        "Noctem quietam et finem perfectum concedat nobis Dominus omnipotens.",
+        "Amen."
+      ]
+    }
+  },
+  "salve-regina": {
+    "id": "salve-regina",
+    "type": "antiphon",
+    "title": {
+      "en": ["Salve Regina"],
+      "la": ["Salve Regina"]
+    },
+    "content": {
+      "en": [
+        "Hail, Holy Queen, Mother of Mercy,",
+        "our life, our sweetness and our hope.",
+        "To thee do we cry, poor banished children of Eve;",
+        "to thee do we send up our sighs,",
+        "mourning and weeping in this valley of tears.",
+        "Turn then, most gracious advocate,",
+        "thine eyes of mercy toward us;",
+        "and after this our exile,",
+        "show unto us the blessed fruit of thy womb, Jesus.",
+        "O clement, O loving, O sweet Virgin Mary."
+      ],
+      "la": [
+        "Salve, Regina, Mater misericordiae,",
+        "vita, dulcedo, et spes nostra, salve.",
+        "Ad te clamamus exsules filii Evae,",
+        "ad te suspiramus, gementes et flentes",
+        "in hac lacrimarum valle.",
+        "Eia, ergo, advocata nostra, illos tuos",
+        "misericordes oculos ad nos converte;",
+        "et Jesum, benedictum fructum ventris tui,",
+        "nobis post hoc exsilium ostende.",
+        "O clemens, O pia, O dulcis Virgo Maria."
+      ]
+    },
+    "audio": [
+      {
+        "id": "salve-regina-chant",
+        "type": "chant",
+        "url": "/audio/chant/salve-regina-solesmes.mp3",
+        "description": "Solesmes Chant"
+      }
+    ]
+  }
+}
