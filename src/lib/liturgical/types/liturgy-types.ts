@@ -19,6 +19,7 @@ export interface AudioResource {
 export interface ChantResource {
   id: string;
   notation: ChantNotation;
+  gregobase_id: string | number | null;
   data: string; // Could be GABC, MEI, or other notation format
   description?: string;
 }
