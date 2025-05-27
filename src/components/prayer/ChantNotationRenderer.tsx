@@ -51,20 +51,34 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
 
     const renderChant = async () => {
+      // Initial check - if we don't have the ref or gabc, don't proceed
       if (!containerRef.current || !gabc) {
-        setLoading(false);  
+        console.log("Container ref or gabc not available", containerRef, gabc);
         return;
       }
 
       try {
         setLoading(true);
-        await loadLibrary();
-        if (!mounted) return;
         setError(null);
-console.log("Trying to render a chant");
+        
         // Clear previous content
         containerRef.current.innerHTML = '';
 
+        await loadLibrary();
+
+        // Check mounted state after async operation
+        if (!mounted) return;
+
+        // Check again after async operation
+        if (!containerRef.current) {
+          console.log("Container ref lost after async operation");
+          return;
+        }
+
+        setError(null);
+console.log("Trying to render a chant");
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
         // Check if exsurge is available
         if (!window.exsurge) {
           throw new Error('Exsurge library not loaded');
@@ -102,6 +116,7 @@ console.log("Exsurge is loaded");
       } catch (err) {
         console.error('Error rendering chant notation:', err);
         setError(err instanceof Error ? err.message : 'Failed to render chant notation');
+        setLoading(false);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -132,10 +147,22 @@ console.log("Exsurge is loaded");
     }
   }, [gabc]);
 
+  // if (loading) {
+  //   return (
+  //     <div className={`p-4 text-center text-amber-700 ${className}`}>
+  //       Loading chant notation...
+  //     </div>
+  //   );
+  // }
   if (loading) {
     return (
-      <div className={`p-4 text-center text-amber-700 ${className}`}>
-        Loading chant notation...
+      <div className={className}>
+        {description && (
+          <p className="text-sm text-amber-700 mb-2">{description}</p>
+        )}
+        <div className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto min-h-[100px] flex items-center justify-center">
+          <div className="text-amber-700">Loading chant notation...</div>
+        </div>
       </div>
     );
   }
@@ -153,6 +180,18 @@ console.log("Exsurge is loaded");
     );
   }
 
+  // return (
+  //   <div className={className}>
+  //     {description && (
+  //       <p className="text-sm text-amber-700 mb-2">{description}</p>
+  //     )}
+  //     <div 
+  //       ref={containerRef}
+  //       className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto"
+  //       style={{ minHeight: '100px' }}
+  //     />
+  //   </div>
+  // );
   return (
     <div className={className}>
       {description && (
@@ -160,9 +199,23 @@ console.log("Exsurge is loaded");
       )}
       <div 
         ref={containerRef}
-        className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto"
-        style={{ minHeight: '100px' }}
-      />
+        className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto min-h-[100px]"
+      >
+        {loading && (
+          <div className="text-center text-amber-700">
+            Loading chant notation...
+          </div>
+        )}
+      </div>
+      {error && (
+        <div className="text-red-600 mt-2">
+          <p>Unable to display chant notation</p>
+          <details className="text-sm mt-1">
+            <summary>Error details</summary>
+            <pre className="whitespace-pre-wrap">{error}</pre>
+          </details>
+        </div>
+      )}
     </div>
   );
 };
