@@ -71,17 +71,24 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
       }
     };
 
+
     // Load exsurge if not already loaded
     if (!window.exsurge) {
       const script = document.createElement('script');
       script.src = '/exsurge/exsurge.min.js';
-      script.onload = () => renderChant();
+      script.onload = () => {
+        console.log('Exsurge loaded successfully');
+        renderChant();  
+      };
       script.onerror = () => {
+        console.error('Failed to load Exsurge script');
         setError('Failed to load chant notation library');
         setLoading(false);
       };
+      console.log('Appending script:', script.src);
       document.head.appendChild(script);
     } else {
+      console.log('Exsurge already loaded');
       renderChant();
     }
   }, [gabc]);
