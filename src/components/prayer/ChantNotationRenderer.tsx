@@ -52,17 +52,16 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
     const renderChant = async () => {
       // Initial check - if we don't have the ref or gabc, don't proceed
-      if (!containerRef.current || !gabc) {
-        console.log("Container ref or gabc not available", containerRef, gabc);
-        return;
-      }
+      // if (!containerRef.current || !gabc) {
+      //   console.log("Container ref or gabc not available", containerRef, gabc);
+      //   return;
+      // }
 
       try {
         setLoading(true);
         setError(null);
         
-        // Clear previous content
-        containerRef.current.innerHTML = '';
+        await new Promise((resolve) => setTimeout(resolve, 150));
 
         await loadLibrary();
 
@@ -71,14 +70,18 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
         // Check again after async operation
         if (!containerRef.current) {
-          console.log("Container ref lost after async operation");
+          console.error("Container ref lost after async operation", containerRef);
+          setError('Container ref lost after async operation');
+          //setLoading(false);
           return;
         }
+
+        // Clear previous content
+        containerRef.current.innerHTML = '';
 
         setError(null);
 console.log("Trying to render a chant");
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
         // Check if exsurge is available
         if (!window.exsurge) {
           throw new Error('Exsurge library not loaded');
