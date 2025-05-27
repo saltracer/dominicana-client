@@ -31,7 +31,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
   const hasAudio = component.audio && component.audio.length > 0;
   const chantContent = LiturgyService.chantContent(component.chant, preferences); //component.chant && component.chant.length > 0;
   
-  console.log("rendering a LiturgyPart:", component, title, hasAudio, chantContent)
+  //console.log("rendering a LiturgyPart:", component, title, hasAudio, chantContent)
 
   const handleChantToggle = () => {
     setShowChant(!showChant);

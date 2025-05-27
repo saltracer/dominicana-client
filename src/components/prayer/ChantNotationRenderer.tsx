@@ -80,13 +80,13 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
         containerRef.current.innerHTML = '';
 
         setError(null);
-console.log("Trying to render a chant");
+//console.log("Trying to render a chant");
 
         // Check if exsurge is available
         if (!window.exsurge) {
           throw new Error('Exsurge library not loaded');
         }
-console.log("Exsurge is loaded");
+//console.log("Exsurge is loaded");
         // Create a new score using exsurge
         //const score = new window.exsurge.ChantScore();
         
@@ -95,26 +95,26 @@ console.log("Exsurge is loaded");
         ctxt.lyricTextFont = "'Crimson Text', serif";
         ctxt.lyricTextSize = 16;
         ctxt.dropCapTextFont = "'Crimson Text', serif";
-        console.log("Setting up the context", ctxt);
-        console.log('Parsing the GABC notation:', gabc)
+        //console.log("Setting up the context", ctxt);
+        //console.log('Parsing the GABC notation:', gabc)
         // Parse the GABC notation
         const mappings = window.exsurge.Gabc.createMappingsFromSource(ctxt, gabc);
         const score = new window.exsurge.ChantScore(ctxt, mappings, true);
         
-        console.log("Parsed the GABC notation", score);
+        //console.log("Parsed the GABC notation", score);
         // Perform layout
         score.performLayout(ctxt);
         score.layoutChantLines(ctxt, 1000);
-        console.log("Layout complete");
+        //console.log("Layout complete");
         // Create SVG element
         const svgElement = score.createSvg(ctxt);
         //console.log("SVG element created", svgElement);
-        console.log("SVG element created, type:", typeof svgElement);
+        //console.log("SVG element created, type:", typeof svgElement);
         // Append to container
-        console.log("Applying the SVG element to the container", containerRef.current);
+        //console.log("Applying the SVG element to the container", containerRef.current);
         containerRef.current.innerHTML = '';
         containerRef.current.innerHTML = svgElement;
-        console.log("SVG element attached via innerHTML");
+        //console.log("SVG element attached via innerHTML");
         setLoading(false); //Setting loading to false after a successful render
       } catch (err) {
         console.error('Error rendering chant notation:', err);
@@ -134,7 +134,7 @@ console.log("Exsurge is loaded");
       const script = document.createElement('script');
       script.src = '/exsurge/exsurge.min.js';
       script.onload = () => {
-        console.log('Exsurge loaded successfully');
+        //console.log('Exsurge loaded successfully');
         renderChant();  
       };
       script.onerror = () => {
@@ -142,10 +142,10 @@ console.log("Exsurge is loaded");
         setError('Failed to load chant notation library');
         setLoading(false);
       };
-      console.log('Appending script:', script.src);
+      //console.log('Appending script:', script.src);
       document.head.appendChild(script);
     } else {
-      console.log('Exsurge already loaded');
+      //console.log('Exsurge already loaded');
       renderChant();
     }
   }, [gabc]);
