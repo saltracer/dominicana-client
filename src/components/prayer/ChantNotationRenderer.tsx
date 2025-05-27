@@ -63,12 +63,13 @@ console.log("Exsurge is loaded");
         // Create SVG element
         const svgElement = score.createSvg(ctxt);
         console.log("SVG element created", svgElement);
+        console.log("SVG element created, type:", typeof svgElement);
         // Append to container
         console.log("Applying the SVG element to the container", containerRef.current);
-        containerRef.current.appendChild(svgElement);
-        console.log("SVG element appended");
+        containerRef.current.innerHTML = '';
+        containerRef.current.innerHTML = svgElement;
+        console.log("SVG element attached via innerHTML");
         setLoading(false); //Setting loading to false after a successful render
-      
       } catch (err) {
         console.error('Error rendering chant notation:', err);
         setError(err instanceof Error ? err.message : 'Failed to render chant notation');
