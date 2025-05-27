@@ -29,9 +29,9 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     LiturgyService.renderContent(component.antiphon.after, preferences) : [];
   
   const hasAudio = component.audio && component.audio.length > 0;
-  const hasChant = component.chant && component.chant.length > 0;
+  const chantContent = LiturgyService.chantContent(component.chant, preferences); //component.chant && component.chant.length > 0;
   
-  console.log("rendering a LiturgyPart:", component, title, hasAudio, hasChant)
+  console.log("rendering a LiturgyPart:", component, title, hasAudio, chantContent)
 
   const handleChantToggle = () => {
     setShowChant(!showChant);
@@ -47,7 +47,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
               <Volume2 className="h-3 w-3" />
             </Button>
           )}
-          {hasChant && (
+          {chantContent && (
             <Button 
               size="sm" 
               variant={showChant ? "default" : "outline"} 
@@ -92,16 +92,16 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
         ))}
       </div>
       
-      {showChant && hasChant && (
+      {showChant && chantContent && (
         <div className="mt-4">
-          {component.chant?.map((chant, index) => (
+          {/*chantContent.map((chant, index) => ( */
             <ChantNotationRenderer 
-              key={index}
-              gabc={chant.data}
-              description={chant.description}
+              key={chantContent.gregobase_id}
+              gabc={chantContent.data}
+              description={chantContent.description}
               className="mb-4"
             />
-          ))}
+          /*))*/}
         </div>
       )}
       

@@ -5,9 +5,11 @@ import {
   LiturgyTemplate, 
   UserLiturgyPreferences,
   LanguageCode,
-  MultiLanguageContent 
+  MultiLanguageContent,
+  MultiLanguageChantResource
 } from '../types/liturgy-types';
 import { getLiturgicalSeason } from '../liturgical-seasons';
+import { ChantResource } from '../types/liturgy-types';
 
 // Import JSON data
 import commonComponents from '../data/components/common-components.json';
@@ -119,20 +121,38 @@ export class LiturgyService {
   
   static getLiturgicalSeasonClass(date: Date): string {
     const season = getLiturgicalSeason(date);
+    // Return the season name in lowercase as the class name
+    return season.name.toLowerCase() || 'ordinary';
+  }
+
+  static chantContent(
+    chant: MultiLanguageChantResource | undefined,
+    preferences: UserLiturgyPreferences
+  ): ChantResource | null {
+    if (!chant) return null;
     
-    switch(season.name.toLowerCase()) {
-      case 'lent':
-        return 'lent';
-      case 'easter':
-        return 'easter';
-      case 'pentecost':
-        return 'pentecost';
-      case 'christmas':
-        return 'christmas';
-      case 'advent':
-        return 'advent';
+    const { primaryLanguage, secondaryLanguage, displayMode } = preferences;
+    
+    switch (displayMode) {
+      case 'primary-only':
+        return chant[primaryLanguage] || chant['en'];
+        
+      case 'secondary-only':
+        if (secondaryLanguage) {
+          return chant[secondaryLanguage] || chant['en'];
+        }
+        return chant[primaryLanguage] || chant['en'];
+        
+      case 'bilingual':
+        // For bilingual mode, we consider it has a chant if either language has it
+        const hasPrimary = chant[primaryLanguage];
+        const hasSecondary = secondaryLanguage ? chant[secondaryLanguage] : null;
+        const hasEnglish = chant['en'];
+        
+        return hasPrimary || hasSecondary || hasEnglish;
+        
       default:
-        return 'ordinary';
+        return null;
     }
   }
   
