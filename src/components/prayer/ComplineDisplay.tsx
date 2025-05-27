@@ -6,6 +6,7 @@ import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ChantNotationRenderer from './ChantNotationRenderer';
 
 interface LiturgyPartProps {
   component: LiturgyComponent;
@@ -90,17 +91,14 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
       </div>
       
       {showChant && hasChant && (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
-          <h5 className="font-medium text-amber-800 mb-2">Chant Notation</h5>
+        <div className="mt-4">
           {component.chant?.map((chant, index) => (
-            <div key={index} className="mb-3">
-              {chant.description && (
-                <p className="text-sm text-amber-700 mb-1">{chant.description}</p>
-              )}
-              <div className="font-mono text-sm bg-white p-3 rounded border border-amber-300">
-                {chant.data}
-              </div>
-            </div>
+            <ChantNotationRenderer 
+              key={index}
+              gabc={chant.data}
+              description={chant.description}
+              className="mb-4"
+            />
           ))}
         </div>
       )}
