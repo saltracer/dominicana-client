@@ -98,8 +98,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
             <ChantNotationRenderer 
               key={index}
               chant={chant}
-              preferredLanguage={preferences.primaryLanguage}
-              fallbackLanguage={preferences.secondaryLanguage}
+              preferences={preferences}
               className="mb-4"
             />
           ))}
