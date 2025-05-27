@@ -62,7 +62,7 @@ console.log("Exsurge is loaded");
         console.log("Layout complete");
         // Create SVG element
         const svgElement = score.createSvg(ctxt);
-        console.log("SVG element created");
+        console.log("SVG element created", svgElement);
         // Append to container
         console.log("Applying the SVG element to the container", containerRef.current);
         containerRef.current.appendChild(svgElement);
@@ -77,7 +77,6 @@ console.log("Exsurge is loaded");
       }
     };
 
-    
     // Load exsurge if not already loaded
     if (!window.exsurge) {
       const script = document.createElement('script');
