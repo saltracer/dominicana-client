@@ -97,8 +97,8 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
           {component.chant?.map((chant, index) => (
             <ChantNotationRenderer 
               key={index}
-              gabc={chant.data}
-              description={chant.description}
+              chant={chant}
+              preferences={preferences}
               className="mb-4"
             />
           ))}
