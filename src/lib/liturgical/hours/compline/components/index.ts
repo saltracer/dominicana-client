@@ -1,7 +1,5 @@
-import type {ComplineComponent} from "../../hour-types"
-import { nowThatTheDaylightDiesAway, salveRegina } from "./hymns"
 
-export { nowThatTheDaylightDiesAway, salveRegina }
+import type {ComplineComponent} from "../../hour-types"
 
 export const introduction: ComplineComponent = {
     id: "compline-introduction",

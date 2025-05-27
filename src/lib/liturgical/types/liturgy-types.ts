@@ -16,12 +16,16 @@ export interface AudioResource {
   description?: string;
 }
 
+export interface MultiLanguageChantData {
+  [key: string]: string; // Language code to GABC notation data
+}
+
 export interface ChantResource {
   id: string;
   notation: ChantNotation;
   gregobase_id: string | number | null;
-  data: string; // Could be GABC, MEI, or other notation format
-  description?: string;
+  data: MultiLanguageChantData; // Now supports multiple languages
+  description?: MultiLanguageContent; // Descriptions in multiple languages
 }
 
 export interface ScriptureReference {
