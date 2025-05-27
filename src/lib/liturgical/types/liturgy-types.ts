@@ -20,8 +20,8 @@ export interface ChantResource {
   id: string;
   notation: ChantNotation;
   gregobase_id: string | number | null;
-  data: MultiLanguageContent; // Changed from string to MultiLanguageContent
-  description?: MultiLanguageContent; // Changed from string to MultiLanguageContent
+  data: string; // Could be GABC, MEI, or other notation format
+  description?: string;
 }
 
 export interface ScriptureReference {
