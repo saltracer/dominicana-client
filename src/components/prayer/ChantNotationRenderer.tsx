@@ -74,7 +74,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
     // Load exsurge if not already loaded
     if (!window.exsurge) {
       const script = document.createElement('script');
-      script.src = '/src/lib/exsurge/exsurge.min.js';
+      script.src = '/exsurge/exsurge.min.js';
       script.onload = () => renderChant();
       script.onerror = () => {
         setError('Failed to load chant notation library');
