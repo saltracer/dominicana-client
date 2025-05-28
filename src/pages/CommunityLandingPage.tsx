@@ -87,7 +87,7 @@ const CommunityLandingPage: React.FC = () => {
         </div>
 
         {/* Global Dominican Presence */}
-        <Card className="border-amber-200 mb-8">
+        <Card className="border-amber-200 mb-8 hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="font-garamond text-3xl text-dominican-black text-center flex items-center justify-center">
               <MapPin className="mr-3" size={32} />
