@@ -6,6 +6,28 @@ import { CelebrationRank } from "../../celebrations/celebrations-types"
 // May saints
 export const mayGeneralSaints: Saint[] = [
   {
+    id: "augustine-of-canterbury",
+    name: "St. Augustine of Canterbury",
+    feast_day: "05-27",
+    short_bio: "Apostle to the English and first Archbishop of Canterbury",
+    biography: [
+      "St. Augustine of Canterbury, often called the 'Apostle to the English', was a Benedictine monk who became the first Archbishop of Canterbury in the year 597. He was sent by Pope Gregory the Great to evangelize the Anglo-Saxons in England. Augustine had been the prior of a monastery in Rome when Pope Gregory chose him to lead a mission to convert King Æthelberht and his Kingdom of Kent from Anglo-Saxon paganism to Christianity.",
+      "Augustine and his companions landed in Kent in 597 and were received by King Æthelberht, whose Christian wife, Bertha of Kent, had already established a church dedicated to St. Martin of Tours in Canterbury. The king was eventually converted and baptized, and he allowed the missionaries to preach freely throughout his kingdom. Augustine established his episcopal see in Canterbury and became the first Archbishop of Canterbury, establishing the foundations of what would become the Church of England.",
+      "Augustine faced challenges in his mission, particularly in his relations with the native British Christians, who followed different liturgical customs. Despite attempts at reconciliation at the Synod of Chester, differences in practice and the lingering resentment over Anglo-Saxon encroachment on British lands prevented full unity. Augustine was more successful in establishing a school to train native clergy and in founding the first cathedral at Canterbury, which became a center of learning and mission.",
+      "Before his death on May 26, 604, Augustine had established churches in Canterbury, Rochester, and London, and had laid the foundation for the Christianization of the Anglo-Saxon kingdoms. He was buried at what became St. Augustine's Abbey in Canterbury, which remained an important religious center until the English Reformation.",
+    ],
+    image_url: "/saints/st-augustine-of-canterbury.jpg",
+    patronage: "England, English dioceses, and the Anglican Communion",
+    birth_year: 6,
+    death_year: 604,
+    prayers:
+      "O Lord our God, who by your Son Jesus Christ called your Apostles and sent them forth to preach the Gospel to the nations: We bless your holy name for your servant Augustine, first Archbishop of Canterbury, whose labors in prayer, preaching, and pastoral zeal established the Church in England; and we pray that all whom you call and send may do your will, bide your time, and see your glory; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. Amen.",
+    is_dominican: false,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
+    color: LiturgicalColor.WHITE,
+    proper: "Common of Pastors: For Missionaries",
+  },
+  {
     id: "isidore-the-farmer",
     name: "St. Isidore the Farmer",
     feast_day: "05-15",
