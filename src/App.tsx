@@ -16,6 +16,12 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import AdminPanel from "./pages/admin/AdminPanel";
 import SettingsPage from "./pages/SettingsPage";
 
+// New content pages
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+
 // Prayer Pages
 import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
 import RosaryPage from "./pages/prayer/RosaryPage";
@@ -49,6 +55,12 @@ const App = () => {
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 <Route path="/subscription" element={<SubscriptionPage />} />
+                
+                {/* Content Pages - Public Access */}
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms-of-service" element={<TermsOfServicePage />} />
                 
                 {/* Settings Route - Requires Authentication */}
                 <Route path="/settings" element={
