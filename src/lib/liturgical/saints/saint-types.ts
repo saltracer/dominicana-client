@@ -13,7 +13,6 @@ export interface Saint {
   rank?: CelebrationRank
   color?: LiturgicalColor
   proper?: string
-  celebration_name?: string
   type?: "universal" | "dominican" | "both"
   books?: any[]
   canonization_date?: string

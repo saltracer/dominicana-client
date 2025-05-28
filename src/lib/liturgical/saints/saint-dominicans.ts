@@ -190,7 +190,6 @@ export const dominicanSaints: Saint[] = [
     rank: CelebrationRank.SOLEMNITY,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
-    celebration_name: "Our Holy Father Dominic, Priest and Founder of the Order of Preachers",
     type: "dominican",
   },
   {

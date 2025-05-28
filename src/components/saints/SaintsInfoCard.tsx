@@ -122,28 +122,6 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
             </>
           )}
 
-          {/* Quotes Section */}
-          {selectedSaint.quotes && selectedSaint.quotes.length > 0 && (
-            <>
-              <Separator className="my-6" />
-              <section>
-                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3 flex items-center gap-2">
-                  <Quote className="w-5 h-5" />
-                  Notable Quotes
-                </h2>
-                <div className="space-y-3">
-                  {selectedSaint.quotes.map((quote, index) => (
-                    <blockquote key={index} className="border-l-4 border-dominican-gold pl-4 py-2 bg-dominican-white/50 rounded-r-lg">
-                      <p className="font-garamond text-lg text-gray-700 italic leading-relaxed">
-                        "{quote}"
-                      </p>
-                    </blockquote>
-                  ))}
-                </div>
-              </section>
-            </>
-          )}
-
           {/* Canonization Information */}
           {selectedSaint.canonization_date && (
             <>
@@ -190,6 +168,28 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
                     <p key={index} className="text-gray-700 leading-relaxed text-justify">
                       {paragraph}
                     </p>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+
+          {/* Quotes Section */}
+          {selectedSaint.quotes && selectedSaint.quotes.length > 0 && (
+            <>
+              <Separator className="my-6" />
+              <section>
+                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3 flex items-center gap-2">
+                  <Quote className="w-5 h-5" />
+                  Notable Quotes
+                </h2>
+                <div className="space-y-3">
+                  {selectedSaint.quotes.map((quote, index) => (
+                    <blockquote key={index} className="border-l-4 border-dominican-gold pl-4 py-2 bg-dominican-white/50 rounded-r-lg">
+                      <p className="font-garamond text-lg text-gray-700 italic leading-relaxed">
+                        "{quote}"
+                      </p>
+                    </blockquote>
                   ))}
                 </div>
               </section>
