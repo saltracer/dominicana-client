@@ -78,7 +78,7 @@ const CommunityLandingPage: React.FC = () => {
                 <div className="text-sm text-gray-600">• St. Rose of Lima - First Saint of the Americas</div>
               </div>
               <Link to="/community/saints">
-                <Button className="w-full bg-dominican-black hover:bg-gray-800">
+                <Button className="w-full bg-dominican-burgundy">
                   Explore Saints
                 </Button>
               </Link>
