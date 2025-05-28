@@ -131,6 +131,110 @@
       ]
     }
   },
+  "alma-redemptoris": {
+    "id": "alma-redemptoris",
+    "type": "antiphon",
+    "title": {
+      "en": ["Loving Mother of the Redeemer"],
+      "la": ["Alma Redemptóris Mater"]
+    },
+    "content": {
+      "en": [
+        "Loving mother of the Redeemer, gate of heaven, star of the sea,",
+        "assist your people who have fallen yet strive to rise again.",
+        "To the wonderment of nature you bore your Creator,",
+        "yet remained a virgin after as before.",
+        "You who received Gabriel's joyful greeting,",
+        "have pity on us poor sinners."
+      ],
+      "la": [
+        "Alma Redemptóris Mater, quæ pérvia cæli",
+        "Porta manes, et stella maris, succúrre cadénti,",
+        "Súrgere qui curat pópulo: tu quæ genuísti,",
+        "Natúra miránte, tuum sanctum Genitórem,",
+        "Virgo prius ac postérius, Gabriélis ab ore",
+        "Sumens illud Ave, peccatórum miserére."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "alma-redemptoris-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8128,
+        "data": "(c4) Al[Loving](c)ma[/](e) Re[mother](g)dem(h)pó(hi)ris[/](h) Ma[of the Redeemer,](g)ter,(g.) (;) quæ[gate](h) pér[of heaven,](i)vi(g)a[/](h) cé[star](i)li[/](h) por[of the sea,](g)ta,(g.) (;) ma[who](h)nes,[/](i) et[and](i) stél[star](i)la[/](i) ma[of the sea,](h)ris,(g.) (;) suc[assist](h)cúr[your](i)re[/](h) ca[people](g)dén[who have](h)ti,[/](g.) (;) Súr[to rise](h)ge[again.](i)re[/](h) qui[who](g) cu[fall](h)rat[/](g) pó[to rise](h)pu(i)lo:(g.) (::) Tu[You](h) quæ[who](i) ge[gave birth](h)nu(hi)ís(g)ti,[/](h.) (;) Na[by the wonder](h)tú[of nature](i)ra[/](h) mi[your](g)rán(h)te,[/](g.) (;) tu[your](h)um[/](i) sanc(g)tum[/](h) Ge[Creator,](i)ni(g)tó(h)rem,(g.) (;) Vir[Virgin](h)go[/](i) pri[before](h)us[/](g) ac[and](h) post(h)é(h)ri(i)us,(g.) (;) Ga[Gabriel's](h)bri(g)é(g)lis[/](h) ab[greeting,](i) o(g)re[/](h) (;) Su[have](g)mens[/](h) il(g)lud[/](hi) A(hi)ve,(g.) (;) pec[on us](h)ca(h)tó(g)rum[/](h) mi[have mercy.](g)se(g)ré(g)re.(e.) (::)",
+        "description": "Traditional Gregorian chant for Alma Redemptoris Mater"
+      }
+    }
+  },
+  
+  "ave-regina-caelorum": {
+    "id": "ave-regina-caelorum",
+    "type": "antiphon",
+    "title": {
+      "en": ["Hail, Queen of Heaven"],
+      "la": ["Ave Regina Caelorum"]
+    },
+    "content": {
+      "en": [
+        "Hail, O Queen of Heaven, enthroned! Hail, by angels Mistress owned!",
+        "Root of Jesse, Gate of morn, when the world's true Light was born:",
+        "Glorious Virgin, joy to thee, loveliest whom in heaven they see:",
+        "Fairest thou where all are fair, plead with Christ our sins to spare."
+      ],
+      "la": [
+        "Ave, Regina cælórum, Ave, Dómina Angelórum:",
+        "Salve, radix, salve, porta, Ex qua mundo lux est orta:",
+        "Gaude, Virgo gloriósa, Super omnes speciósa,",
+        "Vale, o valde decóra, Et pro nobis Christum exóra."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "ave-regina-caelorum-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8129,
+        "data": "(c4) A[Hail,](c)ve,[/](e) Re[Queen](g)gi(g)na[/](h) cæ[of heaven,](g)ló(h)rum,(g.) (;) A[Hail,](h)ve,[/](i) Dó[by](i)mi(g)na[/](h) An[angels](i)ge(g)ló(g)rum:(g.) (::) Sal[Root](h)ve,[/](i) ra[of Jesse,](g)dix,[/](h) sal[Gate](i)ve,[/](g) por[of](h)ta,[/](g.) (;) Ex[when](h) qua[/](i) mun[the world's](g)do[/](h) lux[light](i) est[/](h) or[was born:](g)ta:(g.) (::) Gau[Glorious](h)de,[/](i) Vir[Virgin,](g)go[/](h) glo[joy](i)ri(g)ó(g)sa,(g.) (;) Su[loveliest](h)per[/](i) om[whom](g)nes[/](h) spe[in](i)ci(g)ó(g)sa,(g.) (::) Va[Fairest](h)le,[/](i) o[where](g) val[all](h)de[/](g) de[are fair,](h)có(h)ra,(g.) (;) Et[plead](h) pro[/](i) no[with](g)bis[/](h) Chri[Christ](i)stum[/](h) ex[our](g)ó(g)ra.(e.) (::)",
+        "description": "Traditional Gregorian chant for Ave Regina Caelorum"
+      }
+    }
+  },
+  
+  "regina-caeli": {
+    "id": "regina-caeli",
+    "type": "antiphon",
+    "title": {
+      "en": ["Queen of Heaven"],
+      "la": ["Regina Caeli"]
+    },
+    "content": {
+      "en": [
+        "Queen of Heaven, rejoice, alleluia:",
+        "For He whom you merited to bear, alleluia,",
+        "Has risen, as He said, alleluia.",
+        "Pray for us to God, alleluia.",
+        "Rejoice and be glad, O Virgin Mary, alleluia.",
+        "For the Lord has truly risen, alleluia."
+      ],
+      "la": [
+        "Regína cæli lætáre, allelúia:",
+        "Quia quem meruísti portáre, allelúia,",
+        "Resurréxit, sicut dixit, allelúia.",
+        "Ora pro nobis Deum, allelúia.",
+        "Gaude et lætáre, Virgo María, allelúia.",
+        "Quia surréxit Dóminus vere, allelúia."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "regina-caeli-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8130,
+        "data": "(c4) Re[Queen](c)gi(g)na[/](h) cæ[of heaven,](g)li[/](h) læ[rejoice,](i)tá(h)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Qui[For](h)a[/](i) quem[/](h) me[you](g)ru(h)ís(g)ti[/](h) por[to bear,](i)tá(h)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Re[He](h)sur(h)ré[has risen,](i)xit,[/](h.) (;) si[as](g)cut[/](h) di[He said,](i)xit,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) O[Pray](h)ra[/](i) pro[/](h) no[to God,](g)bis[/](h) De(i)um,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Gau[Rejoice](h)de[/](i) et[/](h) læ[and be glad,](i)tá(h)re,(g.) (;) Vir[Virgin](h)go[/](i) Ma[Mary,](g)rí(h)a,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Qui[For](h)a[/](i) sur[/](h)ré[the Lord](i)xit[/](h) Dó[has truly risen,](i)mi(g)nus[/](h) ve[alleluia.](i)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(e.) (::)",
+        "description": "Traditional Gregorian chant for Regina Caeli"
+      }
+    }
+  },
+  
   "salve-regina": {
     "id": "salve-regina",
     "type": "antiphon",

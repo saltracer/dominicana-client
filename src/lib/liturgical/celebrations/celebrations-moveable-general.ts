@@ -1,5 +1,23 @@
 import { LiturgicalColor } from "../liturgical-types"
-import { calculateEaster, calculateFirstAdventSunday } from "../liturgical-seasons"
+import { 
+  calculateEaster, 
+  calculateFirstAdventSunday,
+  getAshWednesday,
+  getHolyWeekDates,
+  getEasterOctaveDates,
+  getPentecostSunday,
+  getLaetareSunday,
+  getHolyThursday,
+  getGoodFriday,
+  getHolySaturday,
+  getPalmSunday,
+  getDivineMercySunday,
+  getAscensionThursday,
+  getTrinitySunday,
+  getCorpusChristiThursday,
+  getSacredHeartFriday,
+  getChristTheKingSunday
+} from "../liturgical-seasons"
 import { FixedCelebration, CelebrationRank } from "./celebrations-types"
 
 // Define the moveable feasts and solemnities (those that depend on the date of Easter)
@@ -11,132 +29,123 @@ export function moveableGeneralCelebrations(year: number): FixedCelebration[] {
   // Format Easter date as "MM-DD"
   const easterDateString = `${easterMonth.toString().padStart(2, "0")}-${easterDay.toString().padStart(2, "0")}`
 
-  // Calculate other dates based on Easter
-  const ashWednesdayDate = new Date(easterDate)
-  ashWednesdayDate.setDate(easterDate.getDate() - 46) // 46 days before Easter
+  // Get Ash Wednesday
+  const ashWednesdayDate = getAshWednesday(year)
   const ashWednesdayMonth = ashWednesdayDate.getMonth() + 1
   const ashWednesdayDay = ashWednesdayDate.getDate()
   const ashWednesdayString = `${ashWednesdayMonth.toString().padStart(2, "0")}-${ashWednesdayDay.toString().padStart(2, "0")}`
 
-  // Holy Week - Monday, Tuesday, Wednesday
-  const holyMondayDate = new Date(easterDate)
-  holyMondayDate.setDate(easterDate.getDate() - 6) // 6 days before Easter
-  const holyMondayMonth = holyMondayDate.getMonth() + 1
-  const holyMondayDay = holyMondayDate.getDate()
-  const holyMondayString = `${holyMondayMonth.toString().padStart(2, "0")}-${holyMondayDay.toString().padStart(2, "0")}`
+  // Get Holy Week dates
+  const {
+    palmSunday: palmSundayDate,
+    holyMonday: holyMondayDate,
+    holyTuesday: holyTuesdayDate,
+    holyWednesday: holyWednesdayDate,
+    holyThursday: holyThursdayDate,
+    goodFriday: goodFridayDate,
+    holySaturday: holySaturdayDate
+  } = getHolyWeekDates(easterDate)
 
-  const holyTuesdayDate = new Date(easterDate)
-  holyTuesdayDate.setDate(easterDate.getDate() - 5) // 5 days before Easter
-  const holyTuesdayMonth = holyTuesdayDate.getMonth() + 1
-  const holyTuesdayDay = holyTuesdayDate.getDate()
-  const holyTuesdayString = `${holyTuesdayMonth.toString().padStart(2, "0")}-${holyTuesdayDay.toString().padStart(2, "0")}`
-
-  const holyWednesdayDate = new Date(easterDate)
-  holyWednesdayDate.setDate(easterDate.getDate() - 4) // 4 days before Easter
-  const holyWednesdayMonth = holyWednesdayDate.getMonth() + 1
-  const holyWednesdayDay = holyWednesdayDate.getDate()
-  const holyWednesdayString = `${holyWednesdayMonth.toString().padStart(2, "0")}-${holyWednesdayDay.toString().padStart(2, "0")}`
-
-  const palmSundayDate = new Date(easterDate)
-  palmSundayDate.setDate(easterDate.getDate() - 7) // 7 days before Easter
   const palmSundayMonth = palmSundayDate.getMonth() + 1
   const palmSundayDay = palmSundayDate.getDate()
   const palmSundayString = `${palmSundayMonth.toString().padStart(2, "0")}-${palmSundayDay.toString().padStart(2, "0")}`
 
-  // Calculate Laetare Sunday (4th Sunday of Lent - 3 weeks before Easter)
-  const laetareSundayDate = new Date(easterDate)
-  laetareSundayDate.setDate(easterDate.getDate() - 21) // 21 days (3 weeks) before Easter
+  const holyMondayMonth = holyMondayDate.getMonth() + 1
+  const holyMondayDay = holyMondayDate.getDate()
+  const holyMondayString = `${holyMondayMonth.toString().padStart(2, "0")}-${holyMondayDay.toString().padStart(2, "0")}`
+
+  const holyTuesdayMonth = holyTuesdayDate.getMonth() + 1
+  const holyTuesdayDay = holyTuesdayDate.getDate()
+  const holyTuesdayString = `${holyTuesdayMonth.toString().padStart(2, "0")}-${holyTuesdayDay.toString().padStart(2, "0")}`
+
+  const holyWednesdayMonth = holyWednesdayDate.getMonth() + 1
+  const holyWednesdayDay = holyWednesdayDate.getDate()
+  const holyWednesdayString = `${holyWednesdayMonth.toString().padStart(2, "0")}-${holyWednesdayDay.toString().padStart(2, "0")}`
+
+  // Get Laetare Sunday (4th Sunday of Lent)
+  const laetareSundayDate = getLaetareSunday(year)
   const laetareSundayMonth = laetareSundayDate.getMonth() + 1
   const laetareSundayDay = laetareSundayDate.getDate()
   const laetareSundayString = `${laetareSundayMonth.toString().padStart(2, "0")}-${laetareSundayDay.toString().padStart(2, "0")}`
 
-  const holyThursdayDate = new Date(easterDate)
-  holyThursdayDate.setDate(easterDate.getDate() - 3) // 3 days before Easter
   const holyThursdayMonth = holyThursdayDate.getMonth() + 1
   const holyThursdayDay = holyThursdayDate.getDate()
   const holyThursdayString = `${holyThursdayMonth.toString().padStart(2, "0")}-${holyThursdayDay.toString().padStart(2, "0")}`
 
-  const goodFridayDate = new Date(easterDate)
-  goodFridayDate.setDate(easterDate.getDate() - 2) // 2 days before Easter
   const goodFridayMonth = goodFridayDate.getMonth() + 1
   const goodFridayDay = goodFridayDate.getDate()
   const goodFridayString = `${goodFridayMonth.toString().padStart(2, "0")}-${goodFridayDay.toString().padStart(2, "0")}`
 
-  const holySaturdayDate = new Date(easterDate)
-  holySaturdayDate.setDate(easterDate.getDate() - 1) // 1 day before Easter
   const holySaturdayMonth = holySaturdayDate.getMonth() + 1
   const holySaturdayDay = holySaturdayDate.getDate()
   const holySaturdayString = `${holySaturdayMonth.toString().padStart(2, "0")}-${holySaturdayDay.toString().padStart(2, "0")}`
 
-  // Easter Octave - Monday through Saturday
-  const easterMondayDate = new Date(easterDate)
-  easterMondayDate.setDate(easterDate.getDate() + 1) // 1 day after Easter
+  // Get Easter Octave dates
+  const {
+    easterMonday: easterMondayDate,
+    easterTuesday: easterTuesdayDate,
+    easterWednesday: easterWednesdayDate,
+    easterThursday: easterThursdayDate,
+    easterFriday: easterFridayDate,
+    easterSaturday: easterSaturdayDate
+  } = getEasterOctaveDates(easterDate)
+
   const easterMondayMonth = easterMondayDate.getMonth() + 1
   const easterMondayDay = easterMondayDate.getDate()
   const easterMondayString = `${easterMondayMonth.toString().padStart(2, "0")}-${easterMondayDay.toString().padStart(2, "0")}`
 
-  const easterTuesdayDate = new Date(easterDate)
-  easterTuesdayDate.setDate(easterDate.getDate() + 2) // 2 days after Easter
   const easterTuesdayMonth = easterTuesdayDate.getMonth() + 1
   const easterTuesdayDay = easterTuesdayDate.getDate()
   const easterTuesdayString = `${easterTuesdayMonth.toString().padStart(2, "0")}-${easterTuesdayDay.toString().padStart(2, "0")}`
 
-  const easterWednesdayDate = new Date(easterDate)
-  easterWednesdayDate.setDate(easterDate.getDate() + 3) // 3 days after Easter
   const easterWednesdayMonth = easterWednesdayDate.getMonth() + 1
   const easterWednesdayDay = easterWednesdayDate.getDate()
   const easterWednesdayString = `${easterWednesdayMonth.toString().padStart(2, "0")}-${easterWednesdayDay.toString().padStart(2, "0")}`
 
-  const easterThursdayDate = new Date(easterDate)
-  easterThursdayDate.setDate(easterDate.getDate() + 4) // 4 days after Easter
   const easterThursdayMonth = easterThursdayDate.getMonth() + 1
   const easterThursdayDay = easterThursdayDate.getDate()
   const easterThursdayString = `${easterThursdayMonth.toString().padStart(2, "0")}-${easterThursdayDay.toString().padStart(2, "0")}`
 
-  const easterFridayDate = new Date(easterDate)
-  easterFridayDate.setDate(easterDate.getDate() + 5) // 5 days after Easter
   const easterFridayMonth = easterFridayDate.getMonth() + 1
   const easterFridayDay = easterFridayDate.getDate()
   const easterFridayString = `${easterFridayMonth.toString().padStart(2, "0")}-${easterFridayDay.toString().padStart(2, "0")}`
 
-  const easterSaturdayDate = new Date(easterDate)
-  easterSaturdayDate.setDate(easterDate.getDate() + 6) // 6 days after Easter
   const easterSaturdayMonth = easterSaturdayDate.getMonth() + 1
   const easterSaturdayDay = easterSaturdayDate.getDate()
   const easterSaturdayString = `${easterSaturdayMonth.toString().padStart(2, "0")}-${easterSaturdayDay.toString().padStart(2, "0")}`
 
-  const divineMercyDate = new Date(easterDate)
-  divineMercyDate.setDate(easterDate.getDate() + 7) // 7 days (one week) after Easter
+  // Get Divine Mercy Sunday (1 week after Easter)
+  const divineMercyDate = getDivineMercySunday(year)
   const divineMercyMonth = divineMercyDate.getMonth() + 1
   const divineMercyDay = divineMercyDate.getDate()
   const divineMercyString = `${divineMercyMonth.toString().padStart(2, "0")}-${divineMercyDay.toString().padStart(2, "0")}`
 
-  const ascensionDate = new Date(easterDate)
-  ascensionDate.setDate(easterDate.getDate() + 39) // 39 days after Easter (traditionally 40, but we're calculating from Easter Sunday)
+  // Get Ascension Thursday (39 days after Easter)
+  const ascensionDate = getAscensionThursday(year)
   const ascensionMonth = ascensionDate.getMonth() + 1
   const ascensionDay = ascensionDate.getDate()
   const ascensionString = `${ascensionMonth.toString().padStart(2, "0")}-${ascensionDay.toString().padStart(2, "0")}`
 
-  const pentecostDate = new Date(easterDate)
-  pentecostDate.setDate(easterDate.getDate() + 49) // 49 days after Easter (7 weeks)
+  // Get Pentecost (49 days after Easter)
+  const pentecostDate = getPentecostSunday(year)
   const pentecostMonth = pentecostDate.getMonth() + 1
   const pentecostDay = pentecostDate.getDate()
   const pentecostString = `${pentecostMonth.toString().padStart(2, "0")}-${pentecostDay.toString().padStart(2, "0")}`
 
-  const trinityDate = new Date(easterDate)
-  trinityDate.setDate(easterDate.getDate() + 56) // 56 days after Easter (8 weeks)
-  const trinityMonth = trinityDate.getMonth() + 1
-  const trinityDay = trinityDate.getDate()
-  const trinityString = `${trinityMonth.toString().padStart(2, "0")}-${trinityDay.toString().padStart(2, "0")}`
+  // Get Trinity Sunday (1 week after Pentecost)
+  const trinitySundayDate = getTrinitySunday(year)
+  const trinitySundayMonth = trinitySundayDate.getMonth() + 1
+  const trinitySundayDay = trinitySundayDate.getDate()
+  const trinitySundayString = `${trinitySundayMonth.toString().padStart(2, "0")}-${trinitySundayDay.toString().padStart(2, "0")}`
 
-  const corpusChristiDate = new Date(easterDate)
-  corpusChristiDate.setDate(easterDate.getDate() + 60) // 60 days after Easter (Thursday after Trinity Sunday)
+  // Get Corpus Christi (Thursday after Trinity Sunday)
+  const corpusChristiDate = getCorpusChristiThursday(year)
   const corpusChristiMonth = corpusChristiDate.getMonth() + 1
   const corpusChristiDay = corpusChristiDate.getDate()
   const corpusChristiString = `${corpusChristiMonth.toString().padStart(2, "0")}-${corpusChristiDay.toString().padStart(2, "0")}`
 
-  const sacredHeartDate = new Date(easterDate)
-  sacredHeartDate.setDate(easterDate.getDate() + 68) // 68 days after Easter (Friday after Corpus Christi)
+  // Get Sacred Heart of Jesus (Friday after Trinity Sunday)
+  const sacredHeartDate = getSacredHeartFriday(year)
   const sacredHeartMonth = sacredHeartDate.getMonth() + 1
   const sacredHeartDay = sacredHeartDate.getDate()
   const sacredHeartString = `${sacredHeartMonth.toString().padStart(2, "0")}-${sacredHeartDay.toString().padStart(2, "0")}`
@@ -509,7 +518,7 @@ export function moveableGeneralCelebrations(year: number): FixedCelebration[] {
     {
       id: "trinity",
       name: "The Most Holy Trinity",
-      date: trinityString,
+      date: trinitySundayString,
       rank: CelebrationRank.SOLEMNITY,
       color: LiturgicalColor.WHITE,
       proper: "Proper of Time",

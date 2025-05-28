@@ -126,10 +126,14 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
 const ComplineDisplay: React.FC = () => {
   const { selectedDate } = useLiturgicalDay();
   const { preferences, loading: preferencesLoading } = useLiturgyPreferences();
-  
+    
   const { compline, info, renderedComponents } = useMemo(() => {
     const compline = LiturgyService.getComplineForDate(selectedDate);
     const info = LiturgyService.getComplineInfo(selectedDate, preferences);
+    const marianAntiphonId = LiturgyService.getMarianAntiphonPeriod(selectedDate);
+    console.log("marianAntiphonId", marianAntiphonId);
+    // Get the appropriate Marian antiphon component
+    const marianAntiphon = LiturgyService.getComponent(marianAntiphonId);
     
     const renderedComponents = compline ? {
       introduction: compline.components.introduction ? LiturgyService.getComponent(compline.components.introduction) : null,
@@ -140,7 +144,7 @@ const ComplineDisplay: React.FC = () => {
       canticle: compline.components.canticle ? LiturgyService.getComponent(compline.components.canticle) : null,
       prayer: compline.components.prayer ? LiturgyService.getComponent(compline.components.prayer) : null,
       conclusion: compline.components.conclusion ? LiturgyService.getComponent(compline.components.conclusion) : null,
-      marian: compline.components.marian ? LiturgyService.getComponent(compline.components.marian) : null
+      marian: marianAntiphon // Use the dynamically determined Marian antiphon
     } : null;
     
     return { compline, info, renderedComponents };
