@@ -22,6 +22,12 @@ import ContactPage from "./pages/ContactPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 
+// Landing Pages
+import PrayerLandingPage from "./pages/PrayerLandingPage";
+import StudyLandingPage from "./pages/StudyLandingPage";
+import CommunityLandingPage from "./pages/CommunityLandingPage";
+import PreachingLandingPage from "./pages/PreachingLandingPage";
+
 // Prayer Pages
 import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
 import RosaryPage from "./pages/prayer/RosaryPage";
@@ -61,6 +67,12 @@ const App = () => {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+                
+                {/* Landing Pages - Public Access */}
+                <Route path="/prayer" element={<PrayerLandingPage />} />
+                <Route path="/study" element={<StudyLandingPage />} />
+                <Route path="/community" element={<CommunityLandingPage />} />
+                <Route path="/preaching" element={<PreachingLandingPage />} />
                 
                 {/* Settings Route - Requires Authentication */}
                 <Route path="/settings" element={
