@@ -103,7 +103,7 @@ const SaintsList: React.FC = () => {
         </div>
         
         {viewMode === 'list' && (
-          <div className="space-y-2 overflow-y-auto flex-1 min-h-0 max-h-[600px]">
+          <div className="space-y-2 overflow-y-auto flex-1 min-h-0 max-h-[900px]">
             {filteredSaints.map(saint => (
               <div
                 key={saint.id}
