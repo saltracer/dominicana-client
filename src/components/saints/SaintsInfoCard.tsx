@@ -104,26 +104,6 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
             </section>
           )}
 
-          {/* Complete Biography Section */}
-          {selectedSaint.biography && selectedSaint.biography.length > 0 && (
-            <>
-              <Separator className="my-6" />
-              <section>
-                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3 flex items-center gap-2">
-                  <Book className="w-5 h-5" />
-                  Complete Biography
-                </h2>
-                <div className="space-y-4">
-                  {selectedSaint.biography.map((paragraph, index) => (
-                    <p key={index} className="text-gray-700 leading-relaxed text-justify">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            </>
-          )}
-
           {/* Patronage Section */}
           {selectedSaint.patronage && (
             <>
@@ -196,6 +176,26 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
             </>
           )}
 
+          {/* Complete Biography Section */}
+          {selectedSaint.biography && selectedSaint.biography.length > 0 && (
+            <>
+              <Separator className="my-6" />
+              <section>
+                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3 flex items-center gap-2">
+                  <Book className="w-5 h-5" />
+                  Complete Biography
+                </h2>
+                <div className="space-y-4">
+                  {selectedSaint.biography.map((paragraph, index) => (
+                    <p key={index} className="text-gray-700 leading-relaxed text-justify">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+          
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-4">
             {selectedSaint.books && selectedSaint.books.length > 0 && (
