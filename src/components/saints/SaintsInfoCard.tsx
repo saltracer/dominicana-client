@@ -134,7 +134,7 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
                 <div className="space-y-3">
                   {selectedSaint.quotes.map((quote, index) => (
                     <blockquote key={index} className="border-l-4 border-dominican-gold pl-4 py-2 bg-dominican-white/50 rounded-r-lg">
-                      <p className="font-garamond text-gray-700 italic leading-relaxed">
+                      <p className="font-garamond text-lg text-gray-700 italic leading-relaxed">
                         "{quote}"
                       </p>
                     </blockquote>
