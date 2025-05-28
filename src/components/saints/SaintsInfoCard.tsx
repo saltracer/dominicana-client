@@ -22,7 +22,7 @@ export function SaintsInfoCard({
   const lifespan = selectedSaint.birth_year && selectedSaint.death_year ? `${selectedSaint.birth_year} - ${selectedSaint.death_year}` : null;
   return <div className="h-full overflow-y-auto bg-dominican-white">
       <Card className="border-0 shadow-none">
-        <CardHeader className="pb-6">
+        <CardHeader className="pb-6 bg-dominican-white">
           <div className="space-y-4">
             {/* Title and Dominican Badge */}
             <div className="flex items-start justify-between">
