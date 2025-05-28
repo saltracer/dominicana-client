@@ -1,63 +1,45 @@
-// import type {ComplineComponent} from "../../hour-types"
 
-// export const introduction: ComplineComponent = {
-//     id: "compline-introduction",
-//     type: "introduction",
-//     language: "en",
-//     content: {en:[
-//     "O God, come to my assistance.",
-//     "O Lord, make haste to help me.",
-//     "Glory be to the Father and to the Son and to the Holy Spirit,",
-//     "as it was in the beginning, is now, and ever shall be, world without end. Amen. Alleluia."
-//     ]},
-//     rubric: "The Alleluia is omitted during Lent."
-// }
+// Export all compline components
+export const introduction = {
+  id: "compline-introduction",
+  type: "opening",
+  title: "Introduction",
+  content: "Our help is in the name of the Lord.",
+  response: "Who made heaven and earth."
+};
 
-// export const nuncDimittis: ComplineComponent = {
-//     id: "compline-canticle-nunc-dimittis",
-//     type: "canticle",
-//     language: "en",
-//     title: "Nunc Dimittis",
-//     antiphon: {
-//         before: "Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace.",
-//         after: "Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."
-//     },
-//     content: {en:[
-//         "At last, all-powerful Master,",
-//         "you give leave to your servant to go in peace,",
-//         "according to your promise.",
-//         "",
-//         "For my eyes have seen your salvation",
-//         "which you have prepared for all nations,",
-//         "the light to enlighten the Gentiles",
-//         "and give glory to Israel, your people.",
-//         "",
-//         "Glory be to the Father and to the Son",
-//         "and to the Holy Spirit,",
-//         "as it was in the beginning,",
-//         "is now, and ever shall be,",
-//         "world without end. Amen."
-//     ]}
-// };
+export const nowThatTheDaylightDiesAway = {
+  id: "now-that-the-daylight-dies-away",
+  type: "hymn",
+  title: "Now that the daylight dies away",
+  content: "Now that the daylight dies away, by all thy mercies, Lord, we pray..."
+};
 
-// export const complineShortResponsory = {
-//     type: "responsory",
-//     language: "en",
-//     content: {en:[
-//         "Into your hands, Lord, I commend my spirit.",
-//         "Into your hands, Lord, I commend my spirit.",
-//         "You have redeemed us, Lord God of truth.",
-//         "I commend my spirit.",
-//         "Glory be to the Father and to the Son and to the Holy Spirit.",
-//         "Into your hands, Lord, I commend my spirit."
-//     ]}
-// };
+export const nuncDimittis = {
+  id: "nunc-dimittis",
+  type: "canticle",
+  title: "Nunc Dimittis",
+  content: "Lord, now you let your servant go in peace..."
+};
 
-// export const complineConclusion = {
-//     type: "conclusion",
-//     language: "en",
-//     content: {en:[
-//         "The Lord grant us a quiet night and a perfect death.",
-//         "Amen."
-//     ]}
-// };
+export const salveRegina = {
+  id: "salve-regina",
+  type: "antiphon",
+  title: "Salve Regina",
+  content: "Hail, holy Queen, Mother of mercy..."
+};
+
+export const complineShortResponsory = {
+  id: "compline-short-responsory",
+  type: "responsory",
+  title: "Short Responsory",
+  verse: "Into your hands, Lord, I commend my spirit.",
+  response: "Into your hands, Lord, I commend my spirit."
+};
+
+export const complineConclusion = {
+  id: "compline-conclusion",
+  type: "conclusion",
+  title: "Conclusion",
+  content: "May the all-powerful Lord grant us a restful night and a peaceful death."
+};

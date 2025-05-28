@@ -2,17 +2,19 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, List, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { generalSaints } from '@/lib/liturgical/saints';
+import { allSaintsCombined } from '@/lib/liturgical/saints/all-saints-combined';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
+import SaintsTimeline from './SaintsTimeline';
 
 const SaintsList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSaint, setSelectedSaint] = useState<Saint | null>(null);
   const [filter, setFilter] = useState('all'); // 'all', 'dominican', 'other'
+  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
   
-  const filteredSaints = generalSaints.filter(saint => {
+  const filteredSaints = allSaintsCombined.filter(saint => {
     const matchesSearch = 
       saint.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (saint.short_bio && saint.short_bio.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -41,7 +43,7 @@ const SaintsList: React.FC = () => {
         </div>
         
         <div className="mb-6">
-          <div className="flex rounded-md overflow-hidden">
+          <div className="flex rounded-md overflow-hidden mb-4">
             <Button 
               variant="ghost" 
               className={cn(
@@ -50,7 +52,7 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('all')}
             >
-              All
+              All ({allSaintsCombined.length})
             </Button>
             <Button 
               variant="ghost" 
@@ -60,7 +62,7 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('dominican')}
             >
-              Dominican
+              Dominican ({allSaintsCombined.filter(s => s.is_dominican).length})
             </Button>
             <Button 
               variant="ghost" 
@@ -70,49 +72,82 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('other')}
             >
-              Other
+              Other ({allSaintsCombined.filter(s => !s.is_dominican).length})
+            </Button>
+          </div>
+
+          <div className="flex rounded-md overflow-hidden">
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "flex-1", 
+                viewMode === 'list' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
+              )}
+              onClick={() => setViewMode('list')}
+            >
+              <List className="mr-2" size={16} />
+              List
+            </Button>
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "flex-1", 
+                viewMode === 'timeline' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
+              )}
+              onClick={() => setViewMode('timeline')}
+            >
+              <Clock className="mr-2" size={16} />
+              Timeline
             </Button>
           </div>
         </div>
         
-        <div className="space-y-2 max-h-[600px] overflow-y-auto">
-          {filteredSaints.map((saint) => (
-            <div 
-              key={saint.id}
-              className={cn(
-                "p-3 rounded-md cursor-pointer transition-colors",
-                selectedSaint?.id === saint.id 
-                  ? "bg-dominican-burgundy text-white" 
-                  : "hover:bg-dominican-burgundy/10"
-              )}
-              onClick={() => setSelectedSaint(saint)}
-            >
-              <h3 className={cn(
-                "font-garamond font-semibold",
-                selectedSaint?.id === saint.id ? "text-white" : "text-dominican-burgundy"
-              )}>
-                {saint.name}
-              </h3>
-              <p className={cn(
-                "text-sm",
-                selectedSaint?.id === saint.id ? "text-white/80" : "text-gray-600"
-              )}>
-                {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')} • 
-                {saint.birth_year && saint.death_year ? ` ${saint.birth_year}-${saint.death_year}` : ''}
-              </p>
-            </div>
-          ))}
-          
-          {filteredSaints.length === 0 && (
-            <div className="text-center py-4 text-gray-500">
-              No saints found matching your search.
-            </div>
-          )}
-        </div>
+        {viewMode === 'list' && (
+          <div className="space-y-2 max-h-[600px] overflow-y-auto">
+            {filteredSaints.map((saint) => (
+              <div 
+                key={saint.id}
+                className={cn(
+                  "p-3 rounded-md cursor-pointer transition-colors",
+                  selectedSaint?.id === saint.id 
+                    ? "bg-dominican-burgundy text-white" 
+                    : "hover:bg-dominican-burgundy/10"
+                )}
+                onClick={() => setSelectedSaint(saint)}
+              >
+                <h3 className={cn(
+                  "font-garamond font-semibold",
+                  selectedSaint?.id === saint.id ? "text-white" : "text-dominican-burgundy"
+                )}>
+                  {saint.name}
+                </h3>
+                <p className={cn(
+                  "text-sm",
+                  selectedSaint?.id === saint.id ? "text-white/80" : "text-gray-600"
+                )}>
+                  {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')} • 
+                  {saint.birth_year && saint.death_year ? ` ${saint.birth_year}-${saint.death_year}` : ''}
+                </p>
+              </div>
+            ))}
+            
+            {filteredSaints.length === 0 && (
+              <div className="text-center py-4 text-gray-500">
+                No saints found matching your search.
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-        {selectedSaint ? (
+        {viewMode === 'timeline' ? (
+          <SaintsTimeline 
+            saints={filteredSaints}
+            selectedSaint={selectedSaint}
+            onSaintSelect={setSelectedSaint}
+          />
+        ) : selectedSaint ? (
           <div className="animate-fade-in">
             <div className="mb-6">
               <h2 className="font-garamond text-3xl font-bold text-dominican-burgundy mb-2">
@@ -203,11 +238,13 @@ const SaintsList: React.FC = () => {
               </span>
             </div>
             <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
-              Select a Saint
+              {viewMode === 'timeline' ? 'Timeline View' : 'Select a Saint'}
             </h3>
             <p className="text-gray-600 max-w-md">
-              Explore the lives and legacies of Dominican saints and other holy figures 
-              from the Catholic tradition. Click on any saint to view their details.
+              {viewMode === 'timeline' 
+                ? 'Explore saints and blesseds arranged chronologically. Use the filters to narrow your search.'
+                : 'Explore the lives and legacies of Dominican saints and other holy figures from the Catholic tradition. Click on any saint to view their details.'
+              }
             </p>
           </div>
         )}
