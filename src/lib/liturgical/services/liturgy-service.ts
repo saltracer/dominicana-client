@@ -214,59 +214,6 @@ Regina Caeli: Sung from Easter Vigil until Pentecost Sunday.
 Salve Regina: Sung from the day after Pentecost until the First Sunday of Advent. 
 */
 
-  // Helper method to get Easter Sunday for a given year
-  // private static getEasterSunday(year: number): Date {
-  //   // Meeus/Jones/Butcher algorithm for Gregorian Easter
-  //   const a = year % 19;
-  //   const b = Math.floor(year / 100);
-  //   const c = year % 100;
-  //   const d = Math.floor(b / 4);
-  //   const e = b % 4;
-  //   const f = Math.floor((b + 8) / 25);
-  //   const g = Math.floor((b - f + 1) / 3);
-  //   const h = (19 * a + b - d - g + 15) % 30;
-  //   const i = Math.floor(c / 4);
-  //   const k = c % 4;
-  //   const l = (32 + 2 * e + 2 * i - h - k) % 7;
-  //   const m = Math.floor((a + 11 * h + 22 * l) / 451);
-  //   const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
-  //   const day = ((h + l - 7 * m + 114) % 31) + 1;
-    
-  //   return new Date(year, month, day);
-  // }
-  
-  // // Helper method to get Pentecost Sunday (50 days after Easter)
-  // private static getPentecostSunday(year: number): Date {
-  //   const easter = this.getEasterSunday(year);
-  //   const pentecost = new Date(easter);
-  //   pentecost.setDate(easter.getDate() + 49); // 7 weeks = 49 days
-  //   return pentecost;
-  // }
-  
-  // // Helper method to get Holy Thursday (3 days before Easter)
-  // private static getHolyThursday(year: number): Date {
-  //   const easter = this.getEasterSunday(year);
-  //   const holyThursday = new Date(easter);
-  //   holyThursday.setDate(easter.getDate() - 3);
-  //   return holyThursday;
-  // }
-  
-  // // Helper method to get First Sunday of Advent for a given year
-  // private static getFirstSundayOfAdvent(year: number): Date {
-  //   // First Sunday of Advent is the Sunday closest to Nov 30,
-  //   // which is 4 Sundays before Christmas (Dec 25)
-  //   const christmas = new Date(year, 11, 25);
-  //   const dayOfWeek = christmas.getDay(); // 0 = Sunday, 6 = Saturday
-    
-  //   // Calculate days to subtract to get to the previous Sunday
-  //   // Then subtract 3 more weeks (21 days) to get to the 4th Sunday before Christmas
-  //   const daysToSubtract = (dayOfWeek + 21) % 7 + 21;
-    
-  //   const advent1 = new Date(christmas);
-  //   advent1.setDate(25 - daysToSubtract);
-  //   return advent1;
-  // }
-
   static chantContent(
     chant: MultiLanguageChantResource | undefined,
     preferences: UserLiturgyPreferences
