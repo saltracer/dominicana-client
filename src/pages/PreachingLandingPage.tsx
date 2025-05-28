@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Lightbulb, Heart, Flame } from 'lucide-react';
 const PreachingLandingPage: React.FC = () => {
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Hero Section */}
         <div className="text-center mb-12">
