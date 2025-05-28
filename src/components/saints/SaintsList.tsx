@@ -125,7 +125,7 @@ const SaintsList: React.FC = () => {
                   "text-sm",
                   selectedSaint?.id === saint.id ? "text-white/80" : "text-gray-600"
                 )}>
-                  {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')} • 
+                  {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$1/$2')} • 
                   {saint.birth_year && saint.death_year ? ` ${saint.birth_year}-${saint.death_year}` : ''}
                 </p>
               </div>
