@@ -150,13 +150,6 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
     }
   }, [gabc]);
 
-  // if (loading) {
-  //   return (
-  //     <div className={`p-4 text-center text-amber-700 ${className}`}>
-  //       Loading chant notation...
-  //     </div>
-  //   );
-  // }
   if (loading) {
     return (
       <div ref={containerRef} className={className}>
@@ -170,33 +163,6 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
     );
   }
 
-  // if (error) {
-  //   return (
-      
-  //     <div 
-  //       className={`p-4 text-center text-red-600 ${className}`}>
-  //       <p className="text-sm">Unable to display chant notation</p>
-  //       {description && <p className="text-xs mt-1">{description}</p>}
-  //       <details className="text-xs mt-2">
-  //         <summary>Error details</summary>
-  //         <p className="mt-1 font-mono">{error}</p>
-  //       </details>
-  //     </div>
-  //   );
-  // }
-
-  // return (
-  //   <div className={className}>
-  //     {description && (
-  //       <p className="text-sm text-amber-700 mb-2">{description}</p>
-  //     )}
-  //     <div 
-  //       ref={containerRef}
-  //       className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto"
-  //       style={{ minHeight: '100px' }}
-  //     />
-  //   </div>
-  // );
   return (
     <div className={className}>
       {description && (
