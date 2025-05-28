@@ -16,6 +16,10 @@ export interface Saint {
   celebration_name?: string
   type?: "universal" | "dominican" | "both"
   books?: any[]
+  canonization_date?: string
+  birth_place?: string
+  death_place?: string
+  quotes?: string[]
 }
 
 import { CelebrationRank } from "../celebrations/celebrations-types"

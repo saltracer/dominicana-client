@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { allSaints } from '@/lib/liturgical/saints';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
 import SaintsTimeline from './SaintsTimeline';
+import { SaintsInfoCard } from './SaintsInfoCard';
 
 const SaintsList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -140,7 +141,7 @@ const SaintsList: React.FC = () => {
         )}
       </div>
       
-      <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+      <div className="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
         {viewMode === 'timeline' ? (
           <SaintsTimeline 
             saints={filteredSaints}
@@ -148,88 +149,7 @@ const SaintsList: React.FC = () => {
             onSaintSelect={setSelectedSaint}
           />
         ) : selectedSaint ? (
-          <div className="animate-fade-in">
-            <div className="mb-6">
-              <h2 className="font-garamond text-3xl font-bold text-dominican-burgundy mb-2">
-                {selectedSaint.name}
-              </h2>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {selectedSaint.is_dominican && (
-                  <span className="bg-dominican-burgundy/10 text-dominican-burgundy text-xs px-2 py-1 rounded">
-                    Dominican
-                  </span>
-                )}
-                {selectedSaint.rank && (
-                  <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
-                    {selectedSaint.rank}
-                  </span>
-                )}
-                {selectedSaint.color && (
-                  <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
-                    {selectedSaint.color} vestments
-                  </span>
-                )}
-              </div>
-              <p className="text-gray-600">
-                <span className="font-medium">Feast Day:</span> {selectedSaint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')}
-                {selectedSaint.birth_year && selectedSaint.death_year && (
-                  <>
-                    <span className="font-medium ml-2">Lived:</span> {selectedSaint.birth_year}-{selectedSaint.death_year}
-                  </>
-                )}
-              </p>
-            </div>
-            
-            {selectedSaint.image_url ? (
-              <div className="mb-6 flex justify-center">
-                <div className="w-48 h-48 bg-dominican-light-gray rounded-full overflow-hidden">
-                  <img 
-                    src={selectedSaint.image_url} 
-                    alt={selectedSaint.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="mb-6 flex justify-center">
-                <div className="w-48 h-48 bg-dominican-light-gray rounded-full flex items-center justify-center">
-                  <span className="font-garamond text-4xl text-dominican-burgundy">
-                    {selectedSaint.name.charAt(0)}
-                  </span>
-                </div>
-              </div>
-            )}
-            
-            <div>
-              {selectedSaint.short_bio && (
-                <>
-                  <h3 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-2">
-                    Biography
-                  </h3>
-                  <p className="text-gray-700 mb-4">
-                    {selectedSaint.short_bio}
-                  </p>
-                </>
-              )}
-              
-              {selectedSaint.patronage && (
-                <>
-                  <h3 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-2">
-                    Patronage
-                  </h3>
-                  <p className="text-gray-700 mb-4">
-                    {selectedSaint.patronage}
-                  </p>
-                </>
-              )}
-              
-              {selectedSaint.biography && selectedSaint.biography.length > 0 && (
-                <Button className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
-                  View Complete Biography
-                </Button>
-              )}
-            </div>
-          </div>
+          <SaintsInfoCard selectedSaint={selectedSaint} />
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-10">
             <div className="w-24 h-24 bg-dominican-light-gray rounded-full flex items-center justify-center mb-4">
@@ -238,13 +158,10 @@ const SaintsList: React.FC = () => {
               </span>
             </div>
             <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
-              {(viewMode as 'list' | 'timeline') === 'timeline' ? 'Timeline View' : 'Select a Saint'}
+              Select a Saint
             </h3>
             <p className="text-gray-600 max-w-md">
-              {(viewMode as 'list' | 'timeline') === 'timeline' 
-                ? 'Explore saints and blesseds arranged chronologically. Use the filters to narrow your search.'
-                : 'Explore the lives and legacies of Dominican saints and other holy figures from the Catholic tradition. Click on any saint to view their details.'
-              }
+              Explore the lives and legacies of Dominican saints and other holy figures from the Catholic tradition. Click on any saint to view their details.
             </p>
           </div>
         )}
