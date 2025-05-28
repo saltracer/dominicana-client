@@ -28,9 +28,9 @@ const SaintsList: React.FC = () => {
   });
   
   return (
-    <div className="lg:grid lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-1 bg-white rounded-lg shadow-md p-4 mb-6 lg:mb-0">
-        <div className="mb-6">
+    <div className="lg:grid lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+      <div className="lg:col-span-1 bg-white rounded-lg shadow-md p-4 mb-6 lg:mb-0 flex flex-col h-full">
+        <div className="mb-6 flex-shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input
@@ -43,7 +43,7 @@ const SaintsList: React.FC = () => {
           </div>
         </div>
         
-        <div className="mb-6">
+        <div className="mb-6 flex-shrink-0">
           <div className="flex rounded-md overflow-hidden mb-4">
             <Button 
               variant="ghost" 
@@ -104,12 +104,12 @@ const SaintsList: React.FC = () => {
         </div>
         
         {viewMode === 'list' && (
-          <div className="space-y-2 max-h-[600px] overflow-y-auto">
+          <div className="space-y-2 overflow-y-auto flex-1 min-h-0">
             {filteredSaints.map((saint) => (
               <div 
                 key={saint.id}
                 className={cn(
-                  "p-3 rounded-md cursor-pointer transition-colors",
+                  "p-3 rounded-md cursor-pointer transition-colors flex-shrink-0",
                   selectedSaint?.id === saint.id 
                     ? "bg-dominican-burgundy text-white" 
                     : "hover:bg-dominican-burgundy/10"
@@ -141,7 +141,7 @@ const SaintsList: React.FC = () => {
         )}
       </div>
       
-      <div className="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden h-full">
         {viewMode === 'timeline' ? (
           <SaintsTimeline 
             saints={filteredSaints}
