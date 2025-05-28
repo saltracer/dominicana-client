@@ -80,7 +80,7 @@ const PreachingLandingPage: React.FC = () => {
                   <p className="text-sm text-gray-600">Insights from great Dominican preachers</p>
                 </div>
               </div>
-              <Button className="w-full bg-dominican-black hover:bg-gray-800" disabled>
+              <Button disabled className="w-full bg-dominican-burgundy">
                 Coming Soon
               </Button>
             </CardContent>
