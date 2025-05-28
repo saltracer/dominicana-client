@@ -433,8 +433,8 @@ export const dominicanSaints: Saint[] = [
   {
     id: "peter-of-verona",
     name: "St. Peter of Verona",
-    feast_day: "04-06",
-    short_bio: "Dominican martyr and inquisitor",
+    feast_day: "06-04",
+    short_bio: "Dominican martyr and inquisitor, known for his defense of Catholic orthodoxy.",
     biography: [
       "St. Peter of Verona, also known as St. Peter Martyr, was born in Verona, Italy, around 1205 to parents who belonged to the Cathar heretical sect. Despite his upbringing, Peter embraced Catholic orthodoxy and joined the Dominican Order around 1221, possibly after meeting St. Dominic himself.",
       "Peter became a renowned preacher throughout northern Italy, known for his eloquence and theological knowledge. His sermons drew large crowds and led to many conversions, both of sinners and heretics.",
@@ -442,6 +442,7 @@ export const dominicanSaints: Saint[] = [
       "He was known for his austere lifestyle, deep prayer life, and numerous miracles. It is said that he could levitate during prayer and had the gift of healing.",
       "On April 6, 1252, while traveling from Como to Milan, Peter was attacked by hired assassins. He was struck on the head with an axe but managed to write 'Credo in Unum Deum' (I believe in One God) on the ground with his own blood before dying.",
       "Peter was canonized by Pope Innocent IV less than a year after his death, making him one of the fastest canonized saints in Church history. He is often depicted in art with a knife or axe in his head and a palm branch symbolizing martyrdom.",
+      "His feast, no longer on the general calendar, is celebrated on June 4th in the Dominican Order.",
     ],
     image_url: "/saints/st-peter-of-verona.jpg",
     patronage: "Inquisitors, midwives, protection against head diseases",
@@ -452,7 +453,7 @@ export const dominicanSaints: Saint[] = [
     is_dominican: true,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.RED,
-    proper: "Proper of Saints",
+    proper: "Common of One Martyr",
     type: "dominican",
   },
   {

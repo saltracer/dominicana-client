@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, List, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { allSaintsCombined } from '@/lib/liturgical/saints/all-saints-combined';
+import { allSaints } from '@/lib/liturgical/saints';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
 import SaintsTimeline from './SaintsTimeline';
 
@@ -14,7 +14,7 @@ const SaintsList: React.FC = () => {
   const [filter, setFilter] = useState('all'); // 'all', 'dominican', 'other'
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
   
-  const filteredSaints = allSaintsCombined.filter(saint => {
+  const filteredSaints = allSaints.filter(saint => {
     const matchesSearch = 
       saint.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (saint.short_bio && saint.short_bio.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -52,7 +52,7 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('all')}
             >
-              All ({allSaintsCombined.length})
+              All ({allSaints.length})
             </Button>
             <Button 
               variant="ghost" 
@@ -62,7 +62,7 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('dominican')}
             >
-              Dominican ({allSaintsCombined.filter(s => s.is_dominican).length})
+              Dominican ({allSaints.filter(s => s.is_dominican).length})
             </Button>
             <Button 
               variant="ghost" 
@@ -72,7 +72,7 @@ const SaintsList: React.FC = () => {
               )}
               onClick={() => setFilter('other')}
             >
-              Other ({allSaintsCombined.filter(s => !s.is_dominican).length})
+              Other ({allSaints.filter(s => !s.is_dominican).length})
             </Button>
           </div>
 
@@ -238,10 +238,10 @@ const SaintsList: React.FC = () => {
               </span>
             </div>
             <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
-              {viewMode === 'timeline' ? 'Timeline View' : 'Select a Saint'}
+              {(viewMode as 'list' | 'timeline') === 'timeline' ? 'Timeline View' : 'Select a Saint'}
             </h3>
             <p className="text-gray-600 max-w-md">
-              {viewMode === 'timeline' 
+              {(viewMode as 'list' | 'timeline') === 'timeline' 
                 ? 'Explore saints and blesseds arranged chronologically. Use the filters to narrow your search.'
                 : 'Explore the lives and legacies of Dominican saints and other holy figures from the Catholic tradition. Click on any saint to view their details.'
               }
