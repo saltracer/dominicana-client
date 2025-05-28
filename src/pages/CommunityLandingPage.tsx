@@ -94,7 +94,7 @@ const CommunityLandingPage: React.FC = () => {
               Global Dominican Provinces
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="border-amber-200 hover:shadow-lg transition-shadow">
             <p className="text-gray-700 text-center mb-8">
               The Order of Preachers spans the globe with provinces on every continent, 
               united in the mission of contemplation and preaching.
