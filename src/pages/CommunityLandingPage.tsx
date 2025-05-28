@@ -123,7 +123,7 @@ const CommunityLandingPage: React.FC = () => {
             </div>
             <div className="text-center">
               <Link to="/community/provinces">
-                <Button className="bg-dominican-black hover:bg-gray-800">
+                <Button className="bg-dominican-burgundy">
                   Explore Province Map
                 </Button>
               </Link>
