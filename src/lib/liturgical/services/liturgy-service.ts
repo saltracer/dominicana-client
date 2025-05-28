@@ -138,11 +138,23 @@ export class LiturgyService {
     };
     
     const year = date.getFullYear();
+    const month = date.getMonth();
     
     // Get important dates using functions from liturgical-seasons.ts
-    const advent1 = getDatePortion(calculateFirstAdventSunday(createDate(year, 11, 25)));
-    const christmas = createDate(year, 11, 25); // Dec 25
-    const presentation = createDate(year+1, 1, 2); // Feb 2
+    let advent1 = getDatePortion(calculateFirstAdventSunday(createDate(year, 11, 25)));
+    let christmas = createDate(year, 11, 25); // Dec 25
+    let presentation = createDate(year, 1, 2); // Feb 2
+    if (month === 11) {
+      advent1 = getDatePortion(calculateFirstAdventSunday(createDate(year, 11, 25)));
+      christmas = createDate(year, 11, 25); // Dec 25
+      presentation = createDate(year+1, 1, 2); // Feb 2
+    }
+    if (month === 0 || month === 1) {
+      advent1 = getDatePortion(calculateFirstAdventSunday(createDate(year-1, 11, 25)));
+      christmas = createDate(year-1, 11, 25); // Dec 25
+      presentation = createDate(year, 1, 2); // Feb 2
+    }
+
     const easter = getDatePortion(calculateEaster(year));
     const pentecost = getDatePortion(getPentecostSunday(year));
     const currentDate = getDatePortion(date);
@@ -158,37 +170,37 @@ export class LiturgyService {
     // Determine the period
     if (currentTs >= advent1Ts && currentTs < christmasTs) {
       // From First Sunday of Advent until Christmas
-      console.log("Advent: ", new Date(advent1Ts).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Christmas: ", new Date(christmasTs).toISOString())
+      // console.log("Advent: ", new Date(advent1Ts).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Christmas: ", new Date(christmasTs).toISOString())
       return 'alma-redemptoris-mater';
     } else if (currentTs >= christmasTs && currentTs < presentationTs) {
-      console.log("Christmas: ", new Date(christmasTs).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Presentation: ", new Date(presentationTs).toISOString())
+      // console.log("Christmas: ", new Date(christmasTs).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Presentation: ", new Date(presentationTs).toISOString())
       // From Christmas until Feb 1 (inclusive)
       return 'alma-redemptoris-mater';
     } else if (currentTs >= presentationTs && currentTs < easterTs) {
       // From Feb 2 until Easter Vigil (therefore exclusive of Easter day)
-      console.log("Presentation: ", new Date(presentationTs).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Easter: ", new Date(easterTs).toISOString())
+      // console.log("Presentation: ", new Date(presentationTs).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Easter: ", new Date(easterTs).toISOString())
       return 'ave-regina-caelorum';
     } else if (currentTs >= easterTs && currentTs <= pentecostTs) {
       // From Easter Sunday until Pentecost Sunday (inclusive)
-      console.log("Easter: ", new Date(easterTs).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Pentecost: ", new Date(pentecostTs).toISOString())
+      // console.log("Easter: ", new Date(easterTs).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Pentecost: ", new Date(pentecostTs).toISOString())
       return 'regina-caeli';
     } else {
       // From day after Pentecost until day before First Sunday of Advent
-      console.log("Pentecost: ", new Date(pentecostTs).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Advent: ", new Date(advent1Ts).toISOString())   
+      // console.log("Pentecost: ", new Date(pentecostTs).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Advent: ", new Date(advent1Ts).toISOString())   
       
-      console.log("Christmas: ", new Date(christmasTs).toISOString())
-      console.log("Date: ", new Date(currentTs).toISOString())
-      console.log("Presentation: ", new Date(presentationTs).toISOString())
+      // console.log("Christmas: ", new Date(christmasTs).toISOString())
+      // console.log("Date: ", new Date(currentTs).toISOString())
+      // console.log("Presentation: ", new Date(presentationTs).toISOString())
 
       return 'salve-regina';
     }

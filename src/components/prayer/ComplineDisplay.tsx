@@ -131,7 +131,7 @@ const ComplineDisplay: React.FC = () => {
     const compline = LiturgyService.getComplineForDate(selectedDate);
     const info = LiturgyService.getComplineInfo(selectedDate, preferences);
     const marianAntiphonId = LiturgyService.getMarianAntiphonPeriod(selectedDate);
-    console.log("marianAntiphonId", marianAntiphonId);
+    //console.log("marianAntiphonId", marianAntiphonId);
     // Get the appropriate Marian antiphon component
     const marianAntiphon = LiturgyService.getComponent(marianAntiphonId);
     
