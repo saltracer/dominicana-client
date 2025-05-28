@@ -104,6 +104,26 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
             </section>
           )}
 
+          {/* Complete Biography Section */}
+          {selectedSaint.biography && selectedSaint.biography.length > 0 && (
+            <>
+              <Separator className="my-6" />
+              <section>
+                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3 flex items-center gap-2">
+                  <Book className="w-5 h-5" />
+                  Complete Biography
+                </h2>
+                <div className="space-y-4">
+                  {selectedSaint.biography.map((paragraph, index) => (
+                    <p key={index} className="text-gray-700 leading-relaxed text-justify">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+
           {/* Patronage Section */}
           {selectedSaint.patronage && (
             <>
@@ -178,13 +198,6 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-4">
-            {selectedSaint.biography && selectedSaint.biography.length > 0 && (
-              <Button className="bg-dominican-burgundy hover:bg-dominican-burgundy/90 text-white">
-                <Book className="w-4 h-4 mr-2" />
-                View Complete Biography
-              </Button>
-            )}
-            
             {selectedSaint.books && selectedSaint.books.length > 0 && (
               <Button variant="outline" className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10">
                 <Book className="w-4 h-4 mr-2" />
