@@ -47,10 +47,9 @@ export function SaintsInfoCard({ selectedSaint }: SaintsInfoCardProps) {
                   {selectedSaint.rank}
                 </Badge>
               )}
-              {selectedSaint.type && (
+              {selectedSaint.is_dominican && (
                 <Badge variant="outline" className="border-dominican-gold text-dominican-gold">
-                  {selectedSaint.type === 'universal' ? 'Universal' : 
-                   selectedSaint.type === 'dominican' ? 'Dominican' : 'Both'}
+                  Dominican
                 </Badge>
               )}
             </div>
