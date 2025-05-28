@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Lightbulb, Heart, Flame } from 'lucide-react';
-
 const PreachingLandingPage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -50,7 +47,7 @@ const PreachingLandingPage: React.FC = () => {
                 <div className="text-sm text-gray-600">• Theological insights</div>
               </div>
               <Link to="/preaching/daily-reflections">
-                <Button className="w-full bg-dominican-black hover:bg-gray-800">
+                <Button className="w-full bg-dominican-burgundy">
                   Read Today's Reflection
                 </Button>
               </Link>
@@ -210,8 +207,6 @@ const PreachingLandingPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PreachingLandingPage;
