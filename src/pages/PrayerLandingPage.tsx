@@ -75,7 +75,7 @@ const PrayerLandingPage: React.FC = () => {
                 <div className="text-sm text-gray-600">• Luminous Mysteries (Thursday)</div>
               </div>
               <Link to="/prayer/rosary">
-                <Button className="w-full bg-dominican-black hover:bg-gray-800">
+                <Button className="w-full bg-dominican-burgundy">
                   Pray the Rosary
                 </Button>
               </Link>
