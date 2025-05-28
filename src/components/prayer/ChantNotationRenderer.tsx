@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 interface ChantNotationRendererProps {
   gabc: string;
@@ -22,14 +22,66 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
+  const renderChant = useCallback(async () => {
+    if (!containerRef.current || !gabc) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      // Check if exsurge is available
+      if (!window.exsurge) {
+        throw new Error('Exsurge library not loaded');
+      }
+
+      // Clear previous content
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+
+      // Set up rendering context
+      const ctxt = new window.exsurge.ChantContext();
+      ctxt.lyricTextFont = "'Crimson Text', serif";
+      ctxt.lyricTextSize = 16;
+      ctxt.dropCapTextFont = "'Crimson Text', serif";
+
+      // Parse the GABC notation
+      const mappings = window.exsurge.Gabc.createMappingsFromSource(ctxt, gabc);
+      const score = new window.exsurge.ChantScore(ctxt, mappings, true);
+      
+      // Perform layout with current container width
+      score.performLayout(ctxt);
+      const containerWidth = containerRef.current?.offsetWidth;
+      //console.log("Performing layout: Container width is:", containerWidth);
+      score.layoutChantLines(ctxt, containerWidth || 1000);
+      
+      // Create and append SVG element
+      const svgElement = score.createSvg(ctxt);
+      if (containerRef.current) {
+        containerRef.current.innerHTML = svgElement;
+      }
+      
+    } catch (err) {
+      console.error('Error rendering chant notation:', err);
+      setError(err instanceof Error ? err.message : 'Failed to render chant notation');
+    } finally {
+      setLoading(false);
+    }
+  }, [gabc]);
+
+  // Load exsurge and set up initial render
   useEffect(() => {
     let mounted = true;
+    let script: HTMLScriptElement | null = null;
 
     const loadLibrary = async () => {
       if (!window.exsurge) {
         return new Promise<void>((resolve) => {
-          const script = document.createElement('script');
+          script = document.createElement('script');
           script.src = '/exsurge/exsurge.min.js';
           script.onload = () => {
             if (mounted) {
@@ -43,112 +95,49 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
               setLoading(false);
             }
           };
-          document.body.appendChild(script);
+          document.head.appendChild(script);
         });
       }
       return Promise.resolve();
     };
 
-    const renderChant = async () => {
-      // Initial check - if we don't have the ref or gabc, don't proceed
-      // if (!containerRef.current || !gabc) {
-      //   console.error("Container ref or gabc not available", containerRef, gabc);
-      //   return;
-      // }
-
+    const initialize = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        
-        await new Promise((resolve) => setTimeout(resolve, 150));
-
         await loadLibrary();
-
-        // Check mounted state after async operation
-        if (!mounted) return;
-
-        // Check again after async operation
-        if (!containerRef.current) {
-          console.error("Container ref lost after async operation", containerRef);
-          setError('Container ref lost after async operation');
-          setLoading(false);
-          return;
-        }
-
-        // Clear previous content
-        containerRef.current.innerHTML = '';
-
-        setError(null);
-//console.log("Trying to render a chant");
-
-        // Check if exsurge is available
-        if (!window.exsurge) {
-          throw new Error('Exsurge library not loaded');
-        }
-//console.log("Exsurge is loaded");
-        // Create a new score using exsurge
-        //const score = new window.exsurge.ChantScore();
-        
-        // Set up rendering context
-        const ctxt = new window.exsurge.ChantContext();
-        ctxt.lyricTextFont = "'Crimson Text', serif";
-        ctxt.lyricTextSize = 16;
-        ctxt.dropCapTextFont = "'Crimson Text', serif";
-        //console.log("Setting up the context", ctxt);
-        //console.log('Parsing the GABC notation:', gabc)
-        // Parse the GABC notation
-        const mappings = window.exsurge.Gabc.createMappingsFromSource(ctxt, gabc);
-        const score = new window.exsurge.ChantScore(ctxt, mappings, true);
-        
-        //console.log("Parsed the GABC notation", score);
-        // Perform layout
-        score.performLayout(ctxt);
-        console.log("Performing layout: Container width is:", containerRef.current?.offsetWidth);
-        score.layoutChantLines(ctxt, containerRef.current?.offsetWidth || 1000);
-        //console.log("Layout complete");
-        // Create SVG element
-        const svgElement = score.createSvg(ctxt);
-        //console.log("SVG element created", svgElement);
-        //console.log("SVG element created, type:", typeof svgElement);
-        // Append to container
-        //console.log("Applying the SVG element to the container", containerRef.current);
-        containerRef.current.innerHTML = '';
-        containerRef.current.innerHTML = svgElement;
-        //console.log("SVG element attached via innerHTML");
-        setLoading(false); //Setting loading to false after a successful render
-      } catch (err) {
-        console.error('Error rendering chant notation:', err);
-        setError(err instanceof Error ? err.message : 'Failed to render chant notation');
-        setLoading(false);
-      } finally {
         if (mounted) {
-          setLoading(false);
+          await renderChant();
         }
+      } catch (err) {
+        console.error('Initialization error:', err);
       }
     };
 
-    renderChant();
-    
-    // Load exsurge if not already loaded
-    if (!window.exsurge) {
-      const script = document.createElement('script');
-      script.src = '/exsurge/exsurge.min.js';
-      script.onload = () => {
-        //console.log('Exsurge loaded successfully');
-        renderChant();  
-      };
-      script.onerror = () => {
-        console.error('Failed to load Exsurge script');
-        setError('Failed to load chant notation library');
-        setLoading(false);
-      };
-      //console.log('Appending script:', script.src);
-      document.head.appendChild(script);
-    } else {
-      //console.log('Exsurge already loaded');
-      renderChant();
+    initialize();
+
+    // Set up ResizeObserver
+    if (containerRef.current) {
+      resizeObserverRef.current = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.contentBoxSize && containerRef.current) {
+            renderChant();
+          }
+        }
+      });
+
+      resizeObserverRef.current.observe(containerRef.current);
     }
-  }, [gabc]);
+
+    return () => {
+      mounted = false;
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
+      if (script && script.parentNode) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [gabc, renderChant]);
 
   if (loading) {
     return (
