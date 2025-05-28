@@ -181,7 +181,7 @@ const LiturgicalCalendar: React.FC = () => {
                   "text-xs p-1 mt-1 rounded",
                   colorClasses[liturgicalColor.toLowerCase()] || ''
                 )}>
-                  {eventType}
+                  {eventType.split(' ')[0]}
                 </span>
               )}
 
