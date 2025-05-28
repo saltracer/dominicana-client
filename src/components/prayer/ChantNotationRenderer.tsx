@@ -49,7 +49,6 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
       return Promise.resolve();
     };
 
-
     const renderChant = async () => {
       // Initial check - if we don't have the ref or gabc, don't proceed
       // if (!containerRef.current || !gabc) {
@@ -72,7 +71,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
         if (!containerRef.current) {
           console.error("Container ref lost after async operation", containerRef);
           setError('Container ref lost after async operation');
-          //setLoading(false);
+          setLoading(false);
           return;
         }
 
@@ -104,7 +103,8 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
         //console.log("Parsed the GABC notation", score);
         // Perform layout
         score.performLayout(ctxt);
-        score.layoutChantLines(ctxt, 1000);
+        console.log("Performing layout: Container width is:", containerRef.current?.offsetWidth);
+        score.layoutChantLines(ctxt, containerRef.current?.offsetWidth || 1000);
         //console.log("Layout complete");
         // Create SVG element
         const svgElement = score.createSvg(ctxt);
