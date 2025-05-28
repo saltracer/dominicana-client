@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import ComplineDisplay from '@/components/prayer/ComplineDisplay';
-//import EnhancedComplineDisplay from '@/components/prayer/EnhancedComplineDisplay';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';

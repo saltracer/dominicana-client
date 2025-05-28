@@ -441,9 +441,161 @@ export function isEaster(date: Date): boolean {
 }
 
 export function isPentecost(date: Date): boolean {
-  const easter = calculateEaster(date.getFullYear())
-  const pentecost = new Date(easter)
-  pentecost.setDate(easter.getDate() + 49)
-
+  const pentecost = getPentecostSunday(date.getFullYear())
   return isSameDay(date, pentecost)
+}
+
+// Date calculation functions
+export function getAshWednesday(year: number): Date {
+  const easter = calculateEaster(year)
+  const ashWednesday = new Date(easter)
+  ashWednesday.setDate(easter.getDate() - 46)
+  return ashWednesday
+}
+
+export function getHolyWeekDates(easter: Date) {
+  const palmSunday = new Date(easter)
+  palmSunday.setDate(easter.getDate() - 7)
+  
+  const holyMonday = new Date(easter)
+  holyMonday.setDate(easter.getDate() - 6)
+  
+  const holyTuesday = new Date(easter)
+  holyTuesday.setDate(easter.getDate() - 5)
+  
+  const holyWednesday = new Date(easter)
+  holyWednesday.setDate(easter.getDate() - 4)
+  
+  const holyThursday = new Date(easter)
+  holyThursday.setDate(easter.getDate() - 3)
+  
+  const goodFriday = new Date(easter)
+  goodFriday.setDate(easter.getDate() - 2)
+  
+  const holySaturday = new Date(easter)
+  holySaturday.setDate(easter.getDate() - 1)
+  
+  return {
+    palmSunday,
+    holyMonday,
+    holyTuesday,
+    holyWednesday,
+    holyThursday,
+    goodFriday,
+    holySaturday
+  }
+}
+
+export function getEasterOctaveDates(easter: Date) {
+  const easterMonday = new Date(easter)
+  easterMonday.setDate(easter.getDate() + 1)
+  
+  const easterTuesday = new Date(easter)
+  easterTuesday.setDate(easter.getDate() + 2)
+  
+  const easterWednesday = new Date(easter)
+  easterWednesday.setDate(easter.getDate() + 3)
+  
+  const easterThursday = new Date(easter)
+  easterThursday.setDate(easter.getDate() + 4)
+  
+  const easterFriday = new Date(easter)
+  easterFriday.setDate(easter.getDate() + 5)
+  
+  const easterSaturday = new Date(easter)
+  easterSaturday.setDate(easter.getDate() + 6)
+  
+  return {
+    easterMonday,
+    easterTuesday,
+    easterWednesday,
+    easterThursday,
+    easterFriday,
+    easterSaturday
+  }
+}
+
+export function getPentecostSunday(year: number): Date {
+  const easter = calculateEaster(year)
+  const pentecost = new Date(easter)
+  pentecost.setDate(easter.getDate() + 49) // 7 weeks after Easter
+  return pentecost
+}
+
+export function getLaetareSunday(year: number): Date {
+  const easter = calculateEaster(year)
+  const laetareSunday = new Date(easter)
+  laetareSunday.setDate(easter.getDate() - 21) // 3 weeks before Easter
+  return laetareSunday
+}
+
+export function getHolyThursday(year: number): Date {
+  const easter = calculateEaster(year)
+  const holyThursday = new Date(easter)
+  holyThursday.setDate(easter.getDate() - 3)
+  return holyThursday
+}
+
+export function getGoodFriday(year: number): Date {
+  const easter = calculateEaster(year)
+  const goodFriday = new Date(easter)
+  goodFriday.setDate(easter.getDate() - 2)
+  return goodFriday
+}
+
+export function getHolySaturday(year: number): Date {
+  const easter = calculateEaster(year)
+  const holySaturday = new Date(easter)
+  holySaturday.setDate(easter.getDate() - 1)
+  return holySaturday
+}
+
+export function getPalmSunday(year: number): Date {
+  const easter = calculateEaster(year)
+  const palmSunday = new Date(easter)
+  palmSunday.setDate(easter.getDate() - 7)
+  return palmSunday
+}
+
+export function getDivineMercySunday(year: number): Date {
+  const easter = calculateEaster(year)
+  const divineMercy = new Date(easter)
+  divineMercy.setDate(easter.getDate() + 7) // 1 week after Easter
+  return divineMercy
+}
+
+export function getAscensionThursday(year: number): Date {
+  const easter = calculateEaster(year)
+  const ascension = new Date(easter)
+  ascension.setDate(easter.getDate() + 39) // 39 days after Easter (40th day counting inclusively)
+  return ascension
+}
+
+export function getTrinitySunday(year: number): Date {
+  const pentecost = getPentecostSunday(year)
+  const trinitySunday = new Date(pentecost)
+  trinitySunday.setDate(pentecost.getDate() + 7) // 1 week after Pentecost
+  return trinitySunday
+}
+
+export function getCorpusChristiThursday(year: number): Date {
+  const trinitySunday = getTrinitySunday(year)
+  const corpusChristi = new Date(trinitySunday)
+  corpusChristi.setDate(trinitySunday.getDate() + 4) // Thursday after Trinity Sunday
+  return corpusChristi
+}
+
+export function getSacredHeartFriday(year: number): Date {
+  const trinitySunday = getTrinitySunday(year)
+  const sacredHeart = new Date(trinitySunday)
+  sacredHeart.setDate(trinitySunday.getDate() + 5) // Friday after Trinity Sunday
+  return sacredHeart
+}
+
+export function getChristTheKingSunday(year: number): Date {
+  // Last Sunday before Advent (34th Sunday in Ordinary Time)
+  const firstAdvent = calculateFirstAdventSunday(new Date(year, 11, 25))
+  const christTheKing = new Date(firstAdvent)
+  christTheKing.setDate(firstAdvent.getDate() - 7) // Sunday before Advent
+  return christTheKing
 }

@@ -6,6 +6,7 @@ import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ChantNotationRenderer from './ChantNotationRenderer';
 
 interface LiturgyPartProps {
   component: LiturgyComponent;
@@ -28,8 +29,10 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     LiturgyService.renderContent(component.antiphon.after, preferences) : [];
   
   const hasAudio = component.audio && component.audio.length > 0;
-  const hasChant = component.chant && component.chant.length > 0;
+  const chantContent = LiturgyService.chantContent(component.chant, preferences); //component.chant && component.chant.length > 0;
   
+  //console.log("rendering a LiturgyPart:", component, title, hasAudio, chantContent)
+
   const handleChantToggle = () => {
     setShowChant(!showChant);
   };
@@ -44,7 +47,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
               <Volume2 className="h-3 w-3" />
             </Button>
           )}
-          {hasChant && (
+          {chantContent && (
             <Button 
               size="sm" 
               variant={showChant ? "default" : "outline"} 
@@ -89,19 +92,16 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
         ))}
       </div>
       
-      {showChant && hasChant && (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
-          <h5 className="font-medium text-amber-800 mb-2">Chant Notation</h5>
-          {component.chant?.map((chant, index) => (
-            <div key={index} className="mb-3">
-              {chant.description && (
-                <p className="text-sm text-amber-700 mb-1">{chant.description}</p>
-              )}
-              <div className="font-mono text-sm bg-white p-3 rounded border border-amber-300">
-                {chant.data}
-              </div>
-            </div>
-          ))}
+      {showChant && chantContent && (
+        <div className="mt-4">
+          {/*chantContent.map((chant, index) => ( */
+            <ChantNotationRenderer 
+              key={chantContent.gregobase_id}
+              gabc={chantContent.data}
+              description={chantContent.description}
+              className="mb-4"
+            />
+          /*))*/}
         </div>
       )}
       
@@ -126,10 +126,14 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
 const ComplineDisplay: React.FC = () => {
   const { selectedDate } = useLiturgicalDay();
   const { preferences, loading: preferencesLoading } = useLiturgyPreferences();
-  
+    
   const { compline, info, renderedComponents } = useMemo(() => {
     const compline = LiturgyService.getComplineForDate(selectedDate);
     const info = LiturgyService.getComplineInfo(selectedDate, preferences);
+    const marianAntiphonId = LiturgyService.getMarianAntiphonPeriod(selectedDate);
+    //console.log("marianAntiphonId", marianAntiphonId);
+    // Get the appropriate Marian antiphon component
+    const marianAntiphon = LiturgyService.getComponent(marianAntiphonId);
     
     const renderedComponents = compline ? {
       introduction: compline.components.introduction ? LiturgyService.getComponent(compline.components.introduction) : null,
@@ -140,7 +144,7 @@ const ComplineDisplay: React.FC = () => {
       canticle: compline.components.canticle ? LiturgyService.getComponent(compline.components.canticle) : null,
       prayer: compline.components.prayer ? LiturgyService.getComponent(compline.components.prayer) : null,
       conclusion: compline.components.conclusion ? LiturgyService.getComponent(compline.components.conclusion) : null,
-      marian: compline.components.marian ? LiturgyService.getComponent(compline.components.marian) : null
+      marian: marianAntiphon // Use the dynamically determined Marian antiphon
     } : null;
     
     return { compline, info, renderedComponents };

@@ -3,6 +3,10 @@
   "compline-introduction": {
     "id": "compline-introduction",
     "type": "introduction",
+    "title": {
+      "en": ["O God, come to my assistance"],
+      "la": ["Deus, in adjutorium"]
+    },
     "content": {
       "en": [
         "O God, come to my assistance.",
@@ -16,6 +20,15 @@
         "Gloria Patri et Filio et Spiritui Sancto,",
         "sicut erat in principio, et nunc, et semper, et in saecula saeculorum. Amen."
       ]
+    },
+    "chant": {
+      "la": {
+        "id": "compline-introduction-gregorian",
+        "notation": "gregorian",
+        "gregobase_id": 6354,
+        "data": "(c3) De(ehffe)us,(e) (::) in(fvED) ad(e)ju(f)tó(hhi)ri(h)um(h) me(hih)um(hgh) (;3) in(fdfe)tén(efe)de:(e) (:) Dó(ei)mi(i)ne,(iji) (;) ad(h) ad(hih)ju(f)ván(hhi)dum(h) me(ik) fe(kjki)stí(h)na:(hih) (:) con(f)fun(h)dán(ij)tur,(h) (;) et(h) re(h)ve(h)re(i)án(ijij)tur(h) (;) i(h)ni(h)mí(i)ci(h) me(hegf)i,(f) (;) qui(f) quæ(h!ij)runt(i) á(k)ni(j)mam(ij) me(h!ijhhf)am.(fe) <sp>V/</sp>.(::) A(ehg)ver(hi)tán(i)tur(i) re(i)trór(i)sum,(i) (;6) et(i) e(ik)ru(j)bé(ji)scant,(ij) (::) qui(ig) có(hi)gi(i)tant(i!jkj) mi(i)hi(h) ma(hg)la.(fe) (::) Gló(ehg)ri(hi)a(i) (::) E(i) u(i!jkj) o(i) u(h) a(hg) e.(fe) (::)",
+        "description": "Traditional Gregorian chant notation"
+      }
     },
     "rubric": {
       "en": ["The Alleluia is omitted during Lent."],
@@ -118,11 +131,115 @@
       ]
     }
   },
+  "alma-redemptoris": {
+    "id": "alma-redemptoris",
+    "type": "antiphon",
+    "title": {
+      "en": ["Loving Mother of the Redeemer"],
+      "la": ["Alma Redemptóris Mater"]
+    },
+    "content": {
+      "en": [
+        "Loving mother of the Redeemer, gate of heaven, star of the sea,",
+        "assist your people who have fallen yet strive to rise again.",
+        "To the wonderment of nature you bore your Creator,",
+        "yet remained a virgin after as before.",
+        "You who received Gabriel's joyful greeting,",
+        "have pity on us poor sinners."
+      ],
+      "la": [
+        "Alma Redemptóris Mater, quæ pérvia cæli",
+        "Porta manes, et stella maris, succúrre cadénti,",
+        "Súrgere qui curat pópulo: tu quæ genuísti,",
+        "Natúra miránte, tuum sanctum Genitórem,",
+        "Virgo prius ac postérius, Gabriélis ab ore",
+        "Sumens illud Ave, peccatórum miserére."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "alma-redemptoris-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8128,
+        "data": "(c4) Al[Loving](c)ma[/](e) Re[mother](g)dem(h)pó(hi)ris[/](h) Ma[of the Redeemer,](g)ter,(g.) (;) quæ[gate](h) pér[of heaven,](i)vi(g)a[/](h) cé[star](i)li[/](h) por[of the sea,](g)ta,(g.) (;) ma[who](h)nes,[/](i) et[and](i) stél[star](i)la[/](i) ma[of the sea,](h)ris,(g.) (;) suc[assist](h)cúr[your](i)re[/](h) ca[people](g)dén[who have](h)ti,[/](g.) (;) Súr[to rise](h)ge[again.](i)re[/](h) qui[who](g) cu[fall](h)rat[/](g) pó[to rise](h)pu(i)lo:(g.) (::) Tu[You](h) quæ[who](i) ge[gave birth](h)nu(hi)ís(g)ti,[/](h.) (;) Na[by the wonder](h)tú[of nature](i)ra[/](h) mi[your](g)rán(h)te,[/](g.) (;) tu[your](h)um[/](i) sanc(g)tum[/](h) Ge[Creator,](i)ni(g)tó(h)rem,(g.) (;) Vir[Virgin](h)go[/](i) pri[before](h)us[/](g) ac[and](h) post(h)é(h)ri(i)us,(g.) (;) Ga[Gabriel's](h)bri(g)é(g)lis[/](h) ab[greeting,](i) o(g)re[/](h) (;) Su[have](g)mens[/](h) il(g)lud[/](hi) A(hi)ve,(g.) (;) pec[on us](h)ca(h)tó(g)rum[/](h) mi[have mercy.](g)se(g)ré(g)re.(e.) (::)",
+        "description": "Traditional Gregorian chant for Alma Redemptoris Mater"
+      }
+    }
+  },
+  
+  "ave-regina-caelorum": {
+    "id": "ave-regina-caelorum",
+    "type": "antiphon",
+    "title": {
+      "en": ["Hail, Queen of Heaven"],
+      "la": ["Ave Regina Caelorum"]
+    },
+    "content": {
+      "en": [
+        "Hail, O Queen of Heaven, enthroned! Hail, by angels Mistress owned!",
+        "Root of Jesse, Gate of morn, when the world's true Light was born:",
+        "Glorious Virgin, joy to thee, loveliest whom in heaven they see:",
+        "Fairest thou where all are fair, plead with Christ our sins to spare."
+      ],
+      "la": [
+        "Ave, Regina cælórum, Ave, Dómina Angelórum:",
+        "Salve, radix, salve, porta, Ex qua mundo lux est orta:",
+        "Gaude, Virgo gloriósa, Super omnes speciósa,",
+        "Vale, o valde decóra, Et pro nobis Christum exóra."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "ave-regina-caelorum-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8129,
+        "data": "(c4) A[Hail,](c)ve,[/](e) Re[Queen](g)gi(g)na[/](h) cæ[of heaven,](g)ló(h)rum,(g.) (;) A[Hail,](h)ve,[/](i) Dó[by](i)mi(g)na[/](h) An[angels](i)ge(g)ló(g)rum:(g.) (::) Sal[Root](h)ve,[/](i) ra[of Jesse,](g)dix,[/](h) sal[Gate](i)ve,[/](g) por[of](h)ta,[/](g.) (;) Ex[when](h) qua[/](i) mun[the world's](g)do[/](h) lux[light](i) est[/](h) or[was born:](g)ta:(g.) (::) Gau[Glorious](h)de,[/](i) Vir[Virgin,](g)go[/](h) glo[joy](i)ri(g)ó(g)sa,(g.) (;) Su[loveliest](h)per[/](i) om[whom](g)nes[/](h) spe[in](i)ci(g)ó(g)sa,(g.) (::) Va[Fairest](h)le,[/](i) o[where](g) val[all](h)de[/](g) de[are fair,](h)có(h)ra,(g.) (;) Et[plead](h) pro[/](i) no[with](g)bis[/](h) Chri[Christ](i)stum[/](h) ex[our](g)ó(g)ra.(e.) (::)",
+        "description": "Traditional Gregorian chant for Ave Regina Caelorum"
+      }
+    }
+  },
+  
+  "regina-caeli": {
+    "id": "regina-caeli",
+    "type": "antiphon",
+    "title": {
+      "en": ["Queen of Heaven"],
+      "la": ["Regina Caeli"]
+    },
+    "content": {
+      "en": [
+        "Queen of Heaven, rejoice, alleluia:",
+        "For He whom you merited to bear, alleluia,",
+        "Has risen, as He said, alleluia.",
+        "Pray for us to God, alleluia.",
+        "Rejoice and be glad, O Virgin Mary, alleluia.",
+        "For the Lord has truly risen, alleluia."
+      ],
+      "la": [
+        "Regína cæli lætáre, allelúia:",
+        "Quia quem meruísti portáre, allelúia,",
+        "Resurréxit, sicut dixit, allelúia.",
+        "Ora pro nobis Deum, allelúia.",
+        "Gaude et lætáre, Virgo María, allelúia.",
+        "Quia surréxit Dóminus vere, allelúia."
+      ]
+    },
+    "chant": {
+      "la": {
+        "id": "regina-caeli-chant",
+        "notation": "gregorian",
+        "gregobase_id": 8130,
+        "data": "(c4) Re[Queen](c)gi(g)na[/](h) cæ[of heaven,](g)li[/](h) læ[rejoice,](i)tá(h)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Qui[For](h)a[/](i) quem[/](h) me[you](g)ru(h)ís(g)ti[/](h) por[to bear,](i)tá(h)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Re[He](h)sur(h)ré[has risen,](i)xit,[/](h.) (;) si[as](g)cut[/](h) di[He said,](i)xit,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) O[Pray](h)ra[/](i) pro[/](h) no[to God,](g)bis[/](h) De(i)um,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Gau[Rejoice](h)de[/](i) et[/](h) læ[and be glad,](i)tá(h)re,(g.) (;) Vir[Virgin](h)go[/](i) Ma[Mary,](g)rí(h)a,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(g.) (::) Qui[For](h)a[/](i) sur[/](h)ré[the Lord](i)xit[/](h) Dó[has truly risen,](i)mi(g)nus[/](h) ve[alleluia.](i)re,(g.) (;) al[alleluia.](h)le(h)lú(g)i(h)a.(e.) (::)",
+        "description": "Traditional Gregorian chant for Regina Caeli"
+      }
+    }
+  },
+  
   "salve-regina": {
     "id": "salve-regina",
     "type": "antiphon",
     "title": {
-      "en": ["Salve Regina"],
+      "en": ["Hail, Holy Queen"],
       "la": ["Salve Regina"]
     },
     "content": {
@@ -150,6 +267,22 @@
         "nobis post hoc exsilium ostende.",
         "O clemens, O pia, O dulcis Virgo Maria."
       ]
+    },
+    "chant": {
+      "en": {
+        "id": "salve-regina-chant-with-english",
+        "notation": "gregorian",
+        "gregobase_id": 8127,
+        "data": "(c4) SAl[Hail](c)ve,[/](e) Re[Queen,](g')gí(h)na,[/](g.) *(,) má[mother](h)ter[/](j') mi[of mercy:](i)se(h)ri(g)cór(h')di(g)æ :[/](g.) (;) Ví[Life,](j)ta,[/](g') dul[sweetness,](h)cé(ff)do,[/](d.) (,) et[and hope](e) spes(f) nó[of-ours,](g')stra,(e) sál[hail.](ed)ve.[/](c.) (::) Ad[To](g) te[thee](h) cla[we-cry,](i')má(j)mus,[/](g.) (,) éx[exiles,](h)su(i)les,[/](j) fí[children of Eve.](i')li(h)i(g') Hé(h)væ.(g.) (::) Ad[To](j) te[thee](g') sus[we-sigh,](h)pi(f')rá(d)mus,[/](e'_) (,) ge[mourning](e)mén(g')tes(h) et[and weeping](j') flén(h)tes(g'_) (,) in[in](h) hac[this](g') la[tearful](f)cri(e')má(d)rum[/](e') vál[valley.](d)le.(c.) (::) E[Ah](g)ia(h') er[then,](i)go,(j'_) (,) Ad[Advocate](g)vo(h')cá(j)ta[/](i') nó[of ours,](h)stra,(g.) (;) íl[those](j)los(g') tú[thy](h)os(f'_) mi[merciful](d)se(e')ri(f)cór(g')des[/](f) ó[eyes](h')cu(g)los[/](g'_) (`) ad[towards us turn-thou.](f) nos(e') con(d)vér(ed)te.(c.) (::) Et[And Jesus,](g) Jé(hi)sum,[/](jj) (,) be[blessed](i)ne(g')dí(h)ctum[/](g') frúc[fruit of-the-womb](g)tum(h') vén(j)tris(i') tú[of thee,](h)i,(g.) (;) no[to-us](c)bis[/](g'_) post[after](h) hoc[this](j') ex[exile](i)sí(h')li(g)um[/](e'_) o[show-thou.](f)stén(ed)de.[/](c.) (::) O[O](e!fwg) clé[clement :](ee)mens[/](c.) :(::) O[O](g!hwi/ji) pí[tender :](hg)a(g.) :(::) O[O](jjj//ghf'fd) dúl[sweet](ef)cis[/](g'_) *(,) Vir[Virgin](c)go[/](f') Ma[Mary.](e)rí(dc)a.[/](c.) (::)",
+        "description": "Traditional Gregorian chant notation, Solemnes simple chant with english translation"
+      },
+      "la": {
+        "id": "salve-regina-chant",
+        "notation": "gregorian",
+        "gregobase_id": 9961,
+        "data": "(c4) () Sal(hhgh)ve(d) (::) Re(hhg)gí(fvED//e!fgf)na,(ed) (;) Ma(c)ter(d) mi(f)se(g)ri(f)cór(gh)di(d!efEDC)æ,(d) (:) Vi(hhgh)ta(d) (;) dul(hhg)cé(fvED//e!fgf)do(ed) (;) et(c) spes(d) no(f)stra,(gf@gh) (;3) sal(d!efEDC)ve.(d) (:) Ad(d!fg~) te(h) (;3) cla(g)má(gf!gh)mus(e) (;) éx(g)su(f)les(edg) (;1) fí(c)li(d)i(f) He(evDC)væ.(d) (:) Ad(d!fg~) te(h) (;3) su(j)spi(g)rá(hvGFEg)mus,(h) (;) ge(d)mén(f)tes(g) et(d) flen(fvED)tes(c) (;) in(d) hac(dcf) (;4) la(gh)cri(g)má(fe)rum(fg) val(fvEDC)le.(d) (:) E(fg>)ja(f) er(gh~)go(h) (;) ad(j)vo(g)cá(hvGF)ta(ed) no(g)stra,(h) (:) il(k)los(k) tu(ji/jkh)os(h) (;) mi(k)se(j)ri(hg)cór(f ixg!hihhg~)des(hg) (;1) ó(de)cu(f)los(evDC) (;) ad(cd) nos(f) con(gf!gh)vér(d!efEDC)te.(d) (:) Et(d) Je(a)sum(cd) (;1) be(c)ne(de)dí(fvED)ctum(c) (;) fru(g)ctum(fe) ven(d)tris(g) tu(fvEDC)i(d) (;) no(ixdh!iv)bis(h) (;3) post(hvGF) hoc(g) ex(d)sí(f)li(fe)um(dc) (;1) o(efED)stén(c)de.(d) (:) O(hgh//jk) (;6) cle(jvIHG)mens,(h) (:) o(hgh//jk) (;5) pi(jvIHG)a,(h) (:) o(hghd) (;1) (fvEDC) (;) (de/fg) dul(gf~)cis(gh) (;1) Vir(dV>)go(c) Ma(d)rí(ef)a.(ed) <i>T. P.</i>(::) Al(ixhi)le(hghd>//fvED)lú(dc;1d!ef)ia.(ed) (::)",
+        "description": "Traditional Gregorian chant notation"
+      }
     },
     "audio": [
       {
