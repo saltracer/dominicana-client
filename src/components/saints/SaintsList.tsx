@@ -53,7 +53,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
     return Array.from(centuries).sort((a, b) => a - b);
   }, []);
 
-  // Filter saints based on search, filter, and century
+  // Filter saints based on search and saint type
   const filteredSaints = allSaints.filter(saint => {
     // Search term matching
     const matchesSearch = saint.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -61,19 +61,24 @@ const SaintsList: React.FC<SaintsListProps> = ({
       (saint.patronage && saint.patronage.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // Saint type filter
-    let matchesFilter = true;
-    if (filter === 'dominican') matchesFilter = saint.is_dominican;
-    else if (filter === 'other') matchesFilter = !saint.is_dominican;
+    if (filter === 'dominican') return matchesSearch && saint.is_dominican;
+    if (filter === 'other') return matchesSearch && !saint.is_dominican;
     
-    // Century filter
-    let matchesCentury = true;
-    if (selectedCentury !== 'all' && saint.birth_year) {
-      const saintCentury = Math.floor((saint.birth_year - 1) / 100) + 1;
-      matchesCentury = saintCentury === parseInt(selectedCentury);
-    }
-    
-    return matchesSearch && matchesFilter && matchesCentury;
+    return matchesSearch;
   });
+  
+  // Apply century filter only for timeline view
+  const getFilteredSaintsForView = (view: string) => {
+    if (view !== 'timeline') return filteredSaints;
+    
+    return filteredSaints.filter(saint => {
+      if (selectedCentury === 'all' || !saint.birth_year) return true;
+      const saintCentury = Math.floor((saint.birth_year - 1) / 100) + 1;
+      return saintCentury === parseInt(selectedCentury);
+    });
+  };
+  
+  const currentViewSaints = getFilteredSaintsForView(viewMode);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -131,29 +136,6 @@ const SaintsList: React.FC<SaintsListProps> = ({
                 </Button>
               </div>
               
-              {/* Century Filter Dropdown */}
-              <div className="mb-4">
-                <label htmlFor="century-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Filter by Century
-                </label>
-                <select
-                  id="century-filter"
-                  value={selectedCentury}
-                  onChange={(e) => setSelectedCentury(e.target.value)}
-                  className="w-full p-2 border border-dominican-light-gray rounded-md shadow-sm focus:ring-dominican-burgundy focus:border-dominican-burgundy dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                >
-                  <option value="all">All Centuries</option>
-                  {allCenturies.map(century => {
-                    const suffix = century === 1 ? 'st' : century === 2 ? 'nd' : century === 3 ? 'rd' : 'th';
-                    return (
-                      <option key={century} value={century}>
-                        {century}{suffix} Century
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              
               <div className="flex justify-center">
                 <div className="inline-flex rounded-md shadow-sm">
                   <Button
@@ -196,20 +178,43 @@ const SaintsList: React.FC<SaintsListProps> = ({
           
           <div className="lg:col-span-1">
             {viewMode === 'timeline' ? (
-              <SaintsTimeline 
-                saints={filteredSaints} 
-                selectedSaint={selectedSaint}
-                onSaintSelect={onSaintSelect} 
-              />
+              <>
+                <div className="mb-6 bg-white dark:bg-card rounded-lg shadow-sm p-4">
+                  <label htmlFor="century-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Filter by Century
+                  </label>
+                  <select
+                    id="century-filter"
+                    value={selectedCentury}
+                    onChange={(e) => setSelectedCentury(e.target.value)}
+                    className="w-full p-2 border border-dominican-light-gray rounded-md shadow-sm focus:ring-dominican-burgundy focus:border-dominican-burgundy dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  >
+                    <option value="all">All Centuries</option>
+                    {allCenturies.map(century => {
+                      const suffix = century === 1 ? 'st' : century === 2 ? 'nd' : century === 3 ? 'rd' : 'th';
+                      return (
+                        <option key={century} value={century}>
+                          {century}{suffix} Century
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <SaintsTimeline 
+                  saints={currentViewSaints} 
+                  selectedSaint={selectedSaint}
+                  onSaintSelect={onSaintSelect} 
+                />
+              </>
             ) : viewMode === 'feast' ? (
               <SaintsFeastMonth
-                saints={filteredSaints}
+                saints={currentViewSaints}
                 selectedSaint={selectedSaint}
                 onSaintSelect={onSaintSelect}
               />
             ) : (
               <div className="space-y-4">
-                {filteredSaints.map(saint => (
+                {currentViewSaints.map(saint => (
                   <div 
                     key={saint.id}
                     className={cn(
