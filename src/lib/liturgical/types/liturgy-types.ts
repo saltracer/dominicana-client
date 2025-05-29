@@ -1,4 +1,3 @@
-
 export type LanguageCode = 'en' | 'la' | 'fr' | 'es' | 'de' | 'it';
 export type AudioType = 'spoken' | 'chant' | 'organ';
 export type ChantNotation = 'modern' | 'gregorian' | 'solesmes';
@@ -90,8 +89,7 @@ export interface UserLiturgyPreferences {
   bibleTranslation: BibleTranslation;
   audioEnabled: boolean;
   audioTypes: AudioType[];
-  chantNotation?: ChantNotation;
+  chantNotation: ChantNotation;
   fontSize: 'small' | 'medium' | 'large';
   showRubrics: boolean;
-  useNightMode: boolean;
 }

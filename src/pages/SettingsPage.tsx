@@ -1,19 +1,20 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
+import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Monitor, Moon, Sun } from 'lucide-react';
 import { UserLiturgyPreferences } from '@/lib/liturgical/types/liturgy-types';
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { preferences, loading, savePreferences } = useLiturgyPreferences();
+  const { theme, setTheme } = useTheme();
   const [saving, setSaving] = useState(false);
   const [localPreferences, setLocalPreferences] = useState<UserLiturgyPreferences>(preferences);
 
@@ -68,6 +69,66 @@ const SettingsPage: React.FC = () => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-garamond text-xl">Appearance</CardTitle>
+            <CardDescription>
+              Configure the visual appearance of Dominicana.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label className="text-base font-medium">Theme</Label>
+              <div className="grid grid-cols-3 gap-3">
+                <Button
+                  variant={theme === 'light' ? 'default' : 'outline'}
+                  className="flex flex-col gap-2 h-auto py-3"
+                  onClick={() => setTheme('light')}
+                >
+                  <Sun className="h-5 w-5" />
+                  <span className="text-sm">Light</span>
+                </Button>
+                <Button
+                  variant={theme === 'dark' ? 'default' : 'outline'}
+                  className="flex flex-col gap-2 h-auto py-3"
+                  onClick={() => setTheme('dark')}
+                >
+                  <Moon className="h-5 w-5" />
+                  <span className="text-sm">Dark</span>
+                </Button>
+                <Button
+                  variant={theme === 'system' ? 'default' : 'outline'}
+                  className="flex flex-col gap-2 h-auto py-3"
+                  onClick={() => setTheme('system')}
+                >
+                  <Monitor className="h-5 w-5" />
+                  <span className="text-sm">System</span>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Choose your preferred theme. System theme will follow your device's settings.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="font-size">Font Size</Label>
+              <Select
+                value={localPreferences.fontSize}
+                onValueChange={(value) => updatePreference('fontSize', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">Small</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="large">Large</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="font-garamond text-xl">Language & Display Preferences</CardTitle>
@@ -152,42 +213,23 @@ const SettingsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="bible-translation">Bible Translation</Label>
-                <Select
-                  value={localPreferences.bibleTranslation}
-                  onValueChange={(value) => updatePreference('bibleTranslation', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NRSV">NRSV</SelectItem>
-                    <SelectItem value="NAB">NAB</SelectItem>
-                    <SelectItem value="RSV">RSV</SelectItem>
-                    <SelectItem value="DRA">Douay-Rheims</SelectItem>
-                    <SelectItem value="VULGATE">Vulgate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="font-size">Font Size</Label>
-                <Select
-                  value={localPreferences.fontSize}
-                  onValueChange={(value) => updatePreference('fontSize', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="bible-translation">Bible Translation</Label>
+              <Select
+                value={localPreferences.bibleTranslation}
+                onValueChange={(value) => updatePreference('bibleTranslation', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NRSV">NRSV</SelectItem>
+                  <SelectItem value="NAB">NAB</SelectItem>
+                  <SelectItem value="RSV">RSV</SelectItem>
+                  <SelectItem value="DRA">Douay-Rheims</SelectItem>
+                  <SelectItem value="VULGATE">Vulgate</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -221,18 +263,6 @@ const SettingsPage: React.FC = () => {
                 id="show-rubrics"
                 checked={localPreferences.showRubrics}
                 onCheckedChange={(checked) => updatePreference('showRubrics', checked)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="night-mode" className="text-base">Night Mode</Label>
-                <div className="text-sm text-gray-600">Use dark theme for better reading in low light</div>
-              </div>
-              <Switch
-                id="night-mode"
-                checked={localPreferences.useNightMode}
-                onCheckedChange={(checked) => updatePreference('useNightMode', checked)}
               />
             </div>
 

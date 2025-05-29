@@ -14,8 +14,7 @@ const defaultPreferences: UserLiturgyPreferences = {
   audioTypes: ['chant', 'spoken'],
   chantNotation: 'gregorian',
   fontSize: 'medium',
-  showRubrics: true,
-  useNightMode: false
+  showRubrics: true
 };
 
 // Helper functions for type validation
@@ -81,8 +80,7 @@ export const useLiturgyPreferences = () => {
           audioTypes: isValidAudioTypes(data.audio_types) ? data.audio_types as AudioType[] : ['chant', 'spoken'],
           chantNotation: isValidChantNotation(data.chant_notation || 'gregorian') ? data.chant_notation as ChantNotation : 'gregorian',
           fontSize: isValidFontSize(data.font_size || 'medium') ? data.font_size as 'small' | 'medium' | 'large' : 'medium',
-          showRubrics: data.show_rubrics ?? true,
-          useNightMode: data.use_night_mode ?? false
+          showRubrics: data.show_rubrics ?? true
         };
         setPreferences(userPrefs);
       } else {
@@ -120,7 +118,6 @@ export const useLiturgyPreferences = () => {
           chant_notation: newPreferences.chantNotation,
           font_size: newPreferences.fontSize,
           show_rubrics: newPreferences.showRubrics,
-          use_night_mode: newPreferences.useNightMode,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'

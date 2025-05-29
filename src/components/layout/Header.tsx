@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import UserMenu from "../auth/UserMenu";
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ThemeSelector } from '@/components/ui/theme-selector';
 import {
   Popover,
   PopoverContent,
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <header className="bg-white border-b border-dominican-light-gray shadow-sm relative z-10">
+    <header className="bg-white dark:bg-card border-b border-dominican-light-gray dark:border-border shadow-sm relative z-10">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -104,11 +104,15 @@ const Header: React.FC = () => {
               </div>
             ))}
             
-            <UserMenu />
+            <div className="flex items-center space-x-2">
+              <ThemeSelector />
+              <UserMenu />
+            </div>
           </nav>
 
           {/* Mobile Menu Controls */}
           <div className="md:hidden flex items-center space-x-2">
+            <ThemeSelector />
             <UserMenu />
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
