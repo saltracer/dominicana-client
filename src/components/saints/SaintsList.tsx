@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, List, Clock, X } from 'lucide-react';
+import { Search, List, Clock, X, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { allSaints } from '@/lib/liturgical/saints';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
 import SaintsTimeline from './SaintsTimeline';
+import SaintsFeastMonth from './SaintsFeastMonth';
 import { SaintsInfoCard } from './SaintsInfoCard';
 
 interface SaintsListProps {
@@ -22,7 +23,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
-  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('timeline');
+  const [viewMode, setViewMode] = useState<'list' | 'timeline' | 'feast'>('timeline');
   const [isMobile, setIsMobile] = useState(false);
 
   // Check if mobile view
@@ -123,13 +124,24 @@ const SaintsList: React.FC<SaintsListProps> = ({
                   <Button
                     variant="outline"
                     className={cn(
-                      "rounded-l-none border-l border-gray-200 dark:border-gray-700",
+                      "rounded-none border-l border-gray-200 dark:border-gray-700",
                       viewMode === 'timeline' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
                     )}
                     onClick={() => setViewMode('timeline')}
                   >
                     <Clock className="mr-2 h-4 w-4" />
                     Timeline
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "rounded-l-none border-l border-gray-200 dark:border-gray-700",
+                      viewMode === 'feast' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
+                    )}
+                    onClick={() => setViewMode('feast')}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    Feast Month
                   </Button>
                 </div>
               </div>
@@ -142,6 +154,12 @@ const SaintsList: React.FC<SaintsListProps> = ({
                 saints={filteredSaints} 
                 selectedSaint={selectedSaint}
                 onSaintSelect={onSaintSelect} 
+              />
+            ) : viewMode === 'feast' ? (
+              <SaintsFeastMonth
+                saints={filteredSaints}
+                selectedSaint={selectedSaint}
+                onSaintSelect={onSaintSelect}
               />
             ) : (
               <div className="space-y-4">
