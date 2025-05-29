@@ -35,15 +35,6 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
 
   return (
     <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy dark:text-dominican-burgundy mb-2">
-          Saints Timeline
-        </h3>
-        <p className="text-gray-600 dark:text-gray-300">
-          Explore saints and blesseds arranged chronologically by their birth years
-        </p>
-      </div>
-
       {Object.entries(centuryGroups).sort(([a], [b]) => Number(a) - Number(b)).map(([century, saints]) => (
         <div key={century} className="relative">
           <div className="sticky top-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg p-3 mb-4 border border-dominican-light-gray dark:bg-gray-800/90 dark:border-gray-700">
