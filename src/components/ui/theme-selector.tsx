@@ -40,7 +40,6 @@ export function ThemeSelector() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           {getThemeIcon()}
-          <span className="hidden sm:inline">{getThemeLabel()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
