@@ -76,7 +76,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
             <div className="mb-4">
               <div className="flex rounded-md overflow-hidden mb-4">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   className={cn(
                     "flex-1",
                     filter === 'all' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
@@ -86,7 +86,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
                   All Saints
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   className={cn(
                     "flex-1",
                     filter === 'dominican' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
@@ -96,7 +96,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
                   Dominican
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   className={cn(
                     "flex-1",
                     filter === 'other' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
@@ -110,7 +110,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
               <div className="flex justify-center">
                 <div className="inline-flex rounded-md shadow-sm">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     className={cn(
                       "rounded-r-none",
                       viewMode === 'list' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
@@ -121,7 +121,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
                     List
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     className={cn(
                       "rounded-l-none border-l border-gray-200 dark:border-gray-700",
                       viewMode === 'timeline' ? "bg-dominican-burgundy text-white" : "hover:bg-dominican-burgundy/10"
