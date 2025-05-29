@@ -122,7 +122,7 @@ export function SaintsInfoCard({
                   Prayer
                 </h2>
                 <div className="bg-dominican-burgundy/5 rounded-lg p-4 border border-dominican-burgundy/10">
-                  <p className="font-garamond text-gray-300 leading-relaxed whitespace-pre-line">
+                  <p className="font-garamond text-gray-700 leading-relaxed whitespace-pre-line">
                     {selectedSaint.prayers}
                   </p>
                 </div>
