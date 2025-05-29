@@ -64,7 +64,12 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src="/logo.svg" 
+              alt="Dominicana Logo" 
+              className="h-8 w-8"
+            />
             <span className="text-dominican-burgundy font-garamond text-2xl font-bold">Dominicana</span>
           </Link>
 
