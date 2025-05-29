@@ -1,10 +1,10 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface BookReaderProps {
   url: string;
@@ -21,8 +21,9 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const [error, setError] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
-  const { userRole } = useAuth(); // Get user role from auth context
-  const isAdmin = userRole === 'admin'; // Check if user is admin
+  const { userRole } = useAuth();
+  const { resolvedTheme } = useTheme();
+  const isAdmin = userRole === 'admin';
 
   // Add debugging for URL and component lifecycle
   useEffect(() => {
@@ -194,6 +195,54 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     setIsLoading(false);
   };
 
+  // Apply theme to rendition when theme changes
+  useEffect(() => {
+    if (renditionRef.current) {
+      console.log('BookReader - Applying theme:', resolvedTheme);
+      
+      // Apply theme styles based on current theme
+      if (resolvedTheme === 'dark') {
+        renditionRef.current.themes.default({
+          'body': {
+            'background-color': '#1f2937 !important',
+            'color': '#f3f4f6 !important',
+          },
+          'p, div, span': {
+            'color': '#f3f4f6 !important',
+          },
+          'h1, h2, h3, h4, h5, h6': {
+            'color': '#ffffff !important',
+          },
+          '::selection': {
+            'background': 'rgba(184, 84, 80, 0.3) !important',
+          },
+          'a': {
+            'color': '#B85450 !important',
+          },
+        });
+      } else {
+        renditionRef.current.themes.default({
+          'body': {
+            'background-color': '#ffffff !important',
+            'color': '#000000 !important',
+          },
+          'p, div, span': {
+            'color': '#000000 !important',
+          },
+          'h1, h2, h3, h4, h5, h6': {
+            'color': '#000000 !important',
+          },
+          '::selection': {
+            'background': 'rgba(102, 0, 32, 0.3) !important',
+          },
+          'a': {
+            'color': '#660020 !important',
+          },
+        });
+      }
+    }
+  }, [resolvedTheme]);
+
   // Handle errors
   const handleError = (error: any) => {
     console.error('BookReader - Error loading book:', error);
@@ -203,28 +252,28 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
   return (
     <div className="h-full">
-      <div className="bg-white p-4 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button 
               onClick={() => navigate(-1)}
               variant="ghost"
               size="icon"
-              className="hover:bg-gray-100"
+              className="hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <ChevronLeft className="h-5 w-5 text-dominican-burgundy" />
+              <ChevronLeft className="h-5 w-5 text-dominican-burgundy dark:text-dominican-burgundy" />
             </Button>
             <Button 
               asChild
               variant="ghost"
               size="icon"
-              className="hover:bg-gray-100"
+              className="hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Link to="/study/library">
-                <Home className="h-5 w-5 text-dominican-burgundy" />
+                <Home className="h-5 w-5 text-dominican-burgundy dark:text-dominican-burgundy" />
               </Link>
             </Button>
-            <h1 className="font-garamond text-xl md:text-2xl font-bold text-dominican-burgundy">
+            <h1 className="font-garamond text-xl md:text-2xl font-bold text-dominican-burgundy dark:text-dominican-burgundy">
               {title}
             </h1>
           </div>
@@ -233,7 +282,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
       {error ? (
         <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <Button asChild>
             <Link to="/study/library">Return to Library</Link>
           </Button>
@@ -260,14 +309,46 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 renditionRef.current = rendition;
                 handleRenditionReady(rendition);
                 
-                rendition.themes.default({
-                  '::selection': {
-                    background: 'rgba(102, 0, 32, 0.3)',
-                  },
-                  'a': {
-                    color: '#660020 !important',
-                  },
-                });
+                // Initial theme application
+                if (resolvedTheme === 'dark') {
+                  rendition.themes.default({
+                    'body': {
+                      'background-color': '#1f2937 !important',
+                      'color': '#f3f4f6 !important',
+                    },
+                    'p, div, span': {
+                      'color': '#f3f4f6 !important',
+                    },
+                    'h1, h2, h3, h4, h5, h6': {
+                      'color': '#ffffff !important',
+                    },
+                    '::selection': {
+                      'background': 'rgba(184, 84, 80, 0.3) !important',
+                    },
+                    'a': {
+                      'color': '#B85450 !important',
+                    },
+                  });
+                } else {
+                  rendition.themes.default({
+                    'body': {
+                      'background-color': '#ffffff !important',
+                      'color': '#000000 !important',
+                    },
+                    'p, div, span': {
+                      'color': '#000000 !important',
+                    },
+                    'h1, h2, h3, h4, h5, h6': {
+                      'color': '#000000 !important',
+                    },
+                    '::selection': {
+                      'background': 'rgba(102, 0, 32, 0.3) !important',
+                    },
+                    'a': {
+                      'color': '#660020 !important',
+                    },
+                  });
+                }
               }}
               tocChanged={(toc) => {
                 console.log('BookReader - TOC changed:', toc);
@@ -344,8 +425,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
           
           {/* Only render the debug controls if user is admin */}
           {isAdmin && (
-            <div className="mt-4 p-4 bg-gray-100 rounded-md">
-              <p className="text-sm text-gray-700">Debug Controls:</p>
+            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <p className="text-sm text-gray-700 dark:text-gray-300">Debug Controls:</p>
               <div className="flex gap-2 mt-2">
                 <Button
                   size="sm"
