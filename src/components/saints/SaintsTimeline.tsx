@@ -3,6 +3,7 @@ import React from 'react';
 import { Calendar, MapPin } from 'lucide-react';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface SaintsTimelineProps {
   saints: Saint[];
@@ -87,9 +88,11 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                       </h5>
                       <div className="flex flex-col items-end text-xs text-gray-500 dark:text-gray-400">
                         <span>{saint.birth_year} - {saint.death_year}</span>
-                        <span className="text-dominican-burgundy dark:text-dominican-burgundy font-medium">
-                          {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')}
-                        </span>
+                        {saint.feast_day && (
+                          <span className="text-dominican-burgundy dark:text-dominican-gold font-medium">
+                            {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')}
+                          </span>
+                        )}
                       </div>
                     </div>
 
