@@ -92,7 +92,7 @@ const CelebrationDetailsDialog: React.FC<CelebrationDetailsDialogProps> = ({
               
               {celebration.biography && <>
                   <h3 className="font-semibold text-lg mb-2">Biography</h3>
-                  {celebration.biography.map((paragraph, index) => <p key={index} className="text-gray-700 mb-3">{paragraph}</p>)}
+                  {celebration.biography.map((paragraph, index) => <p key={index} className="text-gray-700 mb-3 dark:text-gray-300">{paragraph}</p>)}
                 </>}
               
               {celebration.prayers && <>
