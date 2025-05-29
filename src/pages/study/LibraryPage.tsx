@@ -68,13 +68,13 @@ const LibraryPage: React.FC = () => {
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 mb-8 max-w-3xl">
+      <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
         Explore our collection of classical Catholic texts and theological resources, 
         including works by Dominican authors and other significant writers in the Catholic tradition.
       </p>
       
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+      <div className="bg-white dark:bg-card rounded-lg shadow-md">
+        <div className="flex flex-col md:flex-row gap-4 mb-8 p-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input
@@ -104,97 +104,99 @@ const LibraryPage: React.FC = () => {
           </div>
         </div>
         
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredBooks.map(book => (
-              <div key={book.id} className="border border-dominican-light-gray rounded-lg overflow-hidden flex flex-col">
-                <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray">
-                  {book.coverImage ? (
-                    <img 
-                      src={book.coverImage} 
-                      alt={book.title} 
-                      className="object-cover h-full w-full"
-                      onError={(e) => {
-                        // If image fails to load, show text fallback
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'p-4');
-                        const placeholder = document.createElement('div');
-                        placeholder.className = 'text-center';
-                        placeholder.innerHTML = `
-                          <p class="font-garamond text-xl font-bold text-dominican-burgundy">${book.title}</p>
-                          <p class="text-gray-600">${book.author}</p>
-                        `;
-                        e.currentTarget.parentElement?.appendChild(placeholder);
-                      }}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full w-full p-4">
-                      <div className="text-center">
-                        <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
-                        <p className="text-gray-600">{book.author}</p>
+        <div className="p-6 pt-0">
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-dominican-burgundy" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredBooks.map(book => (
+                <div key={book.id} className="border border-dominican-light-gray dark:border-border rounded-lg overflow-hidden flex flex-col bg-white dark:bg-card">
+                  <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray dark:bg-muted">
+                    {book.coverImage ? (
+                      <img 
+                        src={book.coverImage} 
+                        alt={book.title} 
+                        className="object-cover h-full w-full"
+                        onError={(e) => {
+                          // If image fails to load, show text fallback
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center', 'p-4');
+                          const placeholder = document.createElement('div');
+                          placeholder.className = 'text-center';
+                          placeholder.innerHTML = `
+                            <p class="font-garamond text-xl font-bold text-dominican-burgundy">${book.title}</p>
+                            <p class="text-gray-600 dark:text-gray-400">${book.author}</p>
+                          `;
+                          e.currentTarget.parentElement?.appendChild(placeholder);
+                        }}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full w-full p-4">
+                        <div className="text-center">
+                          <p className="font-garamond text-xl font-bold text-dominican-burgundy">{book.title}</p>
+                          <p className="text-gray-600 dark:text-gray-400">{book.author}</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </AspectRatio>
-                
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="font-garamond text-lg font-bold text-dominican-burgundy mb-1 line-clamp-1">{book.title}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{book.author} • {book.year}</p>
-                  <p className="text-gray-700 text-sm mb-3 line-clamp-2">{book.description}</p>
+                    )}
+                  </AspectRatio>
                   
-                  <div className="flex justify-between items-center mt-auto">
-                    <span className="bg-dominican-light-gray text-dominican-black text-xs px-2 py-1 rounded">
-                      {book.category}
-                    </span>
-                    <div className="flex gap-2">
-                      {isAdmin && (
-                        <Button
-                          asChild
-                          variant="outline"
-                          size="sm"
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-garamond text-lg font-bold text-dominican-burgundy mb-1 line-clamp-1">{book.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{book.author} • {book.year}</p>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm mb-3 line-clamp-2">{book.description}</p>
+                    
+                    <div className="flex justify-between items-center mt-auto">
+                      <span className="bg-dominican-light-gray dark:bg-muted text-dominican-black dark:text-foreground text-xs px-2 py-1 rounded">
+                        {book.category}
+                      </span>
+                      <div className="flex gap-2">
+                        {isAdmin && (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
+                            title="Edit book"
+                          >
+                            <Link to={`/admin/books/edit/${book.id}`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        )}
+                        <Button 
+                          asChild 
+                          variant="outline" 
+                          size="sm" 
                           className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                          title="Edit book"
+                          disabled={!book.epubPath && canReadBooks}
+                          title={!book.epubPath ? "No digital version available" : undefined}
+                          onClick={() => handleBookClick(book)}
                         >
-                          <Link to={`/admin/books/edit/${book.id}`}>
-                            <Edit className="h-4 w-4" />
+                          <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                            {canReadBooks ? (book.epubPath ? "Read Book" : "No Digital Version") : "Login to Read"}
                           </Link>
                         </Button>
-                      )}
-                      <Button 
-                        asChild 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                        disabled={!book.epubPath && canReadBooks}
-                        title={!book.epubPath ? "No digital version available" : undefined}
-                        onClick={() => handleBookClick(book)}
-                      >
-                        <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
-                          {canReadBooks ? (book.epubPath ? "Read Book" : "No Digital Version") : "Login to Read"}
-                        </Link>
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            
-            {filteredBooks.length === 0 && !loading && (
-              <div className="col-span-full text-center py-10">
-                <p className="text-gray-600">No books found matching your search criteria.</p>
-              </div>
-            )}
-          </div>
-        )}
+              ))}
+              
+              {filteredBooks.length === 0 && !loading && (
+                <div className="col-span-full text-center py-10">
+                  <p className="text-gray-600 dark:text-gray-400">No books found matching your search criteria.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         
         {!canReadBooks && (
-          <div className="mt-8 p-4 bg-dominican-burgundy/10 rounded-md">
+          <div className="m-6 p-4 bg-dominican-burgundy/10 dark:bg-dominican-burgundy/20 rounded-md">
             <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Login Required</h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               A free account is required to access the full text of books in our digital library. 
               Please log in or create an account to continue.
             </p>
@@ -209,7 +211,7 @@ const LibraryPage: React.FC = () => {
       
       {/* Admin controls */}
       {isAdmin && (
-        <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+        <div className="mt-6 bg-white dark:bg-card rounded-lg shadow-md p-6">
           <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">Admin Controls</h2>
           <Button asChild className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
             <Link to="/admin/books">

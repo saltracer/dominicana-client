@@ -5,6 +5,7 @@ import UserMenu from "../auth/UserMenu";
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ThemeSelector } from '@/components/ui/theme-selector';
 import {
   Popover,
   PopoverContent,
@@ -59,7 +60,7 @@ const Header: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <header className="bg-white border-b border-dominican-light-gray shadow-sm relative z-10">
+    <header className="bg-white dark:bg-card border-b border-dominican-light-gray dark:border-border shadow-sm relative z-10">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -79,13 +80,13 @@ const Header: React.FC = () => {
                         <ChevronDown className="ml-1 h-4 w-4" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-48 p-0" align="center">
-                      <div className="bg-white shadow-md rounded py-2">
+                    <PopoverContent className="w-48 p-0 bg-popover dark:bg-popover border border-border" align="center">
+                      <div className="bg-popover dark:bg-popover shadow-md rounded py-2">
                         {item.submenu.map((subItem) => (
                           <Link
                             key={subItem.path}
                             to={subItem.path}
-                            className="block px-4 py-2 text-sm hover:bg-dominican-light-gray hover:text-dominican-burgundy"
+                            className="block px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-dominican-burgundy"
                           >
                             {subItem.title}
                           </Link>
@@ -104,15 +105,19 @@ const Header: React.FC = () => {
               </div>
             ))}
             
-            <UserMenu />
+            <div className="flex items-center space-x-2">
+              <ThemeSelector />
+              <UserMenu />
+            </div>
           </nav>
 
           {/* Mobile Menu Controls */}
           <div className="md:hidden flex items-center space-x-2">
+            <ThemeSelector />
             <UserMenu />
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-dominican-black hover:text-dominican-burgundy"
+              className="text-dominican-black dark:text-foreground hover:text-dominican-burgundy"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -127,7 +132,7 @@ const Header: React.FC = () => {
       {/* Mobile Menu */}
       <div 
         className={cn(
-          "absolute top-16 left-0 right-0 bg-white shadow-md z-20 transition-all duration-300 ease-in-out md:hidden",
+          "absolute top-16 left-0 right-0 bg-white dark:bg-card shadow-md z-20 transition-all duration-300 ease-in-out md:hidden",
           mobileMenuOpen ? "max-h-[80vh] overflow-y-auto" : "max-h-0 overflow-hidden"
         )}
       >
@@ -136,10 +141,10 @@ const Header: React.FC = () => {
             <div key={item.path} className="py-2">
               {item.submenu ? (
                 <>
-                  <div className="font-medium text-dominican-black py-2">
+                  <div className="font-medium text-dominican-black dark:text-foreground py-2">
                     {item.title}
                   </div>
-                  <div className="pl-4 border-l-2 border-dominican-light-gray space-y-1">
+                  <div className="pl-4 border-l-2 border-dominican-light-gray dark:border-border space-y-1">
                     {item.submenu.map((subItem) => (
                       <Link
                         key={subItem.path}
@@ -155,7 +160,7 @@ const Header: React.FC = () => {
               ) : (
                 <Link
                   to={item.path}
-                  className="block font-medium text-dominican-black hover:text-dominican-burgundy"
+                  className="block font-medium text-dominican-black dark:text-foreground hover:text-dominican-burgundy"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.title}

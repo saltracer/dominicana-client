@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
@@ -155,9 +156,7 @@ const ComplineDisplay: React.FC = () => {
   }
   
   return (
-    <div className={cn(`space-y-6 ${info.seasonClass}`, {
-      'bg-gray-900 text-white': preferences.useNightMode
-    })}>
+    <div className={cn(`space-y-6 ${info.seasonClass}`)}>
       <div className="mb-6">
         <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
           {info.title}

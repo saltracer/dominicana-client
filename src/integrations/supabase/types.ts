@@ -217,8 +217,8 @@ export type Database = {
           primary_language: string | null
           secondary_language: string | null
           show_rubrics: boolean | null
+          theme_preference: string | null
           updated_at: string
-          use_night_mode: boolean | null
           user_id: string
         }
         Insert: {
@@ -236,8 +236,8 @@ export type Database = {
           primary_language?: string | null
           secondary_language?: string | null
           show_rubrics?: boolean | null
+          theme_preference?: string | null
           updated_at?: string
-          use_night_mode?: boolean | null
           user_id: string
         }
         Update: {
@@ -255,8 +255,8 @@ export type Database = {
           primary_language?: string | null
           secondary_language?: string | null
           show_rubrics?: boolean | null
+          theme_preference?: string | null
           updated_at?: string
-          use_night_mode?: boolean | null
           user_id?: string
         }
         Relationships: []

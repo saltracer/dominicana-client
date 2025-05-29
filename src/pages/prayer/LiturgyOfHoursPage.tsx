@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,17 +33,17 @@ const LiturgyOfHoursPage: React.FC = () => {
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 mb-8 max-w-3xl">
+      <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
         The Liturgy of the Hours, also known as the Divine Office, is the official prayer 
         of the Church marking the hours of each day. It sanctifies the day with prayer and 
         is an essential part of Dominican life.
       </p>
       
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="flex items-center justify-between p-4 border-b border-dominican-light-gray">
+      <div className="bg-white dark:bg-card rounded-lg shadow-md">
+        <div className="flex items-center justify-between p-4 border-b border-dominican-light-gray dark:border-border">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-dominican-burgundy" />
-            <span className="font-medium">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
+            <span className="font-medium text-foreground">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -89,20 +88,20 @@ const LiturgyOfHoursPage: React.FC = () => {
                 
                 <div className="space-y-6">
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2">Invitatory</h4>
-                    <p className="mb-2">V. Lord, open my lips.</p>
-                    <p className="mb-4">R. And my mouth will proclaim your praise.</p>
+                    <h4 className="font-garamond text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
+                    <p className="mb-2 text-foreground">V. Lord, open my lips.</p>
+                    <p className="mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
                     
-                    <p className="mb-2">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
+                    <p className="mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
                     
-                    <div className="bg-dominican-light-gray/50 p-4 rounded-md mb-4">
-                      <h5 className="font-medium mb-2">Psalm 95</h5>
-                      <p className="mb-2">Come, let us sing to the Lord<br />
+                    <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
+                      <h5 className="font-medium mb-2 text-foreground">Psalm 95</h5>
+                      <p className="mb-2 text-foreground">Come, let us sing to the Lord<br />
                       and shout with joy to the Rock who saves us.<br />
                       Let us approach him with praise and thanksgiving<br />
                       and sing joyful songs to the Lord.</p>
                       
-                      <p className="mb-2">The Lord is God, the mighty God,<br />
+                      <p className="mb-2 text-foreground">The Lord is God, the mighty God,<br />
                       the great king over all the gods.<br />
                       He holds in his hands the depths of the earth<br />
                       and the highest mountains as well.<br />
@@ -132,7 +131,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                     <h4 className="font-garamond text-xl font-semibold mb-2">Psalmody</h4>
                     <p className="mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
                     
-                    <div className="bg-dominican-light-gray/50 p-4 rounded-md mb-4">
+                    <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                       <h5 className="font-medium mb-2">Psalm 37:1-11</h5>
                       <p className="mb-2">
                         Do not fret because of the wicked;<br />
@@ -260,20 +259,20 @@ const LiturgyOfHoursPage: React.FC = () => {
               
               <div className="space-y-6">
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2">Invitatory</h4>
-                  <p className="mb-2">V. Lord, open my lips.</p>
-                  <p className="mb-4">R. And my mouth will proclaim your praise.</p>
+                  <h4 className="font-garamond text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
+                  <p className="mb-2 text-foreground">V. Lord, open my lips.</p>
+                  <p className="mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
                   
-                  <p className="mb-2">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
+                  <p className="mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
                   
-                  <div className="bg-dominican-light-gray/50 p-4 rounded-md mb-4">
-                    <h5 className="font-medium mb-2">Psalm 95</h5>
-                    <p className="mb-2">Come, let us sing to the Lord<br />
+                  <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
+                    <h5 className="font-medium mb-2 text-foreground">Psalm 95</h5>
+                    <p className="mb-2 text-foreground">Come, let us sing to the Lord<br />
                     and shout with joy to the Rock who saves us.<br />
                     Let us approach him with praise and thanksgiving<br />
                     and sing joyful songs to the Lord.</p>
                     
-                    <p className="mb-2">The Lord is God, the mighty God,<br />
+                    <p className="mb-2 text-foreground">The Lord is God, the mighty God,<br />
                     the great king over all the gods.<br />
                     He holds in his hands the depths of the earth<br />
                     and the highest mountains as well.<br />
@@ -303,7 +302,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                   <h4 className="font-garamond text-xl font-semibold mb-2">Psalmody</h4>
                   <p className="mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
                   
-                  <div className="bg-dominican-light-gray/50 p-4 rounded-md mb-4">
+                  <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                     <h5 className="font-medium mb-2">Psalm 37:1-11</h5>
                     <p className="mb-2">
                       Do not fret because of the wicked;<br />
