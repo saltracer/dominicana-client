@@ -190,7 +190,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
         {/* Right column - Saint details */}
         {selectedSaint && (
           <div className="lg:col-span-2">
-            <div className="sticky top-8 bg-white dark:bg-card rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-card rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy dark:text-dominican-gold">
                   Saint Details
@@ -203,7 +203,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+              <div>
                 <SaintsInfoCard 
                   selectedSaint={selectedSaint} 
                   onClose={onClosePanel}
