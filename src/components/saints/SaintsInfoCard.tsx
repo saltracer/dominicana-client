@@ -1,20 +1,16 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, MapPin, Heart, Book, Quote } from 'lucide-react';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
-
 interface SaintsInfoCardProps {
   selectedSaint: Saint | null;
 }
-
 export function SaintsInfoCard({
   selectedSaint
 }: SaintsInfoCardProps) {
   if (!selectedSaint) return null;
-
   const formatDate = (dateString: string) => {
     const [month, day] = dateString.split('-');
     const date = new Date(2000, parseInt(month) - 1, parseInt(day));
@@ -23,9 +19,7 @@ export function SaintsInfoCard({
       day: 'numeric'
     });
   };
-
   const lifespan = selectedSaint.birth_year && selectedSaint.death_year ? `${selectedSaint.birth_year} - ${selectedSaint.death_year}` : null;
-
   return <div className="h-full overflow-y-auto">
       <Card className="border-0 shadow-none">
         <CardHeader className="pb-6">
@@ -127,7 +121,7 @@ export function SaintsInfoCard({
                 <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-3">
                   Prayer
                 </h2>
-                <div className="bg-dominican-burgundy/5 dark:bg-dominican-burgundy/10 rounded-lg p-4 border border-dominican-burgundy/10 dark:border-dominican-burgundy/20">
+                <div className="bg-dominican-burgundy/5 dark:bg-dominican-black rounded-lg p-4 border border-dominican-burgundy/10 dark:border-dominican-black\n">
                   <p className="font-garamond text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                     {selectedSaint.prayers}
                   </p>
