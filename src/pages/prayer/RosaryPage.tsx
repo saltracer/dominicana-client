@@ -1,432 +1,404 @@
-
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Crown, Heart, Sun, Star, Play, Pause, RotateCcw } from 'lucide-react';
 
-// Define the rosary prayer types
-type RosaryType = "standard" | "dominican";
+interface Prayer {
+  title: string;
+  text: string;
+}
 
-const mysteries = {
-  joyful: [
-    {
-      title: "The Annunciation",
-      description: "The angel Gabriel announces to Mary that she will conceive and bear a son.",
-      scriptureRef: "Luke 1:26-38",
-      reflection: "Mary's humble acceptance of God's will is a model for our own response to God's call in our lives."
-    },
-    {
-      title: "The Visitation",
-      description: "Mary visits her cousin Elizabeth, who is pregnant with John the Baptist.",
-      scriptureRef: "Luke 1:39-56",
-      reflection: "Mary's service to Elizabeth reminds us of our call to serve others with joy and humility."
-    },
-    {
-      title: "The Nativity",
-      description: "Jesus is born in Bethlehem.",
-      scriptureRef: "Luke 2:1-20",
-      reflection: "God humbles himself to be born in poverty, showing us the value of simplicity and humility."
-    },
-    {
-      title: "The Presentation",
-      description: "Mary and Joseph present Jesus at the temple.",
-      scriptureRef: "Luke 2:22-38",
-      reflection: "Simeon and Anna's recognition of the Christ child reminds us to be attentive to God's presence in our lives."
-    },
-    {
-      title: "The Finding in the Temple",
-      description: "Jesus is found in the temple discussing with the teachers.",
-      scriptureRef: "Luke 2:41-52",
-      reflection: "Jesus shows his dedication to his Father's will, teaching us to prioritize our relationship with God."
-    }
-  ],
-  sorrowful: [
-    {
-      title: "The Agony in the Garden",
-      description: "Jesus prays in the Garden of Gethsemane before his arrest.",
-      scriptureRef: "Matthew 26:36-46",
-      reflection: "Jesus' surrender to the Father's will teaches us to trust in God's plan even in our darkest moments."
-    },
-    {
-      title: "The Scourging at the Pillar",
-      description: "Jesus is scourged at the pillar by order of Pontius Pilate.",
-      scriptureRef: "John 19:1",
-      reflection: "Christ's suffering reminds us of the cost of our redemption and the depth of God's love."
-    },
-    {
-      title: "The Crowning with Thorns",
-      description: "Soldiers place a crown of thorns on Jesus' head.",
-      scriptureRef: "Matthew 27:27-31",
-      reflection: "Jesus bears the mockery of the soldiers with dignity, showing us how to respond to insults with patience."
-    },
-    {
-      title: "The Carrying of the Cross",
-      description: "Jesus carries his cross to Calvary.",
-      scriptureRef: "John 19:16-17",
-      reflection: "As Jesus carries his cross, we are reminded to embrace our own crosses with faith and courage."
-    },
-    {
-      title: "The Crucifixion",
-      description: "Jesus is crucified and dies on the cross.",
-      scriptureRef: "John 19:18-30",
-      reflection: "Jesus' ultimate sacrifice on the cross reveals the boundless extent of God's love for humanity."
-    }
-  ],
-  glorious: [
-    {
-      title: "The Resurrection",
-      description: "Jesus rises from the dead.",
-      scriptureRef: "Matthew 28:1-10",
-      reflection: "Christ's resurrection gives us hope in the promise of eternal life and victory over sin and death."
-    },
-    {
-      title: "The Ascension",
-      description: "Jesus ascends into heaven forty days after his resurrection.",
-      scriptureRef: "Acts 1:6-11",
-      reflection: "As Jesus returns to the Father, he promises to send us the Holy Spirit and prepares a place for us."
-    },
-    {
-      title: "The Descent of the Holy Spirit",
-      description: "The Holy Spirit descends upon the apostles at Pentecost.",
-      scriptureRef: "Acts 2:1-13",
-      reflection: "The coming of the Holy Spirit empowers us to bear witness to Christ in the world."
-    },
-    {
-      title: "The Assumption",
-      description: "Mary is assumed body and soul into heaven.",
-      scriptureRef: "Revelation 12:1",
-      reflection: "Mary's assumption gives us hope in our own bodily resurrection at the end of time."
-    },
-    {
-      title: "The Coronation",
-      description: "Mary is crowned Queen of Heaven and Earth.",
-      scriptureRef: "Revelation 12:1",
-      reflection: "Mary's coronation reminds us of her role as our intercessor and the glory that awaits the faithful."
-    }
-  ],
-  luminous: [
-    {
-      title: "The Baptism in the Jordan",
-      description: "Jesus is baptized by John the Baptist.",
-      scriptureRef: "Matthew 3:13-17",
-      reflection: "Jesus' baptism reveals his identity as the beloved Son and inaugurates his public ministry."
-    },
-    {
-      title: "The Wedding at Cana",
-      description: "Jesus performs his first miracle at the wedding feast in Cana.",
-      scriptureRef: "John 2:1-12",
-      reflection: "Through Mary's intercession, Jesus transforms water into wine, showing his power to transform our lives."
-    },
-    {
-      title: "The Proclamation of the Kingdom",
-      description: "Jesus proclaims the Kingdom of God and calls all to conversion.",
-      scriptureRef: "Mark 1:14-15",
-      reflection: "Jesus' call to conversion challenges us to align our lives with the values of God's Kingdom."
-    },
-    {
-      title: "The Transfiguration",
-      description: "Jesus is transfigured on the mountain before Peter, James, and John.",
-      scriptureRef: "Matthew 17:1-8",
-      reflection: "The Transfiguration gives us a glimpse of Christ's glory and strengthens our faith in difficult times."
-    },
-    {
-      title: "The Institution of the Eucharist",
-      description: "Jesus institutes the Eucharist at the Last Supper.",
-      scriptureRef: "Matthew 26:26-29",
-      reflection: "In the Eucharist, Jesus gives himself to us as spiritual food for our journey of faith."
-    }
-  ]
+interface Mystery {
+  title: string;
+  meditation: string;
+}
+
+interface Mysteries {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  feastDay?: string;
+  mysteries: Mystery[];
+}
+
+const mysteriesData: Mysteries[] = [
+  {
+    id: 'joyful',
+    title: 'The Joyful Mysteries',
+    description: 'Reflect on the joyous events in the lives of Jesus and Mary.',
+    icon: <Sun className="h-5 w-5" />,
+    mysteries: [
+      { title: 'The Annunciation', meditation: 'The Angel Gabriel announces to Mary that she will conceive and bear a son.' },
+      { title: 'The Visitation', meditation: 'Mary visits her cousin Elizabeth, who is also with child.' },
+      { title: 'The Nativity', meditation: 'Jesus is born in a manger in Bethlehem.' },
+      { title: 'The Presentation', meditation: 'Mary and Joseph present Jesus in the Temple.' },
+      { title: 'The Finding in the Temple', meditation: 'Mary and Joseph find Jesus teaching in the Temple.' },
+    ],
+  },
+  {
+    id: 'luminous',
+    title: 'The Luminous Mysteries',
+    description: 'Meditate on the key moments in the public ministry of Jesus.',
+    icon: <Star className="h-5 w-5" />,
+    feastDay: 'May 17',
+    mysteries: [
+      { title: 'The Baptism of Jesus', meditation: 'Jesus is baptized by John the Baptist in the Jordan River.' },
+      { title: 'The Wedding at Cana', meditation: 'Jesus performs his first miracle at the wedding in Cana.' },
+      { title: 'The Proclamation of the Kingdom', meditation: 'Jesus proclaims the Kingdom of God and calls for repentance.' },
+      { title: 'The Transfiguration', meditation: 'Jesus is transfigured on Mount Tabor in the presence of Peter, James, and John.' },
+      { title: 'The Institution of the Eucharist', meditation: 'Jesus institutes the Eucharist at the Last Supper.' },
+    ],
+  },
+  {
+    id: 'sorrowful',
+    title: 'The Sorrowful Mysteries',
+    description: 'Contemplate the suffering and death of Jesus.',
+    icon: <Heart className="h-5 w-5" />,
+    mysteries: [
+      { title: 'The Agony in the Garden', meditation: 'Jesus prays in the Garden of Gethsemane before his arrest.' },
+      { title: 'The Scourging at the Pillar', meditation: 'Jesus is scourged at the pillar.' },
+      { title: 'The Crowning with Thorns', meditation: 'Jesus is crowned with thorns.' },
+      { title: 'The Carrying of the Cross', meditation: 'Jesus carries his cross to Calvary.' },
+      { title: 'The Crucifixion', meditation: 'Jesus is crucified on the cross.' },
+    ],
+  },
+  {
+    id: 'glorious',
+    title: 'The Glorious Mysteries',
+    description: 'Celebrate the glory of Jesus and Mary after the Resurrection.',
+    icon: <Crown className="h-5 w-5" />,
+    mysteries: [
+      { title: 'The Resurrection', meditation: 'Jesus rises from the dead.' },
+      { title: 'The Ascension', meditation: 'Jesus ascends to heaven.' },
+      { title: 'The Descent of the Holy Spirit', meditation: 'The Holy Spirit descends upon the apostles and Mary.' },
+      { title: 'The Assumption', meditation: 'Mary is assumed into heaven.' },
+      { title: 'The Coronation of Mary', meditation: 'Mary is crowned Queen of Heaven and Earth.' },
+    ],
+  },
+];
+
+const prayers: { [key: string]: Prayer } = {
+  sign_of_the_cross: {
+    title: 'The Sign of the Cross',
+    text: 'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.'
+  },
+  apostles_creed: {
+    title: "The Apostles' Creed",
+    text: `I believe in God, the Father almighty,
+      creator of heaven and earth.
+      I believe in Jesus Christ, his only Son, our Lord,
+      who was conceived by the Holy Spirit,
+      born of the Virgin Mary,
+      suffered under Pontius Pilate,
+      was crucified, died, and was buried;
+      he descended into hell;
+      on the third day he rose again from the dead;
+      he ascended into heaven,
+      and is seated at the right hand of God the Father almighty;
+      from there he will come to judge the living and the dead.
+      I believe in the Holy Spirit,
+      the holy catholic Church,
+      the communion of saints,
+      the forgiveness of sins,
+      the resurrection of the body,
+      and life everlasting. Amen.`
+  },
+  our_father: {
+    title: 'Our Father',
+    text: `Our Father, who art in heaven,
+      hallowed be thy name;
+      thy kingdom come,
+      thy will be done,
+      on earth as it is in heaven.
+      Give us this day our daily bread,
+      and forgive us our trespasses,
+      as we forgive those who trespass against us;
+      and lead us not into temptation,
+      but deliver us from evil. Amen.`
+  },
+  hail_mary: {
+    title: 'Hail Mary',
+    text: `Hail Mary, full of grace,
+      the Lord is with thee.
+      Blessed art thou among women,
+      and blessed is the fruit of thy womb, Jesus.
+      Holy Mary, Mother of God,
+      pray for us sinners,
+      now and at the hour of our death. Amen.`
+  },
+  glory_be: {
+    title: 'Glory Be',
+    text: `Glory be to the Father,
+      and to the Son,
+      and to the Holy Spirit.
+      As it was in the beginning,
+      is now, and ever shall be,
+      world without end. Amen.`
+  },
+  fatima_prayer: {
+    title: 'Fatima Prayer',
+    text: `O my Jesus, forgive us our sins,
+      save us from the fires of hell;
+      lead all souls to heaven,
+      especially those in most need of thy mercy.`
+  },
+  hail_holy_queen: {
+    title: 'Hail Holy Queen',
+    text: `Hail, holy Queen, Mother of Mercy,
+      hail, our life, our sweetness, and our hope.
+      To thee do we cry, poor banished children of Eve,
+      to thee do we send up our sighs,
+      mourning and weeping in this valley of tears.
+      Turn then, most gracious Advocate,
+      thine eyes of mercy toward us,
+      and after this our exile
+      show unto us the blessed fruit of thy womb, Jesus.
+      O clement, O loving, O sweet Virgin Mary!`
+  }
 };
 
-// Define rosary steps for each type
-const standardRosarySteps = [
-  { name: "Sign of the Cross", content: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen." },
-  { name: "Apostles' Creed", content: "I believe in God, the Father almighty, Creator of heaven and earth, and in Jesus Christ, his only Son, our Lord..." },
-  { name: "Our Father", content: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven..." },
-  { name: "Hail Mary (3x)", content: "Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus..." },
-  { name: "Glory Be", content: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen." },
-  { name: "Mysteries", content: "Meditate on the mysteries of the Rosary." },
-  { name: "Concluding Prayers", content: "Hail Holy Queen, Mother of Mercy, hail our life, our sweetness, and our hope..." }
-];
-
-const dominicanRosarySteps = [
-  { name: "Sign of the Cross", content: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen." },
-  { 
-    name: "Opening Versicle", 
-    content: "V: Hail Mary, full of grace, the Lord is with thee.\nR: Blessed art thou among women, and blessed is the fruit of thy womb, Jesus." 
-  },
-  { 
-    name: "Opening Prayer", 
-    content: "V: O Lord, open my lips.\nR: And my mouth shall declare Your praise.\n\nV: O God, come to my assistance.\nR: O Lord, make haste to help me." 
-  },
-  { name: "Glory Be", content: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen." },
-  { name: "Mysteries", content: "Meditate on the mysteries of the Rosary." },
-  { 
-    name: "Concluding Prayers", 
-    content: "Hail Holy Queen, Mother of Mercy, hail our life, our sweetness, and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious Advocate, thine eyes of mercy towards us, and after this our exile, show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary!\n\nV: Pray for us, O Holy Mother of God.\nR: That we may be made worthy of the promises of Christ.\n\nO God, whose only begotten Son, by His life, death, and resurrection, has purchased for us the rewards of eternal life. Grant, we beseech Thee, that by meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.\n\nV: May the Divine Assistance remain always with us.\nR: Amen.\n\nV: And may the souls of the faithful departed rest in peace.\nR: Amen.\n\nV: And may the blessing of Almighty God, the Father, the Son, and the Holy Spirit descend upon us and remain with us forever.\nR: Amen." 
-  }
-];
-
 const RosaryPage: React.FC = () => {
-  const [activeSet, setActiveSet] = useState<"joyful" | "sorrowful" | "glorious" | "luminous">("joyful");
-  const [activeStep, setActiveStep] = useState<number>(0);
-  const [activeMystery, setActiveMystery] = useState<number>(0);
-  const [praying, setPraying] = useState<boolean>(false);
-  const [rosaryType, setRosaryType] = useState<RosaryType>("standard");
-  
-  const rosarySteps = rosaryType === "standard" ? standardRosarySteps : dominicanRosarySteps;
+  const [selectedMystery, setSelectedMystery] = useState<Mysteries | null>(null);
+  const [currentDecade, setCurrentDecade] = useState(0);
+  const [currentBead, setCurrentBead] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const handleNext = () => {
-    if (activeStep < rosarySteps.length - 1) {
-      setActiveStep(activeStep + 1);
-    } else if (activeMystery < mysteries[activeSet].length - 1) {
-      setActiveMystery(activeMystery + 1);
+  const getTotalBeads = () => {
+    if (!selectedMystery) return 0;
+    return selectedMystery.mysteries.length * 10 + 6; // 10 Hail Marys per decade + initial prayers
+  };
+
+  const getCurrentPrayer = (): Prayer => {
+    if (!selectedMystery) return { title: '', text: '' };
+
+    const decade = selectedMystery.mysteries[currentDecade];
+
+    if (currentBead === 0) {
+      return prayers.sign_of_the_cross;
+    } else if (currentBead === 1) {
+      return prayers.apostles_creed;
+    } else if (currentBead === 2) {
+      return prayers.our_father;
+    } else if (currentBead <= 5) {
+      return prayers.hail_mary;
+    } else if (currentBead === 6) {
+      return prayers.glory_be;
+    }
+
+    // Prayers within the decade
+    const beadInDecade = (currentBead - 6) % 10;
+    if (beadInDecade === 0) {
+      return prayers.our_father;
     } else {
-      // End of rosary
-      setPraying(false);
-      setActiveStep(0);
-      setActiveMystery(0);
+      return prayers.hail_mary;
     }
   };
 
-  const handlePrev = () => {
-    if (activeMystery > 0) {
-      setActiveMystery(activeMystery - 1);
-    } else if (activeStep > 0) {
-      setActiveStep(activeStep - 1);
-    }
-  };
+  const nextBead = () => {
+    if (!selectedMystery) return;
 
-  const toggleRosaryType = () => {
-    setRosaryType(rosaryType === "standard" ? "dominican" : "standard");
-    // Reset progress when changing rosary type
-    if (praying) {
-      setPraying(false);
-      setActiveStep(0);
-      setActiveMystery(0);
+    const totalDecades = selectedMystery.mysteries.length;
+    const totalBeadsInDecade = 10;
+
+    if (currentBead < 6) {
+      setCurrentBead(currentBead + 1);
+    } else {
+      const decadeProgress = (currentBead - 6) % totalBeadsInDecade;
+
+      if (decadeProgress < totalBeadsInDecade - 1) {
+        setCurrentBead(currentBead + 1);
+      } else {
+        if (currentDecade < totalDecades - 1) {
+          setCurrentDecade(currentDecade + 1);
+          setCurrentBead(currentBead + 1);
+        } else {
+          // Rosary is complete
+          setIsPlaying(false);
+          alert("Rosary is complete!");
+        }
+      }
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
-        The Rosary
+        The Dominican Rosary
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      
-      <div className="flex items-center justify-center space-x-2 mb-6">
-        <Switch 
-          id="rosary-type" 
-          checked={rosaryType === "dominican"}
-          onCheckedChange={toggleRosaryType}
-        />
-        <Label htmlFor="rosary-type" className="cursor-pointer">
-          {rosaryType === "standard" ? "Standard Rosary" : "Dominican Rosary"}
-        </Label>
-        <div className="relative ml-1 group">
-          <span className="text-sm text-gray-500 cursor-help">ⓘ</span>
-          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-60 bg-white p-2 rounded shadow-lg text-xs hidden group-hover:block z-10">
-            {rosaryType === "standard" 
-              ? "The standard format of the Rosary as commonly prayed worldwide." 
-              : "The Dominican tradition of praying the Rosary with additional versicles and responses."}
-          </div>
-        </div>
-      </div>
-      
-      <p className="text-gray-700 mb-8 max-w-3xl mx-auto">
-        {rosaryType === "standard" 
-          ? "The Rosary is a Scripture-based prayer that leads us to Jesus through Mary. As we recite the prayers, we meditate on the life of Christ through the eyes of His mother."
-          : "The Dominican Rosary has a special place in Dominican spirituality. St. Dominic is traditionally believed to have received the Rosary from the Blessed Virgin Mary as a powerful spiritual weapon. It includes distinctive opening and closing versicles and responses."}
+      <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
+        The Holy Rosary is a cherished devotion in the Dominican tradition. St. Dominic received this prayer 
+        from Our Lady herself, and it has been a cornerstone of Dominican spirituality for over 800 years.
       </p>
-      
-      {!praying ? (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-6">
-            Select Mysteries to Pray
-          </h2>
-          
-          <Tabs defaultValue="joyful" className="w-full" onValueChange={(value) => setActiveSet(value as any)}>
-            <TabsList className="grid grid-cols-2 md:grid-cols-4">
-              <TabsTrigger value="joyful">Joyful</TabsTrigger>
-              <TabsTrigger value="luminous">Luminous</TabsTrigger>
-              <TabsTrigger value="sorrowful">Sorrowful</TabsTrigger>
-              <TabsTrigger value="glorious">Glorious</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="joyful" className="p-4">
-              <p className="mb-4 text-gray-600">
-                The Joyful Mysteries are traditionally prayed on Mondays and Saturdays, and focus on the events surrounding Christ's birth and childhood.
-              </p>
-              <ul className="list-disc pl-5 mb-6">
-                {mysteries.joyful.map((mystery, index) => (
-                  <li key={index} className="mb-2">
-                    <span className="font-medium">{mystery.title}</span> - {mystery.description}
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-            
-            <TabsContent value="luminous" className="p-4">
-              <p className="mb-4 text-gray-600">
-                The Luminous Mysteries are traditionally prayed on Thursdays, and focus on Christ's public ministry.
-              </p>
-              <ul className="list-disc pl-5 mb-6">
-                {mysteries.luminous.map((mystery, index) => (
-                  <li key={index} className="mb-2">
-                    <span className="font-medium">{mystery.title}</span> - {mystery.description}
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-            
-            <TabsContent value="sorrowful" className="p-4">
-              <p className="mb-4 text-gray-600">
-                The Sorrowful Mysteries are traditionally prayed on Tuesdays and Fridays, and focus on Christ's Passion and death.
-              </p>
-              <ul className="list-disc pl-5 mb-6">
-                {mysteries.sorrowful.map((mystery, index) => (
-                  <li key={index} className="mb-2">
-                    <span className="font-medium">{mystery.title}</span> - {mystery.description}
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-            
-            <TabsContent value="glorious" className="p-4">
-              <p className="mb-4 text-gray-600">
-                The Glorious Mysteries are traditionally prayed on Wednesdays and Sundays, and focus on Christ's Resurrection and the events that followed.
-              </p>
-              <ul className="list-disc pl-5 mb-6">
-                {mysteries.glorious.map((mystery, index) => (
-                  <li key={index} className="mb-2">
-                    <span className="font-medium">{mystery.title}</span> - {mystery.description}
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-          </Tabs>
-          
-          <Button 
-            className="bg-dominican-burgundy hover:bg-dominican-burgundy/90 mt-4"
-            onClick={() => setPraying(true)}
-          >
-            Begin Rosary
-          </Button>
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {activeStep < rosarySteps.length - 1 && activeStep !== 4 ? (
-            <div className="animate-fade-in">
-              <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
-                {rosarySteps[activeStep].name}
-              </h2>
-              
-              <div className="bg-dominican-light-gray/30 p-6 rounded-md mb-6">
-                <p className="italic text-gray-700 whitespace-pre-line">
-                  {rosarySteps[activeStep].content}
-                </p>
-              </div>
-              
-              <div className="flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={handlePrev}
-                  disabled={activeStep === 0}
-                  className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-                </Button>
-                
-                <Button 
-                  onClick={handleNext}
-                  className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
-                >
-                  Next <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : activeStep === 4 ? (
-            <div className="animate-fade-in">
-              <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
-                {mysteries[activeSet][activeMystery].title}
-              </h2>
-              <p className="text-gray-600 mb-4">
-                {activeMystery + 1} of 5 | {activeSet.charAt(0).toUpperCase() + activeSet.slice(1)} Mysteries
-              </p>
-              
-              <div className="mb-6">
-                <div className="bg-dominican-light-gray/30 p-6 rounded-md mb-4">
-                  <p className="mb-2">{mysteries[activeSet][activeMystery].description}</p>
-                  <p className="italic text-sm text-gray-600">Scripture: {mysteries[activeSet][activeMystery].scriptureRef}</p>
-                </div>
-                
-                <h3 className="font-garamond text-xl font-semibold mb-2">Reflection</h3>
-                <p className="text-gray-700 mb-4">
-                  {mysteries[activeSet][activeMystery].reflection}
-                </p>
-                
-                <div className="border-t border-b border-dominican-light-gray py-4 my-4">
-                  <h4 className="font-medium mb-2">Pray:</h4>
-                  <p className="mb-2">1 Our Father</p>
-                  <p className="mb-2">10 Hail Marys</p>
-                  <p className="mb-2">1 Glory Be</p>
-                  <p className="mb-2">Fatima Prayer: O my Jesus, forgive us our sins, save us from the fires of hell. Lead all souls to heaven, especially those in most need of thy mercy.</p>
+
+      <Tabs defaultValue="pray" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="pray">Pray the Rosary</TabsTrigger>
+          <TabsTrigger value="mysteries">Mysteries</TabsTrigger>
+          <TabsTrigger value="history">Dominican History</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="pray" className="space-y-6">
+          {/* Prayer Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white dark:bg-card rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy">
+                  {selectedMystery ? selectedMystery.title : 'Select Mysteries to Begin'}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    disabled={!selectedMystery}
+                  >
+                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentBead(0);
+                      setCurrentDecade(0);
+                      setIsPlaying(false);
+                    }}
+                    disabled={!selectedMystery}
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-              
-              <div className="flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={handlePrev}
-                  className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-                </Button>
-                
-                <Button 
-                  onClick={handleNext}
-                  className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
-                >
-                  {activeMystery < 4 ? "Next Mystery" : "Finish"} <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
+
+              {selectedMystery ? (
+                <div className="space-y-6">
+                  {/* Current Mystery */}
+                  <div className="bg-dominican-burgundy/10 dark:bg-dominican-burgundy/20 p-4 rounded-md">
+                    <h3 className="font-garamond text-lg font-semibold text-dominican-burgundy mb-2">
+                      {currentDecade + 1}. {selectedMystery.mysteries[currentDecade]?.title || 'Complete'}
+                    </h3>
+                    {selectedMystery.mysteries[currentDecade] && (
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">
+                        {selectedMystery.mysteries[currentDecade].meditation}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Current Prayer */}
+                  <div className="bg-white dark:bg-card border border-dominican-light-gray dark:border-border p-6 rounded-md">
+                    <h4 className="font-garamond text-xl font-semibold text-dominican-burgundy mb-4">
+                      {getCurrentPrayer().title}
+                    </h4>
+                    <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                      {getCurrentPrayer().text}
+                    </div>
+                  </div>
+
+                  {/* Progress */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Decade {currentDecade + 1} of 5 • Bead {currentBead + 1} of {getTotalBeads()}
+                    </span>
+                    <Button onClick={nextBead} className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
+                      Next Prayer
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 bg-dominican-light-gray dark:bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="font-garamond text-4xl text-dominican-burgundy">†</span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400">Select a set of mysteries to begin praying the Rosary</p>
+                </div>
+              )}
+            </div>
+
+            {/* Mystery Selection */}
+            <div className="bg-white dark:bg-card rounded-lg shadow-md p-6">
+              <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-4">
+                Select a Mystery
+              </h3>
+              <div className="space-y-4">
+                {mysteriesData.map(mystery => (
+                  <Card
+                    key={mystery.id}
+                    className="border-dominican-light-gray dark:border-border cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => {
+                      setSelectedMystery(mystery);
+                      setCurrentBead(0);
+                      setCurrentDecade(0);
+                    }}
+                  >
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium flex items-center">
+                        {mystery.icon}
+                        <span className="ml-2">{mystery.title}</span>
+                      </CardTitle>
+                      {mystery.feastDay && (
+                        <Badge variant="secondary">Feast: {mystery.feastDay}</Badge>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{mystery.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
-          ) : (
-            <div className="animate-fade-in">
-              <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
-                {rosarySteps[activeStep].name}
-              </h2>
-              
-              <div className="bg-dominican-light-gray/30 p-6 rounded-md mb-6">
-                <p className="italic text-gray-700 whitespace-pre-line">
-                  {rosarySteps[activeStep].content}
-                </p>
-              </div>
-              
-              <div className="flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={handlePrev}
-                  className="border-dominican-burgundy text-dominican-burgundy hover:bg-dominican-burgundy/10"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-                </Button>
-                
-                <Button 
-                  onClick={handleNext}
-                  className="bg-dominican-burgundy hover:bg-dominican-burgundy/90"
-                >
-                  Finish <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        </TabsContent>
+
+        {/* Mysteries Tab */}
+        <TabsContent value="mysteries">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mysteriesData.map(mystery => (
+              <Card key={mystery.id} className="bg-white dark:bg-card rounded-lg shadow-md">
+                <CardHeader>
+                  <CardTitle className="font-garamond text-xl font-bold text-dominican-burgundy">
+                    {mystery.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">{mystery.description}</p>
+                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-400">
+                    {mystery.mysteries.map((m, index) => (
+                      <li key={index} className="mb-2">{m.title} - {m.meditation}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Dominican History Tab */}
+        <TabsContent value="history">
+          <Card className="bg-white dark:bg-card rounded-lg shadow-md">
+            <CardHeader>
+              <CardTitle className="font-garamond text-2xl font-bold text-dominican-burgundy">
+                The Rosary in Dominican History
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                The Rosary has deep roots in the Dominican Order, traditionally said to have been given to St. Dominic by the Virgin Mary in a vision.
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                It became a key element in Dominican preaching and spirituality, used to teach the faithful about the life of Christ.
+              </p>
+              <p className="text-gray-700 dark:text-gray-300">
+                Dominicans helped spread the Rosary throughout the world, establishing confraternities and promoting its use among the laity.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
