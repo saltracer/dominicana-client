@@ -6,9 +6,11 @@ import { Calendar, MapPin, Heart, Book, Quote } from 'lucide-react';
 import type { Saint } from '@/lib/liturgical/saints/saint-types';
 interface SaintsInfoCardProps {
   selectedSaint: Saint | null;
+  onClose?: () => void;
 }
 export function SaintsInfoCard({
-  selectedSaint
+  selectedSaint,
+  onClose
 }: SaintsInfoCardProps) {
   if (!selectedSaint) return null;
   const formatDate = (dateString: string) => {
@@ -22,6 +24,20 @@ export function SaintsInfoCard({
   const lifespan = selectedSaint.birth_year && selectedSaint.death_year ? `${selectedSaint.birth_year} - ${selectedSaint.death_year}` : null;
   return <div className="h-full overflow-y-auto">
       <Card className="border-0 shadow-none">
+        {onClose && (
+          <div className="lg:hidden p-4 border-b">
+            <button 
+              onClick={onClose}
+              className="flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-4 w-4">
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+              </svg>
+              Back to list
+            </button>
+          </div>
+        )}
         <CardHeader className="pb-6">
           <div className="space-y-4">
             {/* Title and Dominican Badge */}

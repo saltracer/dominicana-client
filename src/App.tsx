@@ -111,11 +111,18 @@ const App = () => {
                     <LiturgicalCalendarPage />
                   </RoleGuard>
                 } />
-                <Route path="/community/saints" element={
-                  <RoleGuard requiredRole="free">
-                    <SaintsPage />
-                  </RoleGuard>
-                } />
+                <Route path="/community/saints">
+                  <Route index element={
+                    <RoleGuard requiredRole="free">
+                      <SaintsPage />
+                    </RoleGuard>
+                  } />
+                  <Route path=":saintId" element={
+                    <RoleGuard requiredRole="free">
+                      <SaintsPage />
+                    </RoleGuard>
+                  } />
+                </Route>
                 <Route path="/community/provinces" element={
                   <RoleGuard requiredRole="free">
                     <ProvincesPage />
