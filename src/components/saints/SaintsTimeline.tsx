@@ -39,7 +39,7 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
       </div>
 
       {Object.entries(centuryGroups).sort(([a], [b]) => Number(a) - Number(b)).map(([century, saints]) => <div key={century} className="relative">
-            <div className="sticky top-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg p-3 mb-4 border border-dominican-light-gray dark:background-dark-gray">
+            <div className="sticky top-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg p-3 mb-4 border border-dominican-light-gray dark:bg-gray-800 dark:border-gray-800">
               <h4 className="font-garamond text-xl font-semibold text-dominican-burgundy flex items-center">
                 <Calendar className="mr-2" size={20} />
                 {getCenturyLabel(Number(century))}
