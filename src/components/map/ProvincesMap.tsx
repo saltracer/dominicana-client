@@ -9,6 +9,7 @@ import {
   createProvinceStyler,
   createProvinceInteractions
 } from '@/lib/map/province-geo-utils';
+import { useTheme } from '@/context/ThemeContext';
 import 'leaflet/dist/leaflet.css';
 
 // Define a custom marker icon using inline SVG
@@ -31,6 +32,7 @@ const createCustomIcon = (color: string, isSelected: boolean = false) => {
 };
 
 const ProvincesMap: React.FC = () => {
+  const { resolvedTheme } = useTheme();
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -71,8 +73,8 @@ const ProvincesMap: React.FC = () => {
 
   if (!isMapLoaded) {
     return (
-      <div className="flex items-center justify-center h-[600px] bg-gray-100 rounded-lg">
-        <div className="text-lg text-gray-600">Loading map...</div>
+      <div className="flex items-center justify-center h-[600px] bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <div className="text-lg text-gray-600 dark:text-gray-300">Loading map...</div>
       </div>
     );
   }
@@ -85,6 +87,15 @@ const ProvincesMap: React.FC = () => {
   
   // Create interaction handlers
   const onEachFeature = createProvinceInteractions(allProvinces, setSelectedProvince);
+
+  // Choose tile layer based on theme
+  const tileUrl = resolvedTheme === 'dark' 
+    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  
+  const attribution = resolvedTheme === 'dark'
+    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
   // Function to handle map reference
   const handleMapReady = () => {
@@ -103,8 +114,8 @@ const ProvincesMap: React.FC = () => {
         //whenReady={( target ) => setMapInstance(target)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={attribution}
+          url={tileUrl}
         />
         
         {/* Add zoom controls to a better position */}
@@ -138,12 +149,12 @@ const ProvincesMap: React.FC = () => {
 
       {/* Province details panel */}
       {selectedProvince && (
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
+        <div className="mt-6 p-6 bg-white dark:bg-card rounded-lg shadow-md">
           <div className="flex justify-between items-start mb-4">
             <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy">
               {selectedProvince.name}
               {selectedProvince.latinName && (
-                <span className="block text-lg font-normal italic text-gray-600">
+                <span className="block text-lg font-normal italic text-gray-600 dark:text-gray-400">
                   {selectedProvince.latinName}
                 </span>
               )}
@@ -156,47 +167,47 @@ const ProvincesMap: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-lg mb-2">Overview</h3>
-              <p className="text-gray-700 mb-4">{selectedProvince.description}</p>
+              <h3 className="font-semibold text-lg mb-2 text-foreground">Overview</h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">{selectedProvince.description}</p>
               
               <div className="space-y-2">
                 <div className="flex">
-                  <span className="font-medium w-32">Founded:</span>
-                  <span>{selectedProvince.formation_date}</span>
+                  <span className="font-medium w-32 text-foreground">Founded:</span>
+                  <span className="text-gray-700 dark:text-gray-300">{selectedProvince.formation_date}</span>
                 </div>
                 <div className="flex">
-                  <span className="font-medium w-32">Region:</span>
-                  <span>{selectedProvince.region_expanded || selectedProvince.region}</span>
+                  <span className="font-medium w-32 text-foreground">Region:</span>
+                  <span className="text-gray-700 dark:text-gray-300">{selectedProvince.region_expanded || selectedProvince.region}</span>
                 </div>
                 <div className="flex">
-                  <span className="font-medium w-32">Countries:</span>
-                  <span>{selectedProvince.countries.join(', ')}</span>
+                  <span className="font-medium w-32 text-foreground">Countries:</span>
+                  <span className="text-gray-700 dark:text-gray-300">{selectedProvince.countries.join(', ')}</span>
                 </div>
                 {selectedProvince.patronSaint && (
                   <div className="flex">
-                    <span className="font-medium w-32">Patron Saint:</span>
-                    <span>{selectedProvince.patronSaint}</span>
+                    <span className="font-medium w-32 text-foreground">Patron Saint:</span>
+                    <span className="text-gray-700 dark:text-gray-300">{selectedProvince.patronSaint}</span>
                   </div>
                 )}
                 <div className="flex">
-                  <span className="font-medium w-32">Website:</span>
+                  <span className="font-medium w-32 text-foreground">Website:</span>
                   <a 
                     href={selectedProvince.website} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     {selectedProvince.website.replace(/(https?:\/\/)/, '')}
                   </a>
                 </div>
                 {selectedProvince.lay_website && (
                   <div className="flex">
-                    <span className="font-medium w-32">Lay Dominican:</span>
+                    <span className="font-medium w-32 text-foreground">Lay Dominican:</span>
                     <a 
                       href={selectedProvince.lay_website} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       {selectedProvince.lay_website.replace(/(https?:\/\/)/, '')}
                     </a>
@@ -206,10 +217,10 @@ const ProvincesMap: React.FC = () => {
             </div>
             
             <div>
-              <h3 className="font-semibold text-lg mb-2">History & Mission</h3>
+              <h3 className="font-semibold text-lg mb-2 text-foreground">History & Mission</h3>
               <div className="space-y-3">
                 {selectedProvince.description_array.map((paragraph, i) => (
-                  <p key={i} className="text-gray-700">{paragraph}</p>
+                  <p key={i} className="text-gray-700 dark:text-gray-300">{paragraph}</p>
                 ))}
               </div>
             </div>
@@ -217,10 +228,10 @@ const ProvincesMap: React.FC = () => {
 
           {selectedProvince.priories && selectedProvince.priories.length > 0 && (
             <div className="mt-6">
-              <h3 className="font-semibold text-lg mb-2">Notable Priories</h3>
+              <h3 className="font-semibold text-lg mb-2 text-foreground">Notable Priories</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {selectedProvince.priories.map((priory, index) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded-md">
+                  <div key={index} className="bg-gray-50 dark:bg-muted p-3 rounded-md">
                     <h4 className="font-medium text-dominican-burgundy">
                       {priory.name}
                       {priory.isProvincialHouse && (
@@ -229,8 +240,8 @@ const ProvincesMap: React.FC = () => {
                         </span>
                       )}
                     </h4>
-                    <p className="text-sm text-gray-600">{priory.location}</p>
-                    <p className="text-xs text-gray-500">Founded: {priory.founded}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{priory.location}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">Founded: {priory.founded}</p>
                   </div>
                 ))}
               </div>
@@ -238,8 +249,11 @@ const ProvincesMap: React.FC = () => {
           )}
 
           {/* Attribution */}
-          <div className="mt-6 pt-4 border-t text-xs text-gray-500 text-right">
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-border text-xs text-gray-500 dark:text-gray-400 text-right">
             Map data &copy; <a href="https://www.openstreetmap.org/copyright" className="hover:underline">OpenStreetMap</a> contributors
+            {resolvedTheme === 'dark' && (
+              <span> &copy; <a href="https://carto.com/attributions" className="hover:underline">CARTO</a></span>
+            )}
           </div>
         </div>
       )}
