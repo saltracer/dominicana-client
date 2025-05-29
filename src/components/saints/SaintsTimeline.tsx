@@ -16,15 +16,18 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
   selectedSaint,
   onSaintSelect
 }) => {
-  // Filter and sort saints by birth year
-  const timelineSaints = saints.filter(saint => saint.birth_year && saint.death_year).sort((a, b) => (a.birth_year || 0) - (b.birth_year || 0));
+  // Sort saints by birth year
+  const sortedSaints = [...saints].sort((a, b) => (a.birth_year || 0) - (b.birth_year || 0));
 
-  const centuryGroups = timelineSaints.reduce((groups, saint) => {
-    const century = Math.floor((saint.birth_year || 0) / 100) + 1;
-    if (!groups[century]) {
-      groups[century] = [];
+  // Group saints by century
+  const centuryGroups = sortedSaints.reduce((groups, saint) => {
+    if (saint.birth_year) {
+      const century = Math.floor((saint.birth_year - 1) / 100) + 1;
+      if (!groups[century]) {
+        groups[century] = [];
+      }
+      groups[century].push(saint);
     }
-    groups[century].push(saint);
     return groups;
   }, {} as Record<number, Saint[]>);
 

@@ -23,6 +23,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [selectedCentury, setSelectedCentury] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'list' | 'timeline' | 'feast'>('timeline');
   const [isMobile, setIsMobile] = useState(false);
 
@@ -40,16 +41,38 @@ const SaintsList: React.FC<SaintsListProps> = ({
     };
   }, []);
 
-  // Filter saints based on search and filter
+  // Get unique centuries from all saints
+  const allCenturies = React.useMemo(() => {
+    const centuries = new Set<number>();
+    allSaints.forEach(saint => {
+      if (saint.birth_year) {
+        const century = Math.floor((saint.birth_year - 1) / 100) + 1;
+        centuries.add(century);
+      }
+    });
+    return Array.from(centuries).sort((a, b) => a - b);
+  }, []);
+
+  // Filter saints based on search, filter, and century
   const filteredSaints = allSaints.filter(saint => {
+    // Search term matching
     const matchesSearch = saint.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       (saint.short_bio && saint.short_bio.toLowerCase().includes(searchTerm.toLowerCase())) || 
       (saint.patronage && saint.patronage.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    if (filter === 'all') return matchesSearch;
-    if (filter === 'dominican') return matchesSearch && saint.is_dominican;
-    if (filter === 'other') return matchesSearch && !saint.is_dominican;
-    return matchesSearch;
+    // Saint type filter
+    let matchesFilter = true;
+    if (filter === 'dominican') matchesFilter = saint.is_dominican;
+    else if (filter === 'other') matchesFilter = !saint.is_dominican;
+    
+    // Century filter
+    let matchesCentury = true;
+    if (selectedCentury !== 'all' && saint.birth_year) {
+      const saintCentury = Math.floor((saint.birth_year - 1) / 100) + 1;
+      matchesCentury = saintCentury === parseInt(selectedCentury);
+    }
+    
+    return matchesSearch && matchesFilter && matchesCentury;
   });
 
   return (
@@ -106,6 +129,29 @@ const SaintsList: React.FC<SaintsListProps> = ({
                 >
                   Other Saints
                 </Button>
+              </div>
+              
+              {/* Century Filter Dropdown */}
+              <div className="mb-4">
+                <label htmlFor="century-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Filter by Century
+                </label>
+                <select
+                  id="century-filter"
+                  value={selectedCentury}
+                  onChange={(e) => setSelectedCentury(e.target.value)}
+                  className="w-full p-2 border border-dominican-light-gray rounded-md shadow-sm focus:ring-dominican-burgundy focus:border-dominican-burgundy dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                >
+                  <option value="all">All Centuries</option>
+                  {allCenturies.map(century => {
+                    const suffix = century === 1 ? 'st' : century === 2 ? 'nd' : century === 3 ? 'rd' : 'th';
+                    return (
+                      <option key={century} value={century}>
+                        {century}{suffix} Century
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
               
               <div className="flex justify-center">
