@@ -69,3 +69,7 @@ Simply open [Lovable](https://lovable.dev/projects/95300f75-4005-45e4-990a-712e2
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Use an IDE
+
+You can also use an IDE,and commit code into GitHub. That will be picked up by Lovable if the code is commited to the branch that Lovable is monitoring. The `Windsurf` AI assisted IDE is recommended
