@@ -82,11 +82,6 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                       </h5>
                       <div className="flex flex-col items-end text-xs text-gray-500 dark:text-gray-400">
                         <span>{saint.birth_year} - {saint.death_year}</span>
-                        {saint.feast_day && (
-                          <span className="text-dominican-burgundy dark:text-dominican-gold font-medium">
-                            {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$2/$1')}
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -94,15 +89,20 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                       {saint.short_bio}
                     </p>
 
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex justify-between items-start mb-2">
+                      {saint.patronage && (
+                        <span className="bg-dominican-light-gray text-dominican-black dark:bg-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded">
+                          Patron: {saint.patronage.split(',')[0].trim()}
+                        </span>
+                      )}
                       {saint.is_dominican && (
                         <span className="bg-dominican-burgundy/10 text-dominican-burgundy dark:bg-dominican-burgundy/20 dark:text-dominican-burgundy text-xs px-2 py-1 rounded">
                           Dominican
                         </span>
                       )}
-                      {saint.patronage && (
-                        <span className="bg-dominican-light-gray text-dominican-black dark:bg-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded">
-                          Patron: {saint.patronage.split(',')[0].trim()}
+                      {saint.feast_day && (
+                        <span className="flex flex-col items-end text-xs text-dominican-burgundy dark:text-dominican-gold font-medium">
+                          {saint.feast_day.replace(/^(\d{2})-(\d{2})$/, '$1/$2')}
                         </span>
                       )}
                     </div>

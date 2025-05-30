@@ -8,7 +8,7 @@ export const octoberGeneralSaints: Saint[] = [
     id: "francis-of-assisi",
     name: "St. Francis of Assisi",
     feast_day: "10-04",
-    short_bio: "Founder of the Franciscan Order",
+    short_bio: "Founder of the Franciscan Order - Honored by the Dominican order",
     biography: [
       "St. Francis was born in Assisi, Italy, in 1181 or 1182, the son of a wealthy cloth merchant. In his youth, he lived a carefree and indulgent life, but after a series of experiences, including imprisonment during a war with Perugia and a serious illness, he underwent a profound spiritual conversion.",
       "Around 1208, while praying in the dilapidated church of San Damiano, Francis heard Christ speak to him from the crucifix: 'Francis, repair my house, which is falling into ruins.' Initially taking this literally, he began to restore the physical building, but later understood it as a call to reform the Church.",
