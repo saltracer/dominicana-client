@@ -179,15 +179,11 @@ const SaintsList: React.FC<SaintsListProps> = ({
           <div className="lg:col-span-1">
             {viewMode === 'timeline' ? (
               <>
-                <div className="mb-6 bg-white dark:bg-card rounded-lg shadow-sm p-4">
-                  <label htmlFor="century-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Filter by Century
-                  </label>
                   <select
                     id="century-filter"
                     value={selectedCentury}
                     onChange={(e) => setSelectedCentury(e.target.value)}
-                    className="w-full p-2 border border-dominican-light-gray rounded-md shadow-sm focus:ring-dominican-burgundy focus:border-dominican-burgundy dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    className="mb-6 w-full p-2 border border-dominican-light-gray rounded-md shadow-sm focus:ring-dominican-burgundy focus:border-dominican-burgundy dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   >
                     <option value="all">All Centuries</option>
                     {allCenturies.map(century => {
@@ -199,7 +195,6 @@ const SaintsList: React.FC<SaintsListProps> = ({
                       );
                     })}
                   </select>
-                </div>
                 <SaintsTimeline 
                   saints={currentViewSaints} 
                   selectedSaint={selectedSaint}
