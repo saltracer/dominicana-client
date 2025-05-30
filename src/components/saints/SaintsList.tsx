@@ -24,7 +24,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [selectedCentury, setSelectedCentury] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'list' | 'timeline' | 'feast'>('timeline');
+  const [viewMode, setViewMode] = useState<'list' | 'timeline' | 'feast'>('list');
   const [isMobile, setIsMobile] = useState(false);
 
   // Check if mobile view
