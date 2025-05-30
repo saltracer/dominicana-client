@@ -10,6 +10,7 @@ export interface Saint {
   death_year?: number
   prayers?: string
   is_dominican: boolean
+  is_doctor?: boolean
   rank?: CelebrationRank
   color?: LiturgicalColor
   proper?: string
