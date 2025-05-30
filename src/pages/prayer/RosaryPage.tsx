@@ -4,17 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Heart, Sun, Star, Play, Pause, RotateCcw } from 'lucide-react';
-
 interface Prayer {
   title: string;
   text: string;
 }
-
 interface Mystery {
   title: string;
   meditation: string;
 }
-
 interface Mysteries {
   id: string;
   title: string;
@@ -23,64 +20,95 @@ interface Mysteries {
   feastDay?: string;
   mysteries: Mystery[];
 }
-
-const mysteriesData: Mysteries[] = [
-  {
-    id: 'joyful',
-    title: 'The Joyful Mysteries',
-    description: 'Reflect on the joyous events in the lives of Jesus and Mary.',
-    icon: <Sun className="h-5 w-5" />,
-    mysteries: [
-      { title: 'The Annunciation', meditation: 'The Angel Gabriel announces to Mary that she will conceive and bear a son.' },
-      { title: 'The Visitation', meditation: 'Mary visits her cousin Elizabeth, who is also with child.' },
-      { title: 'The Nativity', meditation: 'Jesus is born in a manger in Bethlehem.' },
-      { title: 'The Presentation', meditation: 'Mary and Joseph present Jesus in the Temple.' },
-      { title: 'The Finding in the Temple', meditation: 'Mary and Joseph find Jesus teaching in the Temple.' },
-    ],
-  },
-  {
-    id: 'luminous',
-    title: 'The Luminous Mysteries',
-    description: 'Meditate on the key moments in the public ministry of Jesus.',
-    icon: <Star className="h-5 w-5" />,
-    feastDay: 'May 17',
-    mysteries: [
-      { title: 'The Baptism of Jesus', meditation: 'Jesus is baptized by John the Baptist in the Jordan River.' },
-      { title: 'The Wedding at Cana', meditation: 'Jesus performs his first miracle at the wedding in Cana.' },
-      { title: 'The Proclamation of the Kingdom', meditation: 'Jesus proclaims the Kingdom of God and calls for repentance.' },
-      { title: 'The Transfiguration', meditation: 'Jesus is transfigured on Mount Tabor in the presence of Peter, James, and John.' },
-      { title: 'The Institution of the Eucharist', meditation: 'Jesus institutes the Eucharist at the Last Supper.' },
-    ],
-  },
-  {
-    id: 'sorrowful',
-    title: 'The Sorrowful Mysteries',
-    description: 'Contemplate the suffering and death of Jesus.',
-    icon: <Heart className="h-5 w-5" />,
-    mysteries: [
-      { title: 'The Agony in the Garden', meditation: 'Jesus prays in the Garden of Gethsemane before his arrest.' },
-      { title: 'The Scourging at the Pillar', meditation: 'Jesus is scourged at the pillar.' },
-      { title: 'The Crowning with Thorns', meditation: 'Jesus is crowned with thorns.' },
-      { title: 'The Carrying of the Cross', meditation: 'Jesus carries his cross to Calvary.' },
-      { title: 'The Crucifixion', meditation: 'Jesus is crucified on the cross.' },
-    ],
-  },
-  {
-    id: 'glorious',
-    title: 'The Glorious Mysteries',
-    description: 'Celebrate the glory of Jesus and Mary after the Resurrection.',
-    icon: <Crown className="h-5 w-5" />,
-    mysteries: [
-      { title: 'The Resurrection', meditation: 'Jesus rises from the dead.' },
-      { title: 'The Ascension', meditation: 'Jesus ascends to heaven.' },
-      { title: 'The Descent of the Holy Spirit', meditation: 'The Holy Spirit descends upon the apostles and Mary.' },
-      { title: 'The Assumption', meditation: 'Mary is assumed into heaven.' },
-      { title: 'The Coronation of Mary', meditation: 'Mary is crowned Queen of Heaven and Earth.' },
-    ],
-  },
-];
-
-const prayers: { [key: string]: Prayer } = {
+const mysteriesData: Mysteries[] = [{
+  id: 'joyful',
+  title: 'The Joyful Mysteries',
+  description: 'Reflect on the joyous events in the lives of Jesus and Mary.',
+  icon: <Sun className="h-5 w-5" />,
+  mysteries: [{
+    title: 'The Annunciation',
+    meditation: 'The Angel Gabriel announces to Mary that she will conceive and bear a son.'
+  }, {
+    title: 'The Visitation',
+    meditation: 'Mary visits her cousin Elizabeth, who is also with child.'
+  }, {
+    title: 'The Nativity',
+    meditation: 'Jesus is born in a manger in Bethlehem.'
+  }, {
+    title: 'The Presentation',
+    meditation: 'Mary and Joseph present Jesus in the Temple.'
+  }, {
+    title: 'The Finding in the Temple',
+    meditation: 'Mary and Joseph find Jesus teaching in the Temple.'
+  }]
+}, {
+  id: 'luminous',
+  title: 'The Luminous Mysteries',
+  description: 'Meditate on the key moments in the public ministry of Jesus.',
+  icon: <Star className="h-5 w-5" />,
+  feastDay: 'May 17',
+  mysteries: [{
+    title: 'The Baptism of Jesus',
+    meditation: 'Jesus is baptized by John the Baptist in the Jordan River.'
+  }, {
+    title: 'The Wedding at Cana',
+    meditation: 'Jesus performs his first miracle at the wedding in Cana.'
+  }, {
+    title: 'The Proclamation of the Kingdom',
+    meditation: 'Jesus proclaims the Kingdom of God and calls for repentance.'
+  }, {
+    title: 'The Transfiguration',
+    meditation: 'Jesus is transfigured on Mount Tabor in the presence of Peter, James, and John.'
+  }, {
+    title: 'The Institution of the Eucharist',
+    meditation: 'Jesus institutes the Eucharist at the Last Supper.'
+  }]
+}, {
+  id: 'sorrowful',
+  title: 'The Sorrowful Mysteries',
+  description: 'Contemplate the suffering and death of Jesus.',
+  icon: <Heart className="h-5 w-5" />,
+  mysteries: [{
+    title: 'The Agony in the Garden',
+    meditation: 'Jesus prays in the Garden of Gethsemane before his arrest.'
+  }, {
+    title: 'The Scourging at the Pillar',
+    meditation: 'Jesus is scourged at the pillar.'
+  }, {
+    title: 'The Crowning with Thorns',
+    meditation: 'Jesus is crowned with thorns.'
+  }, {
+    title: 'The Carrying of the Cross',
+    meditation: 'Jesus carries his cross to Calvary.'
+  }, {
+    title: 'The Crucifixion',
+    meditation: 'Jesus is crucified on the cross.'
+  }]
+}, {
+  id: 'glorious',
+  title: 'The Glorious Mysteries',
+  description: 'Celebrate the glory of Jesus and Mary after the Resurrection.',
+  icon: <Crown className="h-5 w-5" />,
+  mysteries: [{
+    title: 'The Resurrection',
+    meditation: 'Jesus rises from the dead.'
+  }, {
+    title: 'The Ascension',
+    meditation: 'Jesus ascends to heaven.'
+  }, {
+    title: 'The Descent of the Holy Spirit',
+    meditation: 'The Holy Spirit descends upon the apostles and Mary.'
+  }, {
+    title: 'The Assumption',
+    meditation: 'Mary is assumed into heaven.'
+  }, {
+    title: 'The Coronation of Mary',
+    meditation: 'Mary is crowned Queen of Heaven and Earth.'
+  }]
+}];
+const prayers: {
+  [key: string]: Prayer;
+} = {
   sign_of_the_cross: {
     title: 'The Sign of the Cross',
     text: 'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.'
@@ -159,23 +187,21 @@ const prayers: { [key: string]: Prayer } = {
       O clement, O loving, O sweet Virgin Mary!`
   }
 };
-
 const RosaryPage: React.FC = () => {
   const [selectedMystery, setSelectedMystery] = useState<Mysteries | null>(null);
   const [currentDecade, setCurrentDecade] = useState(0);
   const [currentBead, setCurrentBead] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-
   const getTotalBeads = () => {
     if (!selectedMystery) return 0;
     return selectedMystery.mysteries.length * 10 + 6; // 10 Hail Marys per decade + initial prayers
   };
-
   const getCurrentPrayer = (): Prayer => {
-    if (!selectedMystery) return { title: '', text: '' };
-
+    if (!selectedMystery) return {
+      title: '',
+      text: ''
+    };
     const decade = selectedMystery.mysteries[currentDecade];
-
     if (currentBead === 0) {
       return prayers.sign_of_the_cross;
     } else if (currentBead === 1) {
@@ -196,18 +222,14 @@ const RosaryPage: React.FC = () => {
       return prayers.hail_mary;
     }
   };
-
   const nextBead = () => {
     if (!selectedMystery) return;
-
     const totalDecades = selectedMystery.mysteries.length;
     const totalBeadsInDecade = 10;
-
     if (currentBead < 6) {
       setCurrentBead(currentBead + 1);
     } else {
       const decadeProgress = (currentBead - 6) % totalBeadsInDecade;
-
       if (decadeProgress < totalBeadsInDecade - 1) {
         setCurrentBead(currentBead + 1);
       } else {
@@ -222,16 +244,14 @@ const RosaryPage: React.FC = () => {
       }
     }
   };
-
-  return (
-    <div className="container mx-auto px-4 py-8">
+  return <div className="container mx-auto px-4 py-8">
       <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
         The Dominican Rosary
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
+      <p className="text-gray-700 dark:text-gray-300 mb-8 ">
         The Holy Rosary is a cherished devotion in the Dominican tradition. St. Dominic received this prayer 
         from Our Lady herself, and it has been a cornerstone of Dominican spirituality for over 800 years.
       </p>
@@ -252,41 +272,28 @@ const RosaryPage: React.FC = () => {
                   {selectedMystery ? selectedMystery.title : 'Select Mysteries to Begin'}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    disabled={!selectedMystery}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setIsPlaying(!isPlaying)} disabled={!selectedMystery}>
                     {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setCurrentBead(0);
-                      setCurrentDecade(0);
-                      setIsPlaying(false);
-                    }}
-                    disabled={!selectedMystery}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => {
+                  setCurrentBead(0);
+                  setCurrentDecade(0);
+                  setIsPlaying(false);
+                }} disabled={!selectedMystery}>
                     <RotateCcw className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              {selectedMystery ? (
-                <div className="space-y-6">
+              {selectedMystery ? <div className="space-y-6">
                   {/* Current Mystery */}
                   <div className="bg-dominican-burgundy/10 dark:bg-dominican-burgundy/20 p-4 rounded-md">
                     <h3 className="font-garamond text-lg font-semibold text-dominican-burgundy mb-2">
                       {currentDecade + 1}. {selectedMystery.mysteries[currentDecade]?.title || 'Complete'}
                     </h3>
-                    {selectedMystery.mysteries[currentDecade] && (
-                      <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    {selectedMystery.mysteries[currentDecade] && <p className="text-gray-700 dark:text-gray-300 text-sm">
                         {selectedMystery.mysteries[currentDecade].meditation}
-                      </p>
-                    )}
+                      </p>}
                   </div>
 
                   {/* Current Prayer */}
@@ -308,15 +315,12 @@ const RosaryPage: React.FC = () => {
                       Next Prayer
                     </Button>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-12">
+                </div> : <div className="text-center py-12">
                   <div className="w-24 h-24 bg-dominican-light-gray dark:bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="font-garamond text-4xl text-dominican-burgundy">†</span>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400">Select a set of mysteries to begin praying the Rosary</p>
-                </div>
-              )}
+                </div>}
             </div>
 
             {/* Mystery Selection */}
@@ -325,30 +329,22 @@ const RosaryPage: React.FC = () => {
                 Select a Mystery
               </h3>
               <div className="space-y-4">
-                {mysteriesData.map(mystery => (
-                  <Card
-                    key={mystery.id}
-                    className="border-dominican-light-gray dark:border-border cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => {
-                      setSelectedMystery(mystery);
-                      setCurrentBead(0);
-                      setCurrentDecade(0);
-                    }}
-                  >
+                {mysteriesData.map(mystery => <Card key={mystery.id} className="border-dominican-light-gray dark:border-border cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                setSelectedMystery(mystery);
+                setCurrentBead(0);
+                setCurrentDecade(0);
+              }}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium flex items-center">
                         {mystery.icon}
                         <span className="ml-2">{mystery.title}</span>
                       </CardTitle>
-                      {mystery.feastDay && (
-                        <Badge variant="secondary">Feast: {mystery.feastDay}</Badge>
-                      )}
+                      {mystery.feastDay && <Badge variant="secondary">Feast: {mystery.feastDay}</Badge>}
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{mystery.description}</p>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </div>
           </div>
@@ -357,8 +353,7 @@ const RosaryPage: React.FC = () => {
         {/* Mysteries Tab */}
         <TabsContent value="mysteries">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mysteriesData.map(mystery => (
-              <Card key={mystery.id} className="bg-white dark:bg-card rounded-lg shadow-md">
+            {mysteriesData.map(mystery => <Card key={mystery.id} className="bg-white dark:bg-card rounded-lg shadow-md">
                 <CardHeader>
                   <CardTitle className="font-garamond text-xl font-bold text-dominican-burgundy">
                     {mystery.title}
@@ -367,13 +362,10 @@ const RosaryPage: React.FC = () => {
                 <CardContent>
                   <p className="text-gray-700 dark:text-gray-300 mb-4">{mystery.description}</p>
                   <ul className="list-disc list-inside text-gray-600 dark:text-gray-400">
-                    {mystery.mysteries.map((m, index) => (
-                      <li key={index} className="mb-2">{m.title} - {m.meditation}</li>
-                    ))}
+                    {mystery.mysteries.map((m, index) => <li key={index} className="mb-2">{m.title} - {m.meditation}</li>)}
                   </ul>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </TabsContent>
 
@@ -399,8 +391,6 @@ const RosaryPage: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 };
-
 export default RosaryPage;
