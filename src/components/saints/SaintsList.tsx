@@ -235,7 +235,7 @@ const SaintsList: React.FC<SaintsListProps> = ({
                     )}
                     {saint.feast_day && (
                       <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        Feast Day: {saint.feast_day}
+                        {saint.feast_day}
                       </div>
                     )}
                   </div>
@@ -261,8 +261,8 @@ const SaintsList: React.FC<SaintsListProps> = ({
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-card rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                <h2 className="font-garamond text-xl font-semibold text-dominican-burgundy dark:text-dominican-gold">
-                  Saint Details
+                <h2 className="font-garamond text-3xl font-bold text-dominican-burgundy dark:text-dominican-gold">
+                  {selectedSaint.name}
                 </h2>
                 <button 
                   onClick={onClosePanel}

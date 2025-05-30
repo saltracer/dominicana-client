@@ -40,16 +40,6 @@ export function SaintsInfoCard({
         )}
         <CardHeader className="pb-6">
           <div className="space-y-4">
-            {/* Title and Dominican Badge */}
-            <div className="flex items-start justify-between">
-              <h1 className="font-garamond text-3xl font-bold text-dominican-burgundy leading-tight">
-                {selectedSaint.name}
-              </h1>
-              {selectedSaint.is_dominican && <Badge className="bg-dominican-burgundy hover:bg-dominican-burgundy/90 text-white font-medium">
-                  Dominican
-                </Badge>}
-            </div>
-
             {/* Rank and Type */}
             <div className="flex flex-wrap gap-2">
               {selectedSaint.rank && <Badge variant="outline" className="border-dominican-burgundy text-dominican-burgundy">
