@@ -23,6 +23,15 @@ export const septemberGeneralSaints: Saint[] = [
     patronage: "World Youth Day, Missionaries of Charity, the poor and sick, Calcutta, India",
     birth_year: 1910,
     death_year: 1997,
+    birth_place: "Skopje, North Macedonia (then part of the Ottoman Empire)",
+    death_place: "Kolkata, India",
+    quotes: [
+      "If you judge people, you have no time to love them.",
+      "Peace begins with a smile.",
+      "Not all of us can do great things. But we can do small things with great love.",
+      "Spread love everywhere you go. Let no one ever come to you without leaving happier.",
+      "We know only too well that what we are doing is nothing more than a drop in the ocean. But if the drop were not there, the ocean would be missing something."
+    ],
     prayers:
       "Saint Teresa of Calcutta, you allowed the thirsting love of Jesus on the Cross to become a living flame within you, and so became the light of His love to all. Teach me to allow Jesus to penetrate and possess my whole being so completely that my life, too, may radiate His light and love to others. Amen.",
     is_dominican: false,
@@ -50,13 +59,20 @@ export const septemberGeneralSaints: Saint[] = [
     birth_place: "Verdú, Catalonia, Spain",
     death_place: "Cartagena, Colombia",
     canonization_date: "1888-01-15",
+    quotes: [
+      "We must speak to them with our hands before we speak to them with our lips.",
+      "To love God as He ought to be loved, we must be detached from all temporal love. We must love nothing but Him, or if we love anything else, we must love it only for His sake.",
+      "We must help the poor and console them. It is our duty to assist the poor and to bear with them.",
+      "The most powerful weapon to conquer the devil is humility. For, as he does not know at all how to employ it, neither does he know how to defend himself from it.",
+      "Perfection consists in one thing alone, which is doing the will of God. For, according to Our Lord's words, it suffices for perfection to deny self, to take up the cross and to follow Him."
+    ],
     is_dominican: false,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
   {
-    id: "st-matthew",
+    id: "matthew",
     name: "St. Matthew the Apostle",
     feast_day: "09-21",
     short_bio: "Apostle, Evangelist, and former tax collector",
@@ -73,6 +89,11 @@ export const septemberGeneralSaints: Saint[] = [
     birth_place: "Capernaum, Galilee",
     death_place: "Ethiopia (traditional)",
     death_year: 74,
+    quotes: [
+      "As Jesus passed on from there, He saw a man called Matthew sitting at the tax office; and He said to him, 'Follow me.' And he rose and followed Him. (Matthew 9:9)",
+      "The healthy do not need a physician, but the sick do. Go and learn the meaning of the words, 'I desire mercy, not sacrifice.' I did not come to call the righteous but sinners. (Matthew 9:12-13)",
+      "And Jesus came and said to them, 'All authority in heaven and on earth has been given to me. Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all that I have commanded you. And behold, I am with you always, to the end of the age.' (Matthew 28:18-20)"
+    ],
     is_dominican: false,
     rank: CelebrationRank.FEAST,
     color: LiturgicalColor.RED,
@@ -98,6 +119,13 @@ export const septemberGeneralSaints: Saint[] = [
     birth_place: "Pietrelcina, Italy",
     death_place: "San Giovanni Rotondo, Italy",
     canonization_date: "2002-06-16",
+    quotes: [
+      "Pray, hope, and don't worry. Worry is useless. God is merciful and will hear your prayer.",
+      "The life of a Christian is nothing but a perpetual struggle against self; there is no flowering of the soul to the beauty of its perfection except at the price of pain.",
+      "The greater your sufferings, the greater God's love for you.",
+      "Do not fear, Jesus is with you. Take courage and fight like a brave soldier.",
+      "The more you are afflicted, the more you ought to rejoice, because in the fire of tribulation the soul becomes beautiful, just as gold becomes brilliant in the furnace."
+    ],
     is_dominican: false,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
@@ -123,6 +151,13 @@ export const septemberGeneralSaints: Saint[] = [
     birth_place: "Pouy, Gascony, France",
     death_place: "Paris, France",
     canonization_date: "1737-06-16",
+    quotes: [
+      "The most powerful weapon to conquer the devil is humility. For, as he does not know at all how to employ it, neither does he know how to defend himself from it.",
+      "Perfection consists in one thing alone, which is doing the will of God. For, according to Our Lord's words, it suffices for perfection to deny self, to take up the cross and to follow Him.",
+      "We must love our neighbor as being made in the image of God and as an object of His love.",
+      "The Church teaches us that mercy belongs to God. May He never allow us to be lacking in His mercy, and may we always be merciful to our neighbor.",
+      "Extend mercy towards others, so that there can be no one in need whom you meet without helping. For what hope is there for us if God should withdraw His mercy from us?"
+    ],
     is_dominican: false,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.WHITE,
@@ -145,6 +180,11 @@ export const septemberGeneralSaints: Saint[] = [
     patronage: "Naples, blood banks, volcanic eruptions, goldsmiths",
     death_year: 305,
     death_place: "Pozzuoli, Italy",
+    quotes: [
+      "In the midst of the flames, I am not burned; in the midst of wild beasts, I am not devoured; in the sea, I am not drowned; in the tomb, I am not forsaken.",
+      "The blood of martyrs is the seed of the Church.",
+      "The miracle of the blood reminds us that the blood of the martyrs is the seed of Christians."
+    ],
     is_dominican: false,
     rank: CelebrationRank.MEMORIAL,
     color: LiturgicalColor.RED,
