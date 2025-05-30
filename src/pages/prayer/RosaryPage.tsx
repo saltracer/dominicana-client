@@ -271,7 +271,7 @@ const RosaryPage: React.FC = () => {
                 <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy">
                   {selectedMystery ? selectedMystery.title : 'Select Mysteries to Begin'}
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-dominican-black dark:text-gray-300">
                   <Button variant="outline" size="sm" onClick={() => setIsPlaying(!isPlaying)} disabled={!selectedMystery}>
                     {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </Button>
