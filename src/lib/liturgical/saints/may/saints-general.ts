@@ -139,7 +139,7 @@ export const mayGeneralSaints: Saint[] = [
     ],
     image_url: "/saints/st-augustine-of-canterbury.jpg",
     patronage: "England, English dioceses, and the Anglican Communion",
-    birth_year: 6,
+    birth_year: 534,
     death_year: 604,
     prayers:
       "O Lord our God, who by your Son Jesus Christ called your Apostles and sent them forth to preach the Gospel to the nations: We bless your holy name for your servant Augustine, first Archbishop of Canterbury, whose labors in prayer, preaching, and pastoral zeal established the Church in England; and we pray that all whom you call and send may do your will, bide your time, and see your glory; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. Amen.",
