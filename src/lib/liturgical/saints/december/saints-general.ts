@@ -5,6 +5,55 @@ import { CelebrationRank } from "../../celebrations/celebrations-types"
 // December saints
 export const decemberGeneralSaints: Saint[] = [
   {
+    id: "dominic-of-silos",
+    name: "St. Dominic of Silos",
+    feast_day: "12-20",
+    short_bio: "Spanish abbot and miracle-worker, patron of prisoners and shepherds",
+    biography: [
+      "St. Dominic of Silos was born around the year 1000 in Cañas, La Rioja, Spain, to a peasant family. As a young boy, he worked as a shepherd, which gave him ample time for prayer and contemplation. Recognizing his intelligence and piety, his parents sent him to be educated by the local monks at the monastery of San Millán de la Cogolla.",
+      "After completing his education, Dominic became a Benedictine monk at San Millán de la Cogolla. His wisdom and holiness led to his appointment as prior of the monastery. However, when King García Sánchez III of Navarre attempted to claim the monastery's lands, Dominic refused to hand them over, leading to his exile.",
+      "In 1041, Dominic found refuge in Castile under the protection of King Ferdinand I of León. The king appointed him abbot of the monastery of San Sebastián de Silos (now known as Santo Domingo de Silos), which had fallen into disrepair. Dominic restored the monastery both spiritually and physically, transforming it into a center of learning, spirituality, and charitable works.",
+      "Under Dominic's leadership, the monastery became renowned for its scholarship, particularly in the copying and preservation of manuscripts. The scriptorium at Silos produced some of the finest illuminated manuscripts of the period. Dominic also established a hospice for the poor and sick, personally caring for those in need.",
+      "Dominic was known for his miracles, particularly his power to free Christian captives from Muslim rule. Many prisoners claimed to have been miraculously freed from their chains after praying for Dominic's intercession. This led to his veneration as a patron of prisoners and those unjustly detained.",
+      "He died on December 20, 1073, and was buried in the abbey church. His tomb became a popular pilgrimage site, and numerous miracles were attributed to his intercession. In the 16th century, a Spanish woman named Joan Aza prayed at his shrine for a son, promising to name him Dominic. Her son became St. Dominic de Guzmán, founder of the Dominican Order, who was named in honor of Dominic of Silos.",
+      "St. Dominic of Silos was canonized in 1076 by Pope Gregory VII. His abbey church remains an important spiritual and cultural center, famous for its Romanesque architecture and the monks' Gregorian chant recordings.",
+    ],
+    image_url: "/saints/st-dominic-of-silos.jpg",
+    patronage: "Prisoners, shepherds, pregnant women, against rabies, against mad dogs, against insects, against rabies, captives, and the falsely accused",
+    birth_year: 1000,
+    birth_place: "Cañas, La Rioja, Spain",
+    death_year: 1073,
+    death_place: "Santo Domingo de Silos, Castile (now Spain)",
+    canonization_date: "1076-01-01",
+    quotes: [
+      "The Lord has given me the grace to be a good shepherd, to guide souls to heaven.",
+      "The true monk is he who is separated from all and united to all.",
+      "In silence and in hope shall your strength be.",
+      "The measure of love is to love without measure.",
+      "The cross is the school of love.",
+      "He who labors as he prays lifts his heart to God with his hands.",
+      "The more we empty ourselves, the more room we give God to fill us.",
+      "Obedience is the mother of all virtues, the key to the spiritual life.",
+      "The humble man receives praise the way a clean window takes the light of the sun. The truer and more intense the light is, the less you see of the glass.",
+      "The soul that is united with God is feared by the devil as though it were God Himself.",
+    ],
+    prayers: `
+      O God, who to the blessed Abbot Dominic gave the grace to be a model of perfect penance and a great protector of the poor, grant, we beseech Thee, that by his intercession and example we may be delivered from all temporal and spiritual ills, and may always be found in the number of the elect. Through our Lord Jesus Christ, Thy Son, who liveth and reigneth with Thee in the unity of the Holy Ghost, God, world without end. Amen.
+  
+      O holy St. Dominic of Silos, you who were a model of charity and compassion, a father to the poor and a refuge for sinners, intercede for us before the throne of God. Help us to imitate your virtues, especially your love for prayer, your obedience to God's will, and your tender care for those in need. May we, like you, be instruments of God's mercy and peace in the world. Amen.
+    `,
+    books: [
+      "the-rule-of-st-benedict",
+      "sermons-of-st-dominic-of-silos",
+      "the-life-and-miracles-of-st-dominic-of-silos",
+    ],
+    is_dominican: false,
+    is_doctor: false,
+    rank: CelebrationRank.OPTIONAL_MEMORIAL,
+    color: LiturgicalColor.WHITE,
+    proper: "Proper of Saints",
+  },
+  {
     id: "stephen",
     name: "St. Stephen",
     feast_day: "12-26",
