@@ -57,13 +57,13 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                   {/* Timeline dot */}
                   <div className={cn(
                     "absolute left-0 w-8 h-8 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center text-xs font-bold z-10",
-                    saint.is_dominican 
-                      ? "bg-dominican-black text-white dark:bg-dominican-white dark:text-dominican-white" 
-                      : saint.is_doctor
+                    saint.is_doctor 
                         ? "bg-dominican-burgundy text-white dark:bg-dominican-burgundy dark:text-white"
+                      : saint.is_dominican
+                        ? "bg-dominican-black text-white dark:bg-dominican-white dark:text-dominican-white" 
                         : "bg-dominican-gold text-dominican-black dark:bg-dominican-gold dark:text-dominican-black"
                   )}>
-                    {saint.is_dominican ? "OP" : saint.is_doctor ? "DC" : "†"}
+                    {saint.is_doctor ? "DC" : saint.is_dominican ? "OP" : "†"}
                   </div>
 
                   {/* Saint card */}
