@@ -145,7 +145,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
         {description && (
           <p className="text-sm text-amber-700 mb-2">{description}</p>
         )}
-        <div className="chant-notation-container p-4 rounded overflow-x-auto min-h-[100px] flex items-center justify-center">
+        <div className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto min-h-[100px] flex items-center justify-center">
           <div className="text-amber-700">Loading chant notation...</div>
         </div>
       </div>
@@ -159,7 +159,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
       )}
       <div 
         ref={containerRef}
-        className="chant-notation-container p-4 rounded overflow-x-auto min-h-[100px]"
+        className="chant-notation-container bg-white p-4 rounded border border-amber-300 overflow-x-auto min-h-[100px]"
       >
         {loading && (
           <div className="text-center text-amber-700">
