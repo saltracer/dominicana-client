@@ -58,10 +58,12 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                   <div className={cn(
                     "absolute left-0 w-8 h-8 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center text-xs font-bold z-10",
                     saint.is_dominican 
-                      ? "bg-dominican-burgundy text-white dark:bg-dominican-burgundy dark:text-white" 
-                      : "bg-dominican-gold text-dominican-black dark:bg-dominican-gold dark:text-dominican-black"
+                      ? "bg-dominican-black text-white dark:bg-dominican-white dark:text-dominican-white" 
+                      : saint.is_doctor
+                        ? "bg-dominican-burgundy text-white dark:bg-dominican-burgundy dark:text-white"
+                        : "bg-dominican-gold text-dominican-black dark:bg-dominican-gold dark:text-dominican-black"
                   )}>
-                    {saint.is_dominican ? "OP" : "†"}
+                    {saint.is_dominican ? "OP" : saint.is_doctor ? "DC" : "†"}
                   </div>
 
                   {/* Saint card */}
@@ -95,8 +97,13 @@ const SaintsTimeline: React.FC<SaintsTimelineProps> = ({
                           Patron: {saint.patronage.split(',')[0].trim()}
                         </span>
                       )}
+                      {saint.is_doctor && (
+                        <span className="bg-dominican-blue/10 text-dominican-blue dark:bg-dominican-blue/20 dark:text-dominican-blue text-xs px-2 py-1 rounded ml-1">
+                          Doctor
+                        </span>
+                      )}
                       {saint.is_dominican && (
-                        <span className="bg-dominican-burgundy/10 text-dominican-burgundy dark:bg-dominican-burgundy/20 dark:text-dominican-burgundy text-xs px-2 py-1 rounded">
+                        <span className="bg-dominican-burgundy/10 text-dominican-burgundy dark:bg-dominican-burgundy/20 dark:text-dominican-burgundy text-xs px-2 py-1 rounded ml-1">
                           Dominican
                         </span>
                       )}
