@@ -6,7 +6,7 @@ import { CelebrationRank } from "../celebrations"
 import type { Celebration } from "../celebrations"
 
 import { dominicanSaints } from "./saint-dominicans"
-import { doctorSaints } from "./saint-doctors"
+import { doctorSaints } from "./doctors"
 
 // Import saint data from monthly files
 import { januaryGeneralSaints } from "./january"
