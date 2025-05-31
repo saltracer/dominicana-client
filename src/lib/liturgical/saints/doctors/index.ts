@@ -10,9 +10,12 @@ import { medievalDoctors } from "./medieval-doctors"
 import { reformationDoctors } from "./reformation-doctors"
 import { modernDoctors } from "./modern-doctors"
 
+import { doctorSaints as saintDoctors } from "../saint-doctors" //Until the era files are populated
+
 export const doctorSaints = [
   ...ancientDoctors,
   ...medievalDoctors,
   ...reformationDoctors,
   ...modernDoctors,
+  ...saintDoctors,
 ]
