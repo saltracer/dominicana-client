@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from 'lucide-react';
+import { Calendar, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import ComplineDisplay from '@/components/prayer/ComplineDisplay';
 import { Button } from '@/components/ui/button';
@@ -9,10 +10,23 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  hourToSlug, 
+  slugToHour, 
+  dateToUrlString, 
+  urlStringToDate, 
+  buildLiturgyUrl, 
+  isValidHourSlug,
+  hourDisplayNames 
+} from '@/lib/liturgical/hours/url-utils';
 
 const LiturgyOfHoursPage: React.FC = () => {
+  const { hour: hourParam, date: dateParam } = useParams();
+  const navigate = useNavigate();
   const { selectedDate, setSelectedDate } = useLiturgicalDay();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [selectedHour, setSelectedHour] = useState("night-prayer");
 
   const prayerHours = [
@@ -24,6 +38,77 @@ const LiturgyOfHoursPage: React.FC = () => {
     { value: "evening-prayer", label: "Evening Prayer" },
     { value: "night-prayer", label: "Night Prayer" }
   ];
+  
+  // Initialize state from URL parameters
+  useEffect(() => {
+    let initialHour = "night-prayer";
+    let initialDate = selectedDate;
+
+    // Handle hour parameter
+    if (hourParam) {
+      const hourFromSlug = slugToHour(hourParam);
+      if (isValidHourSlug(hourParam) || isValidHourSlug(hourFromSlug)) {
+        initialHour = hourFromSlug;
+      } else {
+        // Invalid hour, redirect to valid URL
+        navigate('/prayer/liturgy-of-the-hours', { replace: true });
+        return;
+      }
+    }
+
+    // Handle date parameter
+    if (dateParam) {
+      const dateFromUrl = urlStringToDate(dateParam);
+      if (dateFromUrl) {
+        initialDate = dateFromUrl;
+        setSelectedDate(dateFromUrl);
+      } else {
+        // Invalid date, redirect without date parameter
+        const newUrl = hourParam ? `/prayer/liturgy-of-the-hours/${hourParam}` : '/prayer/liturgy-of-the-hours';
+        navigate(newUrl, { replace: true });
+        return;
+      }
+    }
+
+    setSelectedHour(initialHour);
+  }, [hourParam, dateParam, navigate, setSelectedDate, selectedDate]);
+
+  // Update URL when hour or date changes
+  const updateUrl = (newHour?: string, newDate?: Date) => {
+    const hour = newHour || selectedHour;
+    const date = newDate !== undefined ? newDate : selectedDate;
+    const newUrl = buildLiturgyUrl(hour, date);
+    navigate(newUrl, { replace: true });
+  };
+
+  const handleHourChange = (newHour: string) => {
+    setSelectedHour(newHour);
+    updateUrl(newHour);
+  };
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (newDate) {
+      setSelectedDate(newDate);
+      updateUrl(undefined, newDate);
+    }
+  };
+
+  const handleShare = async () => {
+    const currentUrl = window.location.href;
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      toast({
+        title: "Link copied!",
+        description: "The link to this prayer has been copied to your clipboard.",
+      });
+    } catch (err) {
+      toast({
+        title: "Share link",
+        description: currentUrl,
+        variant: "default",
+      });
+    }
+  };
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,27 +130,33 @@ const LiturgyOfHoursPage: React.FC = () => {
             <Calendar className="h-5 w-5 text-dominican-burgundy" />
             <span className="font-medium text-foreground">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="default" size="sm">
-                Select Prayers
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleShare}>
+              <Share2 className="h-4 w-4 mr-1" />
+              Share
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="default" size="sm">
+                  Select Date
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
         
         {isMobile ? (
           <div className="p-4">
             <div className="mb-4">
-              <Select value={selectedHour} onValueChange={setSelectedHour}>
+              <Select value={selectedHour} onValueChange={handleHourChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a prayer hour" />
                 </SelectTrigger>
@@ -240,7 +331,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <Tabs defaultValue="office-of-readings" className="w-full">
+          <Tabs value={selectedHour} onValueChange={handleHourChange} className="w-full">
             <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
               <TabsTrigger value="office-of-readings">Office of Readings</TabsTrigger>
               <TabsTrigger value="morning-prayer">Morning Prayer</TabsTrigger>
