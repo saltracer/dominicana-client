@@ -42,28 +42,6 @@ const mysteriesData: Mysteries[] = [{
     meditation: 'Mary and Joseph find Jesus teaching in the Temple.'
   }]
 }, {
-  id: 'luminous',
-  title: 'The Luminous Mysteries',
-  description: 'Meditate on the key moments in the public ministry of Jesus.',
-  icon: <Star className="h-5 w-5" />,
-  feastDay: 'May 17',
-  mysteries: [{
-    title: 'The Baptism of Jesus',
-    meditation: 'Jesus is baptized by John the Baptist in the Jordan River.'
-  }, {
-    title: 'The Wedding at Cana',
-    meditation: 'Jesus performs his first miracle at the wedding in Cana.'
-  }, {
-    title: 'The Proclamation of the Kingdom',
-    meditation: 'Jesus proclaims the Kingdom of God and calls for repentance.'
-  }, {
-    title: 'The Transfiguration',
-    meditation: 'Jesus is transfigured on Mount Tabor in the presence of Peter, James, and John.'
-  }, {
-    title: 'The Institution of the Eucharist',
-    meditation: 'Jesus institutes the Eucharist at the Last Supper.'
-  }]
-}, {
   id: 'sorrowful',
   title: 'The Sorrowful Mysteries',
   description: 'Contemplate the suffering and death of Jesus.',
@@ -104,6 +82,28 @@ const mysteriesData: Mysteries[] = [{
   }, {
     title: 'The Coronation of Mary',
     meditation: 'Mary is crowned Queen of Heaven and Earth.'
+  }]
+},{
+  id: 'luminous',
+  title: 'The Luminous Mysteries',
+  description: 'Meditate on the key moments in the public ministry of Jesus.',
+  icon: <Star className="h-5 w-5" />,
+  feastDay: 'May 17',
+  mysteries: [{
+    title: 'The Baptism of Jesus',
+    meditation: 'Jesus is baptized by John the Baptist in the Jordan River.'
+  }, {
+    title: 'The Wedding at Cana',
+    meditation: 'Jesus performs his first miracle at the wedding in Cana.'
+  }, {
+    title: 'The Proclamation of the Kingdom',
+    meditation: 'Jesus proclaims the Kingdom of God and calls for repentance.'
+  }, {
+    title: 'The Transfiguration',
+    meditation: 'Jesus is transfigured on Mount Tabor in the presence of Peter, James, and John.'
+  }, {
+    title: 'The Institution of the Eucharist',
+    meditation: 'Jesus institutes the Eucharist at the Last Supper.'
   }]
 }];
 const prayers: {
