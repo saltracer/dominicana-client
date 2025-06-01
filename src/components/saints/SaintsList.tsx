@@ -44,18 +44,12 @@ const SaintsList: React.FC<SaintsListProps> = ({
   // Get unique centuries from all saints
   const allCenturies = React.useMemo(() => {
     const centuries = new Set<number>();
-    const doctors = new Set<Saint>();
     allSaints.forEach(saint => {
       if (saint.birth_year) {
         const century = Math.floor((saint.birth_year - 1) / 100) + 1;
         centuries.add(century);
       }
-      if (saint.is_doctor) {
-        console.log(saint.name);
-        doctors.add(saint);
-      }
     });
-    console.log(doctors.size);
     return Array.from(centuries).sort((a, b) => a - b);
   }, []);
 
