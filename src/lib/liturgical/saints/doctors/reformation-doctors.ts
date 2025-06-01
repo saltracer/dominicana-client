@@ -193,7 +193,6 @@ export const reformationDoctors: Saint[] = [
     color: LiturgicalColor.WHITE,
     proper: "Proper of Saints",
   },
-
   {
     id: "lawrence-of-brindisi",
     name: "St. Lawrence of Brindisi",

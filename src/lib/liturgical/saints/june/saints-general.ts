@@ -150,31 +150,6 @@ export const juneGeneralSaints: Saint[] = [
     proper: "Proper of Saints",
   },
   {
-    id: "irenaeus-lyon",
-    name: "St. Irenaeus of Lyon",
-    feast_day: "06-28",
-    short_bio: "Early Church Father and apologist who defended orthodox Christianity against Gnosticism.",
-    biography: [
-      "St. Irenaeus was born around 130 AD in Smyrna (modern-day Izmir, Turkey), where as a young man he became a disciple of St. Polycarp, who himself had been a disciple of the Apostle John, thus providing Irenaeus with a direct connection to the apostolic teaching and making him a crucial link in the chain of early Christian tradition.",
-      "Around 177 AD, while Irenaeus was away on a mission to Rome, a severe persecution broke out in Lyon (then called Lugdunum) in Gaul, where he was a priest, resulting in the martyrdom of many Christians, including the bishop, St. Pothinus; upon his return, Irenaeus was elected as the new bishop of Lyon, a position he would hold until his death.",
-      "As bishop, Irenaeus faced the challenging spread of Gnosticism, a complex set of heretical beliefs that claimed salvation came through secret knowledge (gnosis), portrayed the material world as evil, denied the incarnation of Christ, and rejected the Old Testament God as inferior or even malevolent.",
-      "In response to the Gnostic threat, Irenaeus composed his most famous work, \"Against Heresies\" (Adversus Haereses), a five-volume refutation of Gnostic teachings that not only detailed and criticized their complex systems but also presented a comprehensive exposition of orthodox Christian doctrine based on Scripture and apostolic tradition.",
-      "Irenaeus developed important theological concepts that remain foundational to Christian theology, including the unity of the Old and New Testaments, the parallel between Adam and Christ (and Eve and Mary), the four-fold gospel canon, and most significantly, his understanding of apostolic succession as the guarantee of authentic Christian teaching.",
-      "Beyond his anti-heretical writings, Irenaeus was known as a peace-maker who once intervened with Pope Victor I to prevent the excommunication of churches in Asia Minor over a dispute about the date of Easter, arguing that unity in essential matters should allow for diversity in non-essential practices.",
-      "Though traditional accounts suggest Irenaeus died as a martyr around 202 AD during the persecution under Emperor Septimius Severus, historical evidence for this is limited, and he may have died of natural causes; nevertheless, his feast day is celebrated on June 28, and in 2022, Pope Francis declared him a Doctor of the Church with the title \"Doctor unitatis\" (Doctor of Unity)."
-    ],
-    image_url: "/saints/st-irenaeus.jpg",
-    patronage: "Lyon, apologists, catechists, unity of Eastern and Western Churches",
-    birth_year: 130,
-    death_year: 202,
-    prayers:
-      "O God, who called the Bishop Saint Irenaeus to confirm true doctrine and the peace of the Church, grant, we pray, through his intercession, that, being renewed in faith and charity, we may always be intent on fostering unity and concord. Through our Lord Jesus Christ, your Son, who lives and reigns with you in the unity of the Holy Spirit, one God, for ever and ever. Amen.",
-    is_dominican: false,
-    rank: CelebrationRank.MEMORIAL,
-    color: LiturgicalColor.RED,
-    proper: "Proper of Saints",
-  },
-  {
     id: "first-martyrs-rome",
     name: "First Martyrs of the Church of Rome",
     feast_day: "06-30",
