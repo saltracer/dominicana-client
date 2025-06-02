@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +27,7 @@ const LiturgyOfHoursPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [selectedHour, setSelectedHour] = useState("night-prayer");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const prayerHours = [
     { value: "office-of-readings", label: "Office of Readings" },
@@ -37,10 +39,12 @@ const LiturgyOfHoursPage: React.FC = () => {
     { value: "night-prayer", label: "Night Prayer" }
   ];
   
-  // Initialize state from URL parameters
+  // Initialize state from URL parameters ONCE
   useEffect(() => {
+    if (isInitialized) return;
+
     let initialHour = "night-prayer";
-    let initialDate = selectedDate;
+    let shouldUpdateDate = false;
 
     // Handle hour parameter
     if (hourParam) {
@@ -58,8 +62,8 @@ const LiturgyOfHoursPage: React.FC = () => {
     if (dateParam) {
       const dateFromUrl = urlStringToDate(dateParam);
       if (dateFromUrl) {
-        initialDate = dateFromUrl;
         setSelectedDate(dateFromUrl);
+        shouldUpdateDate = true;
       } else {
         // Invalid date, redirect without date parameter
         const newUrl = hourParam ? `/prayer/liturgy-of-the-hours/${hourParam}` : '/prayer/liturgy-of-the-hours';
@@ -69,16 +73,21 @@ const LiturgyOfHoursPage: React.FC = () => {
     }
 
     setSelectedHour(initialHour);
-  }, [hourParam, dateParam, navigate, setSelectedDate, selectedDate]);
+    setIsInitialized(true);
+  }, [hourParam, dateParam, navigate, setSelectedDate, isInitialized]);
 
-  // Update URL when hour changes or when selectedDate from context changes
+  // Update URL when hour changes or when selectedDate from context changes (but only after initialization)
   useEffect(() => {
+    if (!isInitialized) return;
+    
     const newUrl = buildLiturgyUrl(selectedHour, selectedDate);
-    const currentPath = window.location.pathname + window.location.search;
+    const currentPath = window.location.pathname;
+    
+    // Only navigate if the URL actually needs to change
     if (currentPath !== newUrl) {
       navigate(newUrl, { replace: true });
     }
-  }, [selectedHour, selectedDate, navigate]);
+  }, [selectedHour, selectedDate, navigate, isInitialized]);
 
   const handleHourChange = (newHour: string) => {
     setSelectedHour(newHour);
