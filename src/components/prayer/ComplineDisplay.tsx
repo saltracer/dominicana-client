@@ -22,7 +22,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
   // Get content for both languages
   const primaryLang = preferences.primaryLanguage || 'en';
   const secondaryLang = preferences.secondaryLanguage;
-  const showBilingual = preferences.showBilingual && secondaryLang && secondaryLang !== primaryLang;
+  const showBilingual = preferences.displayMode === 'bilingual' && secondaryLang && secondaryLang !== primaryLang;
   
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
   const primaryContent = LiturgyService.renderContentForLanguage(component.content, primaryLang);
@@ -68,13 +68,11 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     }
 
     // Bilingual side-by-side layout
-    const maxLines = Math.max(primary.length, secondary.length);
-    
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
         <div className="space-y-2">
           <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            {primaryLang === 'en' ? 'English' : 'Latin'}
+            {primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase()}
           </h5>
           {primary.map((line, index) => (
             <p 
@@ -92,7 +90,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
         </div>
         <div className="space-y-2">
           <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            {secondaryLang === 'en' ? 'English' : 'Latin'}
+            {secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase()}
           </h5>
           {secondary.map((line, index) => (
             <p 
