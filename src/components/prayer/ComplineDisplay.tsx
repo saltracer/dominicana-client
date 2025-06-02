@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
@@ -20,22 +19,97 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
   
   if (!component) return null;
   
+  // Get content for both languages
+  const primaryLang = preferences.primaryLanguage || 'en';
+  const secondaryLang = preferences.secondaryLanguage;
+  const showBilingual = preferences.showBilingual && secondaryLang && secondaryLang !== primaryLang;
+  
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
-  const content = LiturgyService.renderContent(component.content, preferences);
+  const primaryContent = LiturgyService.renderContentForLanguage(component.content, primaryLang);
+  const secondaryContent = showBilingual ? LiturgyService.renderContentForLanguage(component.content, secondaryLang) : [];
   const rubric = component.rubric ? LiturgyService.renderContent(component.rubric, preferences) : [];
   
-  const antiphonBefore = component.antiphon?.before ? 
-    LiturgyService.renderContent(component.antiphon.before, preferences) : [];
-  const antiphonAfter = component.antiphon?.after ? 
-    LiturgyService.renderContent(component.antiphon.after, preferences) : [];
+  const primaryAntiphonBefore = component.antiphon?.before ? 
+    LiturgyService.renderContentForLanguage(component.antiphon.before, primaryLang) : [];
+  const secondaryAntiphonBefore = showBilingual && component.antiphon?.before ? 
+    LiturgyService.renderContentForLanguage(component.antiphon.before, secondaryLang) : [];
+    
+  const primaryAntiphonAfter = component.antiphon?.after ? 
+    LiturgyService.renderContentForLanguage(component.antiphon.after, primaryLang) : [];
+  const secondaryAntiphonAfter = showBilingual && component.antiphon?.after ? 
+    LiturgyService.renderContentForLanguage(component.antiphon.after, secondaryLang) : [];
   
   const hasAudio = component.audio && component.audio.length > 0;
-  const chantContent = LiturgyService.chantContent(component.chant, preferences); //component.chant && component.chant.length > 0;
-  
-  //console.log("rendering a LiturgyPart:", component, title, hasAudio, chantContent)
+  const chantContent = LiturgyService.chantContent(component.chant, preferences);
 
   const handleChantToggle = () => {
     setShowChant(!showChant);
+  };
+
+  const renderBilingualContent = (primary: string[], secondary: string[]) => {
+    if (!showBilingual || secondary.length === 0) {
+      return (
+        <div className="space-y-2">
+          {primary.map((line, index) => (
+            <p 
+              key={index} 
+              className={cn(
+                line === "" ? "my-2" : "",
+                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                  "text-sm text-gray-600 italic" : ""
+              )}
+              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      );
+    }
+
+    // Bilingual side-by-side layout
+    const maxLines = Math.max(primary.length, secondary.length);
+    
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+        <div className="space-y-2">
+          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+            {primaryLang === 'en' ? 'English' : 'Latin'}
+          </h5>
+          {primary.map((line, index) => (
+            <p 
+              key={index} 
+              className={cn(
+                line === "" ? "my-2" : "",
+                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                  "text-sm text-gray-600 italic" : ""
+              )}
+              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+        <div className="space-y-2">
+          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+            {secondaryLang === 'en' ? 'English' : 'Latin'}
+          </h5>
+          {secondary.map((line, index) => (
+            <p 
+              key={index} 
+              className={cn(
+                line === "" ? "my-2" : "",
+                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                  "text-sm text-gray-600 italic" : ""
+              )}
+              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      </div>
+    );
   };
   
   return (
@@ -69,48 +143,28 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
         </div>
       )}
       
-      {antiphonBefore.length > 0 && (
+      {(primaryAntiphonBefore.length > 0 || secondaryAntiphonBefore.length > 0) && (
         <div className="text-dominican-burgundy mb-2 font-medium">
-          {antiphonBefore.map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
+          {renderBilingualContent(primaryAntiphonBefore, secondaryAntiphonBefore)}
         </div>
       )}
       
-      <div className="space-y-2">
-        {content.map((line, index) => (
-          <p 
-            key={index} 
-            className={cn(
-              line === "" ? "my-2" : "",
-              line.startsWith('[LA]') || line.startsWith('[EN]') ? 
-                "text-sm text-gray-600 italic" : ""
-            )}
-            style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
-          >
-            {line}
-          </p>
-        ))}
-      </div>
+      {renderBilingualContent(primaryContent, secondaryContent)}
       
       {showChant && chantContent && (
         <div className="mt-4">
-          {/*chantContent.map((chant, index) => ( */
-            <ChantNotationRenderer 
-              key={chantContent.gregobase_id}
-              gabc={chantContent.data}
-              description={chantContent.description}
-              className="mb-4"
-            />
-          /*))*/}
+          <ChantNotationRenderer 
+            key={chantContent.gregobase_id}
+            gabc={chantContent.data}
+            description={chantContent.description}
+            className="mb-4"
+          />
         </div>
       )}
       
-      {antiphonAfter.length > 0 && (
+      {(primaryAntiphonAfter.length > 0 || secondaryAntiphonAfter.length > 0) && (
         <div className="text-dominican-burgundy mt-2 font-medium">
-          {antiphonAfter.map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
+          {renderBilingualContent(primaryAntiphonAfter, secondaryAntiphonAfter)}
         </div>
       )}
       
