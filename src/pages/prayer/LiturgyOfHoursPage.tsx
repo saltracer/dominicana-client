@@ -6,8 +6,6 @@ import { Calendar, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import ComplineDisplay from '@/components/prayer/ComplineDisplay';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
@@ -56,7 +54,7 @@ const LiturgyOfHoursPage: React.FC = () => {
       }
     }
 
-    // Handle date parameter
+    // Handle date parameter - if present, update the context
     if (dateParam) {
       const dateFromUrl = urlStringToDate(dateParam);
       if (dateFromUrl) {
@@ -73,24 +71,17 @@ const LiturgyOfHoursPage: React.FC = () => {
     setSelectedHour(initialHour);
   }, [hourParam, dateParam, navigate, setSelectedDate, selectedDate]);
 
-  // Update URL when hour or date changes
-  const updateUrl = (newHour?: string, newDate?: Date) => {
-    const hour = newHour || selectedHour;
-    const date = newDate !== undefined ? newDate : selectedDate;
-    const newUrl = buildLiturgyUrl(hour, date);
-    navigate(newUrl, { replace: true });
-  };
+  // Update URL when hour changes or when selectedDate from context changes
+  useEffect(() => {
+    const newUrl = buildLiturgyUrl(selectedHour, selectedDate);
+    const currentPath = window.location.pathname + window.location.search;
+    if (currentPath !== newUrl) {
+      navigate(newUrl, { replace: true });
+    }
+  }, [selectedHour, selectedDate, navigate]);
 
   const handleHourChange = (newHour: string) => {
     setSelectedHour(newHour);
-    updateUrl(newHour);
-  };
-
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (newDate) {
-      setSelectedDate(newDate);
-      updateUrl(undefined, newDate);
-    }
   };
 
   const handleShare = async () => {
@@ -135,21 +126,6 @@ const LiturgyOfHoursPage: React.FC = () => {
               <Share2 className="h-4 w-4 mr-1" />
               Share
             </Button>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="default" size="sm">
-                  Select Date
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <CalendarComponent
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateChange}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
           </div>
         </div>
         
