@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
@@ -27,7 +28,6 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
   const primaryContent = LiturgyService.renderContentForLanguage(component.content, primaryLang);
   const secondaryContent = showBilingual ? LiturgyService.renderContentForLanguage(component.content, secondaryLang) : [];
-  const rubric = component.rubric ? LiturgyService.renderContent(component.rubric, preferences) : [];
   
   const primaryAntiphonBefore = component.antiphon?.before ? 
     LiturgyService.renderContentForLanguage(component.antiphon.before, primaryLang) : [];
@@ -38,6 +38,10 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     LiturgyService.renderContentForLanguage(component.antiphon.after, primaryLang) : [];
   const secondaryAntiphonAfter = showBilingual && component.antiphon?.after ? 
     LiturgyService.renderContentForLanguage(component.antiphon.after, secondaryLang) : [];
+  
+  // Get rubrics for each language
+  const primaryRubric = component.rubric ? LiturgyService.renderContentForLanguage(component.rubric, primaryLang) : [];
+  const secondaryRubric = showBilingual && component.rubric ? LiturgyService.renderContentForLanguage(component.rubric, secondaryLang) : [];
   
   const hasAudio = component.audio && component.audio.length > 0;
   
@@ -53,6 +57,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     content: string[], 
     antiphonBefore: string[], 
     antiphonAfter: string[], 
+    rubric: string[],
     langCode: string,
     langLabel: string,
     chantContent: any
@@ -73,6 +78,14 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
           </Button>
         )}
       </div>
+      
+      {rubric.length > 0 && preferences.showRubrics && (
+        <div className="text-sm italic text-gray-600 mb-2">
+          {rubric.map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </div>
+      )}
       
       {antiphonBefore.length > 0 && (
         <div className="text-dominican-burgundy mb-2 font-medium">
@@ -143,6 +156,13 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     if (!showBilingual || secondary.length === 0) {
       return (
         <div className="space-y-2">
+          {primaryRubric.length > 0 && preferences.showRubrics && (
+            <div className="text-sm italic text-gray-600 mb-2">
+              {primaryRubric.map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
+            </div>
+          )}
           {primary.map((line, index) => (
             <p 
               key={index} 
@@ -167,6 +187,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
           primary,
           primaryAntiphonBefore,
           primaryAntiphonAfter,
+          primaryRubric,
           primaryLang,
           primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase(),
           primaryChantContent
@@ -175,6 +196,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
           secondary,
           secondaryAntiphonBefore,
           secondaryAntiphonAfter,
+          secondaryRubric,
           secondaryLang,
           secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase(),
           secondaryChantContent
@@ -203,14 +225,6 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
               <Music className="h-3 w-3" />
             </Button>
           )}
-        </div>
-      )}
-      
-      {rubric.length > 0 && preferences.showRubrics && (
-        <div className="text-sm italic text-gray-600 mb-2">
-          {rubric.map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
         </div>
       )}
       
