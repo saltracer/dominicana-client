@@ -70,72 +70,86 @@ export class LiturgyService {
     return this.getTemplate(templateId) || null;
   }
   
+  /**
+   * Renders content based on user preferences, handling both single and bilingual display modes.
+   * Returns an array of paragraphs, where each paragraph is an array of strings.
+   */
   static renderContent(
     content: MultiLanguageContent,
     preferences: UserLiturgyPreferences
-  ): string[] {
+  ): string[][] {
     const { primaryLanguage, secondaryLanguage, displayMode } = preferences;
     
+    // Helper to get content for a language with fallback to English
+    const getContent = (lang: LanguageCode): string[][] => {
+      const langContent = content[lang];
+      if (langContent && langContent.length > 0) return langContent;
+      return lang !== 'en' && content['en'] ? content['en'] : [];
+    };
+
     switch (displayMode) {
       case 'primary-only':
-        return content[primaryLanguage] || content['en'] || [];
+        return getContent(primaryLanguage);
         
       case 'secondary-only':
-        if (secondaryLanguage) {
-          return content[secondaryLanguage] || content['en'] || [];
-        }
-        return content[primaryLanguage] || content['en'] || [];
+        return secondaryLanguage ? getContent(secondaryLanguage) : getContent(primaryLanguage);
         
       case 'bilingual':
-        const primary = content[primaryLanguage] || content['en'] || [];
-        const secondary = secondaryLanguage ? 
-          (content[secondaryLanguage] || []) : [];
+        const primary = getContent(primaryLanguage);
+        const secondary = secondaryLanguage ? getContent(secondaryLanguage) : [];
         
         if (secondary.length === 0) {
           return primary;
         }
         
-        // Interleave primary and secondary languages
-        const result: string[] = [];
-        const maxLength = Math.max(primary.length, secondary.length);
+        // For bilingual mode, we'll combine paragraphs from both languages
+        // Each paragraph will be kept together
+        const result: string[][] = [];
+        const maxParagraphs = Math.max(primary.length, secondary.length);
         
-        for (let i = 0; i < maxLength; i++) {
-          if (i < primary.length && primary[i]) {
-            result.push(primary[i]);
+        for (let i = 0; i < maxParagraphs; i++) {
+          const primaryPara = i < primary.length ? primary[i] : [];
+          const secondaryPara = i < secondary.length ? secondary[i] : [];
+          
+          // Add primary language paragraph
+          if (primaryPara.length > 0) {
+            result.push(primaryPara);
           }
-          if (i < secondary.length && secondary[i]) {
-            result.push(`[${secondaryLanguage?.toUpperCase()}] ${secondary[i]}`);
-          }
-          if (i < primary.length && primary[i] === '') {
-            result.push(''); // Preserve empty lines
+          
+          // Add secondary language paragraph
+          if (secondaryPara.length > 0) {
+            result.push(secondaryPara);
+          } else if (primaryPara.length > 0) {
+            // Add empty paragraph for spacing if only primary has content
+            result.push(['']);
           }
         }
         
         return result;
-        
-      default:
-        return content[primaryLanguage] || content['en'] || [];
     }
+    
+    return [];
   }
   
-  static renderContentForLanguage(content: any, language: string): string[] {
+  /**
+   * Renders content for a specific language, returning an array of paragraphs.
+   * Each paragraph is an array of strings representing lines of text.
+   */
+  static renderContentForLanguage(
+    content: MultiLanguageContent,
+    language: LanguageCode
+  ): string[][] {
     if (!content) return [];
     
-    if (typeof content === 'string') {
-      return [content];
+    // Return the content for the specified language, or fall back to English
+    const langContent = content[language];
+    if (langContent && langContent.length > 0) {
+      return langContent;
     }
     
-    if (Array.isArray(content)) {
-      return content;
-    }
-    
-    if (typeof content === 'object' && content[language]) {
-      return Array.isArray(content[language]) ? content[language] : [content[language]];
-    }
-    
-    // Fallback to English if requested language not available
-    if (typeof content === 'object' && content.en && language !== 'en') {
-      return Array.isArray(content.en) ? content.en : [content.en];
+    // Fall back to English if available and not already English
+    if (language !== 'en' && content['en']) {
+      return content['en'];
     }
     
     return [];

@@ -4,41 +4,37 @@
     "id": "now-that-the-daylight-dies-away",
     "type": "hymn",
     "title": {
-      "en": ["Now that the daylight dies away"],
-      "la": ["Te lucis ante terminum"]
+      "en": [["Now that the daylight dies away"]],
+      "la": [["Te lucis ante terminum"]]
     },
     "content": {
       "en": [
-        "Now that the daylight dies away,",
+        ["Now that the daylight dies away,",
         "By all thy grace and love,",
         "Thee, Maker of the world, we pray",
-        "To watch our bed above.",
-        "",
-        "Let dreams depart and phantoms fly,",
+        "To watch our bed above."],
+        ["Let dreams depart and phantoms fly,",
         "The offspring of the night,",
         "Keep us, like shrines, beneath thine eye,",
-        "Pure in our foe's despite.",
-        "",
-        "This grace on thy redeemed confer,",
+        "Pure in our foe's despite."],
+        ["This grace on thy redeemed confer,",
         "Father, co-equal Son,",
         "And Holy Ghost, the Comforter,",
-        "Eternal Three in One."
+        "Eternal Three in One."]
       ],
       "la": [
-        "Te lucis ante terminum,",
+        ["Te lucis ante terminum,",
         "rerum Creator, poscimus",
         "ut pro tua clementia",
-        "sis praesul et custodia.",
-        "",
-        "Procul recedant somnia",
+        "sis praesul et custodia."],
+        ["Procul recedant somnia",
         "et noctium phantasmata,",
         "hostemque nostrum comprime,",
-        "ne polluantur corpora.",
-        "",
-        "Praesta, Pater piissime,",
+        "ne polluantur corpora."],
+        ["Praesta, Pater piissime,",
         "Patrique compar Unice,",
         "cum Spiritu Paraclito",
-        "regnans per omne saeculum."
+        "regnans per omne saeculum."]
       ]
     },
     "chant": {

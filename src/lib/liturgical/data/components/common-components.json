@@ -4,23 +4,23 @@
     "id": "compline-introduction",
     "type": "introduction",
     "title": {
-      "en": ["Introduction"],
-      "la": ["Introduction"]
+      "en": [["Introduction"]],
+      "la": [["Introduction"]]
     },
     "content": {
       "en": [
-        "O God, come to my assistance.",
+        ["O God, come to my assistance.",
         "O Lord, make haste to help me.",
         "Glory be to the Father and to the Son and to the Holy Spirit,",
         "as it was in the beginning, is now, ",
-        "and will be for ever. Amen."
+        "and will be for ever. Amen."]
       ],
       "la": [
-        "Deus, in adjutorium meum intende.",
+        ["Deus, in adjutorium meum intende.",
         "Domine, ad adjuvandum me festina.",
         "Gloria Patri et Filio et Spiritui Sancto,",
         "sicut erat in principio, et nunc, et semper, ",
-        "et in saecula saeculorum. Amen."
+        "et in saecula saeculorum. Amen."]
       ]
     },
     "chant": {
@@ -33,53 +33,53 @@
       }
     },
     "rubric": {
-      "en": ["The Alleluia is omitted during Lent."],
-      "la": ["Alleluia omittitur tempore Quadragesimae."]
+      "en": [["The Alleluia is omitted during Lent."]],
+      "la": [["Alleluia omittitur tempore Quadragesimae."]]
     }
   },
   "examen": {
     "id": "examen",
     "type": "examen",
     "title": {
-      "en": ["Examination of Conscience"],
-      "la": ["Examen"]
+      "en": [["Examination of Conscience"]],
+      "la": [["Examen"]]
     },
     "content": {
       "en": [
-        ""
+        [""]
       ],
       "la": [
-        ""
+        [""]
       ]
     },
     "rubric": {
-      "en": ["In private prayers of compline, a moment for private examen is used. In communal prayer, a penitential prayer from the Missal can be used."],
-      "la": ["In orationibus privatis completorii, momentum pro examen privato usum fit. In orationibus communibus, oratio paenitentialis ex Missali usus fit."]
+      "en": [["In private prayers of compline, a moment for private examen is used. In communal prayer, a penitential prayer from the Missal can be used."]],
+      "la": [["In orationibus privatis completorii, momentum pro examen privato usum fit. In orationibus communibus, oratio paenitentialis ex Missali usus fit."]]
     }
   },
   "compline-short-responsory": {
     "id": "compline-short-responsory",
     "type": "responsory",
     "title": {
-      "en": ["Short Responsory"],
-      "la": ["Responsorium breve"]
+      "en": [["Short Responsory"]],
+      "la": [["Responsorium breve"]]
     },
     "content": {
       "en": [
-        "Into your hands, Lord, I commend my spirit.",
+        ["Into your hands, Lord, I commend my spirit.",
         "Into your hands, Lord, I commend my spirit.",
         "You have redeemed us, Lord God of truth.",
         "I commend my spirit.",
         "Glory be to the Father and to the Son and to the Holy Spirit.",
-        "Into your hands, Lord, I commend my spirit."
+        "Into your hands, Lord, I commend my spirit."]
       ],
       "la": [
-        "In manus tuas, Domine, commendo spiritum meum.",
+        ["In manus tuas, Domine, commendo spiritum meum.",
         "In manus tuas, Domine, commendo spiritum meum.",
         "Redemisti nos, Domine Deus veritatis.",
         "Commendo spiritum meum.",
         "Gloria Patri et Filio et Spiritui Sancto.",
-        "In manus tuas, Domine, commendo spiritum meum."
+        "In manus tuas, Domine, commendo spiritum meum."]
       ]
     }
   },
@@ -87,50 +87,50 @@
     "id": "nunc-dimittis",
     "type": "canticle",
     "title": {
-      "en": ["Canticle"],
-      "la": ["Canticum"]
+      "en": [["Canticle"]],
+      "la": [["Canticum"]]
     },
     "antiphon": {
       "before": {
-        "en": ["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."],
-        "la": ["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]
+        "en": [["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."]],
+        "la": [["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]]
       },
       "after": {
-        "en": ["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."],
-        "la": ["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]
+        "en": [["Save us, Lord, while we are awake; protect us while we sleep; that we may keep watch with Christ and rest with him in peace."]],
+        "la": [["Salva nos, Domine, vigilantes, custodi nos dormientes; ut vigilemus cum Christo et requiescamus in pace."]]
       }
     },
     "content": {
       "en": [
-        "At last, all-powerful Master,",
+        ["At last, all-powerful Master,",
         "you give leave to your servant to go in peace,",
-        "according to your promise.",
-        "",
-        "For my eyes have seen your salvation",
+        "according to your promise."],
+        
+        ["For my eyes have seen your salvation",
         "which you have prepared for all nations,",
         "the light to enlighten the Gentiles",
-        "and give glory to Israel, your people.",
-        "",
-        "Glory be to the Father and to the Son",
+        "and give glory to Israel, your people."],
+        
+        ["Glory be to the Father and to the Son",
         "and to the Holy Spirit,",
         "as it was in the beginning,",
         "is now, and ever shall be,",
-        "world without end. Amen."
+        "world without end. Amen."]
       ],
       "la": [
-        "Nunc dimittis servum tuum, Domine,",
+        ["Nunc dimittis servum tuum, Domine,",
         "secundum verbum tuum in pace,",
-        "quia viderunt oculi mei salutare tuum,",
-        "",
-        "quod parasti ante faciem omnium populorum,",
+        "quia viderunt oculi mei salutare tuum,"],
+        
+        ["quod parasti ante faciem omnium populorum,",
         "lumen ad revelationem gentium",
-        "et gloriam plebis tuae Israel.",
-        "",
-        "Gloria Patri et Filio",
+        "et gloriam plebis tuae Israel."],
+        
+        ["Gloria Patri et Filio",
         "et Spiritui Sancto,",
         "sicut erat in principio,",
         "et nunc, et semper,",
-        "et in saecula saeculorum. Amen."
+        "et in saecula saeculorum. Amen."]
       ]
     },
     "scriptureRef": {
@@ -139,7 +139,7 @@
       "verse": "29-32",
       "translation": "NRSV",
       "content": {
-        "en": ["Master, now you are dismissing your servant in peace, according to your word; for my eyes have seen your salvation, which you have prepared in the presence of all peoples, a light for revelation to the Gentiles and for glory to your people Israel."]
+        "en": [["Master, now you are dismissing your servant in peace, according to your word; for my eyes have seen your salvation, which you have prepared in the presence of all peoples, a light for revelation to the Gentiles and for glory to your people Israel."]]
       }
     }
   },
@@ -148,12 +148,12 @@
     "type": "conclusion",
     "content": {
       "en": [
-        "The Lord grant us a quiet night and a perfect death.",
-        "Amen."
+        ["The Lord grant us a quiet night and a perfect death."],
+        ["Amen."]
       ],
       "la": [
-        "Noctem quietam et finem perfectum concedat nobis Dominus omnipotens.",
-        "Amen."
+        ["Noctem quietam et finem perfectum concedat nobis Dominus omnipotens."],
+        ["Amen."]
       ]
     }
   },
@@ -161,25 +161,25 @@
     "id": "alma-redemptoris",
     "type": "antiphon",
     "title": {
-      "en": ["Loving Mother of the Redeemer"],
-      "la": ["Alma Redemptóris Mater"]
+      "en": [["Loving Mother of the Redeemer"]],
+      "la": [["Alma Redemptóris Mater"]]
     },
     "content": {
       "en": [
-        "Loving mother of the Redeemer, gate of heaven, star of the sea,",
+        ["Loving mother of the Redeemer, gate of heaven, star of the sea,",
         "assist your people who have fallen yet strive to rise again.",
         "To the wonderment of nature you bore your Creator,",
         "yet remained a virgin after as before.",
         "You who received Gabriel's joyful greeting,",
-        "have pity on us poor sinners."
+        "have pity on us poor sinners."]
       ],
       "la": [
-        "Alma Redemptóris Mater, quæ pérvia cæli",
+        ["Alma Redemptóris Mater, quæ pérvia cæli",
         "Porta manes, et stella maris, succúrre cadénti,",
         "Súrgere qui curat pópulo: tu quæ genuísti,",
         "Natúra miránte, tuum sanctum Genitórem,",
         "Virgo prius ac postérius, Gabriélis ab ore",
-        "Sumens illud Ave, peccatórum miserére."
+        "Sumens illud Ave, peccatórum miserére."]
       ]
     },
     "chant": {
@@ -197,21 +197,21 @@
     "id": "ave-regina-caelorum",
     "type": "antiphon",
     "title": {
-      "en": ["Hail, Queen of Heaven"],
-      "la": ["Ave Regina Caelorum"]
+      "en": [["Hail, Queen of Heaven"]],
+      "la": [["Ave Regina Caelorum"]]
     },
     "content": {
       "en": [
-        "Hail, O Queen of Heaven, enthroned! Hail, by angels Mistress owned!",
+        ["Hail, O Queen of Heaven, enthroned! Hail, by angels Mistress owned!",
         "Root of Jesse, Gate of morn, when the world's true Light was born:",
         "Glorious Virgin, joy to thee, loveliest whom in heaven they see:",
-        "Fairest thou where all are fair, plead with Christ our sins to spare."
+        "Fairest thou where all are fair, plead with Christ our sins to spare."]
       ],
       "la": [
-        "Ave, Regina cælórum, Ave, Dómina Angelórum:",
+        ["Ave, Regina cælórum, Ave, Dómina Angelórum:",
         "Salve, radix, salve, porta, Ex qua mundo lux est orta:",
         "Gaude, Virgo gloriósa, Super omnes speciósa,",
-        "Vale, o valde decóra, Et pro nobis Christum exóra."
+        "Vale, o valde decóra, Et pro nobis Christum exóra."]
       ]
     },
     "chant": {
@@ -229,25 +229,25 @@
     "id": "regina-caeli",
     "type": "antiphon",
     "title": {
-      "en": ["Queen of Heaven"],
-      "la": ["Regina Caeli"]
+      "en": [["Queen of Heaven"]],
+      "la": [["Regina Caeli"]]
     },
     "content": {
       "en": [
-        "Queen of Heaven, rejoice, alleluia:",
+        ["Queen of Heaven, rejoice, alleluia:",
         "For He whom you merited to bear, alleluia,",
         "Has risen, as He said, alleluia.",
         "Pray for us to God, alleluia.",
         "Rejoice and be glad, O Virgin Mary, alleluia.",
-        "For the Lord has truly risen, alleluia."
+        "For the Lord has truly risen, alleluia."]
       ],
       "la": [
-        "Regína cæli lætáre, allelúia:",
+        ["Regína cæli lætáre, allelúia:",
         "Quia quem meruísti portáre, allelúia,",
         "Resurréxit, sicut dixit, allelúia.",
         "Ora pro nobis Deum, allelúia.",
         "Gaude et lætáre, Virgo María, allelúia.",
-        "Quia surréxit Dóminus vere, allelúia."
+        "Quia surréxit Dóminus vere, allelúia."]
       ]
     },
     "chant": {
@@ -265,33 +265,33 @@
     "id": "salve-regina",
     "type": "antiphon",
     "title": {
-      "en": ["Hail, Holy Queen"],
-      "la": ["Salve Regina"]
+      "en": [["Hail, Holy Queen"]],
+      "la": [["Salve Regina"]]
     },
     "content": {
       "en": [
-        "Hail, Holy Queen, Mother of Mercy,",
+        ["Hail, Holy Queen, Mother of Mercy,",
         "our life, our sweetness and our hope.",
         "To thee do we cry, poor banished children of Eve;",
         "to thee do we send up our sighs,",
-        "mourning and weeping in this valley of tears.",
-        "Turn then, most gracious advocate,",
+        "mourning and weeping in this valley of tears."],
+        ["Turn then, most gracious advocate,",
         "thine eyes of mercy toward us;",
         "and after this our exile,",
         "show unto us the blessed fruit of thy womb, Jesus.",
-        "O clement, O loving, O sweet Virgin Mary."
+        "O clement, O loving, O sweet Virgin Mary."]
       ],
       "la": [
-        "Salve, Regina, Mater misericordiae,",
+        ["Salve, Regina, Mater misericordiae,",
         "vita, dulcedo, et spes nostra, salve.",
         "Ad te clamamus exsules filii Evae,",
         "ad te suspiramus, gementes et flentes",
-        "in hac lacrimarum valle.",
-        "Eia, ergo, advocata nostra, illos tuos",
+        "in hac lacrimarum valle."],
+        ["Eia, ergo, advocata nostra, illos tuos",
         "misericordes oculos ad nos converte;",
         "et Jesum, benedictum fructum ventris tui,",
         "nobis post hoc exsilium ostende.",
-        "O clemens, O pia, O dulcis Virgo Maria."
+        "O clemens, O pia, O dulcis Virgo Maria."]
       ]
     },
     "chant": {
