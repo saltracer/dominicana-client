@@ -10,10 +10,11 @@
     "content": {
       "en": [
         ["O God, come to my assistance.",
-        "O Lord, make haste to help me.",
-        "Glory be to the Father and to the Son and to the Holy Spirit,",
-        "as it was in the beginning, is now, ",
-        "and will be for ever. Amen."]
+        "_O Lord, make haste to help me._",
+        "Glory be to the Father and to the Son",
+        "> **and to the Holy Spirit,**",
+        "as it was in the beginning, is now,",
+        "> and will be for ever. Amen."]
       ],
       "la": [
         ["Deus, in adjutorium meum intende.",

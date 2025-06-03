@@ -1,17 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
-import { LiturgyComponent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
+import { LiturgyComponent, MultiLanguageContent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
+import ReactMarkdown from 'react-markdown';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChantNotationRenderer from './ChantNotationRenderer';
+
 interface LiturgyPartProps {
   component: LiturgyComponent;
   preferences: any;
   className?: string;
 }
+
 const LiturgyPart: React.FC<LiturgyPartProps> = ({
   component,
   preferences,
@@ -128,7 +131,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {/* Main content */}
       <div className="space-y-4">
-        {console.log(content)}
+
         {content.map((paragraph, pIndex) => (
           <div 
             key={`content-${pIndex}`}
@@ -137,18 +140,19 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
             )}
           >
             {paragraph.map((line, lIndex) => (
-              <p 
-                key={`content-${pIndex}-${lIndex}`}
+              <div
+                key={`line-${pIndex}-${lIndex}`}
                 className={cn(
-                  line === "" ? "my-2" : ""
-                )} 
-                style={{
-                  fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
-                           preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-                }}
+                  line === "" ? "my-2" : "", 
+                  line.startsWith('[LA]') || line.startsWith('[EN]')
+                    ? "text-sm text-gray-600 italic" 
+                    : "text-base", 
+                  preferences.textSize === "large" ? "text-lg" : "",
+                  preferences.textSize === "xlarge" ? "text-xl" : ""
+                )}
               >
-                {line}
-              </p>
+                <ReactMarkdown>{line}</ReactMarkdown>
+              </div>
             ))}
           </div>
         ))}
@@ -224,18 +228,19 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                 )}
               >
                 {paragraph.map((line, lIndex) => (
-                  <p 
-                    key={`content-${pIndex}-${lIndex}`}
+                  <div
+                    key={`bilingual-${pIndex}-${lIndex}`}
                     className={cn(
-                      line === "" ? "my-2" : ""
-                    )} 
-                    style={{
-                      fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
-                               preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-                    }}
+                      line === "" ? "my-2" : "", 
+                      line.startsWith('[LA]') || line.startsWith('[EN]')
+                        ? "text-sm text-gray-600 italic" 
+                        : "text-base", 
+                      preferences.textSize === "large" ? "text-lg" : "",
+                      preferences.textSize === "xlarge" ? "text-xl" : ""
+                    )}
                   >
-                    {line}
-                  </p>
+                    <ReactMarkdown>{line}</ReactMarkdown>
+                  </div>
                 ))}
               </div>
             ))}
