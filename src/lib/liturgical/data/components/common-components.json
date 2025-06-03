@@ -4,8 +4,8 @@
     "id": "compline-introduction",
     "type": "introduction",
     "title": {
-      "en": ["O God, come to my assistance"],
-      "la": ["Deus, in adjutorium"]
+      "en": ["Introduction"],
+      "la": ["Introduction"]
     },
     "content": {
       "en": [
@@ -67,8 +67,8 @@
     "id": "nunc-dimittis",
     "type": "canticle",
     "title": {
-      "en": ["Nunc Dimittis"],
-      "la": ["Nunc Dimittis"]
+      "en": ["Canticle"],
+      "la": ["Canticum"]
     },
     "antiphon": {
       "before": {
