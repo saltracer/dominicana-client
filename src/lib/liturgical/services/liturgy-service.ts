@@ -118,6 +118,29 @@ export class LiturgyService {
     }
   }
   
+  static renderContentForLanguage(content: any, language: string): string[] {
+    if (!content) return [];
+    
+    if (typeof content === 'string') {
+      return [content];
+    }
+    
+    if (Array.isArray(content)) {
+      return content;
+    }
+    
+    if (typeof content === 'object' && content[language]) {
+      return Array.isArray(content[language]) ? content[language] : [content[language]];
+    }
+    
+    // Fallback to English if requested language not available
+    if (typeof content === 'object' && content.en && language !== 'en') {
+      return Array.isArray(content.en) ? content.en : [content.en];
+    }
+    
+    return [];
+  }
+  
   static getLiturgicalSeasonClass(date: Date): string {
     const season = getLiturgicalSeason(date);
     return season.name.toLowerCase() || 'ordinary';

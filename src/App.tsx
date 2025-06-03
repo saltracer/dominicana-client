@@ -81,8 +81,18 @@ const App = () => {
                   </RoleGuard>
                 } />
                 
-                {/* Prayer Routes - Free User Access to Pages, Authentication for Features */}
+                {/* Prayer Routes - Updated with URL parameters */}
                 <Route path="/prayer/liturgy-of-the-hours" element={
+                  <RoleGuard requiredRole="free">
+                    <LiturgyOfHoursPage />
+                  </RoleGuard>
+                } />
+                <Route path="/prayer/liturgy-of-the-hours/:hour" element={
+                  <RoleGuard requiredRole="free">
+                    <LiturgyOfHoursPage />
+                  </RoleGuard>
+                } />
+                <Route path="/prayer/liturgy-of-the-hours/:hour/:date" element={
                   <RoleGuard requiredRole="free">
                     <LiturgyOfHoursPage />
                   </RoleGuard>
