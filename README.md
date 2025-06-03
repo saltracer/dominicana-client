@@ -59,6 +59,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- and others
 
 ## How can I deploy this project?
 
