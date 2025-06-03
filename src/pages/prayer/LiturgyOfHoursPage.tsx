@@ -26,7 +26,7 @@ const LiturgyOfHoursPage: React.FC = () => {
   const { selectedDate, setSelectedDate } = useLiturgicalDay();
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const [selectedHour, setSelectedHour] = useState("night-prayer");
+  const [selectedHour, setSelectedHour] = useState("office-of-readings");
   const [isInitialized, setIsInitialized] = useState(false);
 
   const prayerHours = [
@@ -43,7 +43,7 @@ const LiturgyOfHoursPage: React.FC = () => {
   useEffect(() => {
     if (isInitialized) return;
 
-    let initialHour = "night-prayer";
+    let initialHour = "office-of-readings";
     let shouldUpdateDate = false;
 
     // Handle hour parameter
