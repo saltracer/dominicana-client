@@ -5,8 +5,8 @@
     "type": "compline",
     "dayOfWeek": 0,
     "title": {
-      "en": ["Night Prayer - Sunday"],
-      "la": ["Completorium - Dominica"]
+      "en": ["Compline - Sunday"],
+      "la": ["Compline - Dominica"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -33,8 +33,8 @@
     "type": "compline",
     "dayOfWeek": 1,
     "title": {
-      "en": ["Night Prayer - Monday"],
-      "la": ["Completorium - Feria secunda"]
+      "en": ["Compline - Monday"],
+      "la": ["Compline - Feria secunda"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -61,8 +61,8 @@
     "type": "compline",
     "dayOfWeek": 2,
     "title": {
-      "en": ["Night Prayer - Tuesday"],
-      "la": ["Completorium - Feria tertia"]
+      "en": ["Compline - Tuesday"],
+      "la": ["Compline - Feria tertia"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -89,8 +89,8 @@
     "type": "compline",
     "dayOfWeek": 3,
     "title": {
-      "en": ["Night Prayer - Wednesday"],
-      "la": ["Completorium - Feria quarta"]
+      "en": ["Compline - Wednesday"],
+      "la": ["Compline - Feria quarta"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -117,8 +117,8 @@
     "type": "compline",
     "dayOfWeek": 4,
     "title": {
-      "en": ["Night Prayer - Thursday"],
-      "la": ["Completorium - Feria quinta"]
+      "en": ["Compline - Thursday"],
+      "la": ["Compline - Feria quinta"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -145,8 +145,8 @@
     "type": "compline",
     "dayOfWeek": 5,
     "title": {
-      "en": ["Night Prayer - Friday"],
-      "la": ["Completorium - Feria sexta"]
+      "en": ["Compline - Friday"],
+      "la": ["Compline - Feria sexta"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
@@ -173,8 +173,8 @@
     "type": "compline",
     "dayOfWeek": 6,
     "title": {
-      "en": ["Night Prayer - Saturday"],
-      "la": ["Completorium - Sabbato"]
+      "en": ["Compline - Saturday"],
+      "la": ["Compline - Sabbato"]
     },
     "season": ["ordinary"],
     "rank": "ferial",
