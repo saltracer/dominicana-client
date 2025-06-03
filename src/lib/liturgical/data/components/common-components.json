@@ -40,6 +40,10 @@
   "compline-short-responsory": {
     "id": "compline-short-responsory",
     "type": "responsory",
+    "title": {
+      "en": ["Short Responsory"],
+      "la": ["Responsorium breve"]
+    },
     "content": {
       "en": [
         "Into your hands, Lord, I commend my spirit.",
