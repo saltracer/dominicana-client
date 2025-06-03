@@ -43,7 +43,10 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       return (
         <ReactMarkdown
           components={{
-            p: ({node, ...props}) => <span {...props} />
+            p: ({node, ...props}) => <span {...props} />,
+            blockquote: ({node, ...props}) => (
+              <blockquote className="pl-4 " {...props} />
+            )
           }}
         >
           {line}
