@@ -1,3 +1,4 @@
+
 export type LanguageCode = 'en' | 'la' | 'fr' | 'es' | 'de' | 'it';
 export type AudioType = 'spoken' | 'chant' | 'organ';
 export type ChantNotation = 'modern' | 'gregorian' | 'solesmes';
@@ -96,6 +97,7 @@ export interface UserLiturgyPreferences {
   audioEnabled: boolean;
   audioTypes: AudioType[];
   chantNotation: ChantNotation;
+  chantNotationEnabled: boolean;
   fontSize: 'small' | 'medium' | 'large';
   showRubrics: boolean;
 }

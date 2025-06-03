@@ -13,6 +13,7 @@ const defaultPreferences: UserLiturgyPreferences = {
   audioEnabled: true,
   audioTypes: ['chant', 'spoken'],
   chantNotation: 'gregorian',
+  chantNotationEnabled: true,
   fontSize: 'medium',
   showRubrics: true
 };
@@ -79,6 +80,7 @@ export const useLiturgyPreferences = () => {
           audioEnabled: data.audio_enabled ?? true,
           audioTypes: isValidAudioTypes(data.audio_types) ? data.audio_types as AudioType[] : ['chant', 'spoken'],
           chantNotation: isValidChantNotation(data.chant_notation || 'gregorian') ? data.chant_notation as ChantNotation : 'gregorian',
+          chantNotationEnabled: data.chant_notation_enabled ?? true,
           fontSize: isValidFontSize(data.font_size || 'medium') ? data.font_size as 'small' | 'medium' | 'large' : 'medium',
           showRubrics: data.show_rubrics ?? true
         };
@@ -116,6 +118,7 @@ export const useLiturgyPreferences = () => {
           audio_enabled: newPreferences.audioEnabled,
           audio_types: newPreferences.audioTypes,
           chant_notation: newPreferences.chantNotation,
+          chant_notation_enabled: newPreferences.chantNotationEnabled,
           font_size: newPreferences.fontSize,
           show_rubrics: newPreferences.showRubrics,
           updated_at: new Date().toISOString()

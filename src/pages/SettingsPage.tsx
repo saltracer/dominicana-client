@@ -266,6 +266,18 @@ const SettingsPage: React.FC = () => {
               />
             </div>
 
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="chant-notation-enabled" className="text-base">Enable Chant Notation</Label>
+                <div className="text-sm text-gray-600">Show chant notation and musical formatting</div>
+              </div>
+              <Switch
+                id="chant-notation-enabled"
+                checked={localPreferences.chantNotationEnabled}
+                onCheckedChange={(checked) => updatePreference('chantNotationEnabled', checked)}
+              />
+            </div>
+
             {localPreferences.audioEnabled && (
               <div className="space-y-2">
                 <Label htmlFor="chant-notation">Chant Notation</Label>

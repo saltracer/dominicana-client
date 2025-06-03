@@ -208,6 +208,7 @@ export type Database = {
           bible_translation: string | null
           calendar_type: string
           chant_notation: string | null
+          chant_notation_enabled: boolean | null
           created_at: string
           display_mode: string | null
           display_options: Json
@@ -227,6 +228,7 @@ export type Database = {
           bible_translation?: string | null
           calendar_type?: string
           chant_notation?: string | null
+          chant_notation_enabled?: boolean | null
           created_at?: string
           display_mode?: string | null
           display_options?: Json
@@ -246,6 +248,7 @@ export type Database = {
           bible_translation?: string | null
           calendar_type?: string
           chant_notation?: string | null
+          chant_notation_enabled?: boolean | null
           created_at?: string
           display_mode?: string | null
           display_options?: Json

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent, MultiLanguageContent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
 import ReactMarkdown from 'react-markdown';
+import removeMarkdown from 'remove-markdown';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
@@ -28,11 +29,21 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   const secondaryLang = preferences.secondaryLanguage;
   const showBilingual = preferences.displayMode === 'bilingual' && secondaryLang && secondaryLang !== primaryLang;
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
+  
   // Helper function to safely get content with fallback to empty array
   const getContent = (content: any, lang: string): string[][] => {
     if (!content) return [];
     const result = LiturgyService.renderContentForLanguage(content, lang as LanguageCode);
     return Array.isArray(result) && result.length > 0 ? result : [];
+  };
+
+  // Helper function to render content based on chant notation preference
+  const renderContentLine = (line: string) => {
+    if (preferences.chantNotationEnabled) {
+      return <ReactMarkdown>{line}</ReactMarkdown>;
+    } else {
+      return removeMarkdown(line);
+    }
   };
 
   // Get content for primary language
@@ -75,7 +86,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
         <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide">
           {langLabel}
         </h5>
-        {chantContent && (
+        {chantContent && preferences.chantNotationEnabled && (
           <Button 
             size="sm" 
             variant={showChant ? "default" : "outline"} 
@@ -94,7 +105,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
             <div key={`rubric-${pIndex}`} className="mb-2">
               {paragraph.map((line, lIndex) => (
                 <p key={`rubric-${pIndex}-${lIndex}`}>
-                  {line}
+                  {renderContentLine(line)}
                 </p>
               ))}
             </div>
@@ -121,7 +132,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                              preferences.fontSize === 'small' ? '0.875rem' : '1rem'
                   }}
                 >
-                  {line}
+                  {renderContentLine(line)}
                 </p>
               ))}
             </div>
@@ -131,7 +142,6 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {/* Main content */}
       <div className="space-y-4">
-
         {content.map((paragraph, pIndex) => (
           <div 
             key={`content-${pIndex}`}
@@ -151,7 +161,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                   preferences.textSize === "xlarge" ? "text-xl" : ""
                 )}
               >
-                <ReactMarkdown>{line}</ReactMarkdown>
+                {renderContentLine(line)}
               </div>
             ))}
           </div>
@@ -159,7 +169,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       </div>
       
       {/* Chant notation */}
-      {showChant && chantContent && (
+      {showChant && chantContent && preferences.chantNotationEnabled && (
         <div className="mt-6">
           <ChantNotationRenderer 
             key={chantContent.gregobase_id} 
@@ -189,7 +199,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                              preferences.fontSize === 'small' ? '0.875rem' : '1rem'
                   }}
                 >
-                  {line}
+                  {renderContentLine(line)}
                 </p>
               ))}
             </div>
@@ -210,7 +220,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                 <div key={`rubric-${pIndex}`} className="mb-2">
                   {paragraph.map((line, lIndex) => (
                     <p key={`rubric-${pIndex}-${lIndex}`}>
-                      {line}
+                      {renderContentLine(line)}
                     </p>
                   ))}
                 </div>
@@ -239,7 +249,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                       preferences.textSize === "xlarge" ? "text-xl" : ""
                     )}
                   >
-                    <ReactMarkdown>{line}</ReactMarkdown>
+                    {renderContentLine(line)}
                   </div>
                 ))}
               </div>
@@ -273,20 +283,21 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       </div>
     );
   };
+  
   return <div className={cn("mb-6", className)}>
       {title.length > 0 && <div className="flex items-center gap-2 mb-2">
           <h4 className="font-garamond text-xl font-semibold">{title[0]}</h4>
           {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
               <Volume2 className="h-3 w-3" />
             </Button>}
-          {!showBilingual && (primaryChantContent || secondaryChantContent) && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
+          {!showBilingual && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
               <Music className="h-3 w-3" />
             </Button>}
         </div>}
       
       {renderBilingualContent(primaryContent, secondaryContent)}
       
-      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && <div className="mt-4">
+      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <div className="mt-4">
           <ChantNotationRenderer key={(primaryChantContent || secondaryChantContent).gregobase_id} gabc={(primaryChantContent || secondaryChantContent).data} description={(primaryChantContent || secondaryChantContent).description} className="mb-4" />
         </div>}
       
@@ -296,6 +307,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
         </div>}
     </div>;
 };
+
 const ComplineDisplay: React.FC = () => {
   const {
     selectedDate
