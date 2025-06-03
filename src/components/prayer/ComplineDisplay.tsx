@@ -40,11 +40,104 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     LiturgyService.renderContentForLanguage(component.antiphon.after, secondaryLang) : [];
   
   const hasAudio = component.audio && component.audio.length > 0;
-  const chantContent = LiturgyService.chantContent(component.chant, preferences);
+  
+  // Get chant content for each language
+  const primaryChantContent = component.chant && component.chant[primaryLang] ? component.chant[primaryLang] : null;
+  const secondaryChantContent = showBilingual && component.chant && component.chant[secondaryLang] ? component.chant[secondaryLang] : null;
 
   const handleChantToggle = () => {
     setShowChant(!showChant);
   };
+
+  const renderLanguageColumn = (
+    content: string[], 
+    antiphonBefore: string[], 
+    antiphonAfter: string[], 
+    langCode: string,
+    langLabel: string,
+    chantContent: any
+  ) => (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 mb-2">
+        <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          {langLabel}
+        </h5>
+        {chantContent && (
+          <Button 
+            size="sm" 
+            variant={showChant ? "default" : "outline"} 
+            className="p-1 h-7 w-7"
+            onClick={handleChantToggle}
+          >
+            <Music className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+      
+      {antiphonBefore.length > 0 && (
+        <div className="text-dominican-burgundy mb-2 font-medium">
+          {antiphonBefore.map((line, index) => (
+            <p 
+              key={index} 
+              className={cn(
+                line === "" ? "my-2" : "",
+                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                  "text-sm text-gray-600 italic" : ""
+              )}
+              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      )}
+      
+      <div className="space-y-2">
+        {content.map((line, index) => (
+          <p 
+            key={index} 
+            className={cn(
+              line === "" ? "my-2" : "",
+              line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                "text-sm text-gray-600 italic" : ""
+            )}
+            style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+          >
+            {line}
+          </p>
+        ))}
+      </div>
+      
+      {showChant && chantContent && (
+        <div className="mt-4">
+          <ChantNotationRenderer 
+            key={chantContent.gregobase_id}
+            gabc={chantContent.data}
+            description={chantContent.description}
+            className="mb-4"
+          />
+        </div>
+      )}
+      
+      {antiphonAfter.length > 0 && (
+        <div className="text-dominican-burgundy mt-2 font-medium">
+          {antiphonAfter.map((line, index) => (
+            <p 
+              key={index} 
+              className={cn(
+                line === "" ? "my-2" : "",
+                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
+                  "text-sm text-gray-600 italic" : ""
+              )}
+              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   const renderBilingualContent = (primary: string[], secondary: string[]) => {
     if (!showBilingual || secondary.length === 0) {
@@ -70,42 +163,22 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
     // Bilingual side-by-side layout
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-        <div className="space-y-2">
-          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            {primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase()}
-          </h5>
-          {primary.map((line, index) => (
-            <p 
-              key={index} 
-              className={cn(
-                line === "" ? "my-2" : "",
-                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
-                  "text-sm text-gray-600 italic" : ""
-              )}
-              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
-        <div className="space-y-2">
-          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            {secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase()}
-          </h5>
-          {secondary.map((line, index) => (
-            <p 
-              key={index} 
-              className={cn(
-                line === "" ? "my-2" : "",
-                line.startsWith('[LA]') || line.startsWith('[EN]') ? 
-                  "text-sm text-gray-600 italic" : ""
-              )}
-              style={{ fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem' }}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
+        {renderLanguageColumn(
+          primary,
+          primaryAntiphonBefore,
+          primaryAntiphonAfter,
+          primaryLang,
+          primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase(),
+          primaryChantContent
+        )}
+        {renderLanguageColumn(
+          secondary,
+          secondaryAntiphonBefore,
+          secondaryAntiphonAfter,
+          secondaryLang,
+          secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase(),
+          secondaryChantContent
+        )}
       </div>
     );
   };
@@ -120,7 +193,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
               <Volume2 className="h-3 w-3" />
             </Button>
           )}
-          {chantContent && (
+          {!showBilingual && (primaryChantContent || secondaryChantContent) && (
             <Button 
               size="sm" 
               variant={showChant ? "default" : "outline"} 
@@ -141,28 +214,16 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({ component, preferences, class
         </div>
       )}
       
-      {(primaryAntiphonBefore.length > 0 || secondaryAntiphonBefore.length > 0) && (
-        <div className="text-dominican-burgundy mb-2 font-medium">
-          {renderBilingualContent(primaryAntiphonBefore, secondaryAntiphonBefore)}
-        </div>
-      )}
-      
       {renderBilingualContent(primaryContent, secondaryContent)}
       
-      {showChant && chantContent && (
+      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && (
         <div className="mt-4">
           <ChantNotationRenderer 
-            key={chantContent.gregobase_id}
-            gabc={chantContent.data}
-            description={chantContent.description}
+            key={(primaryChantContent || secondaryChantContent).gregobase_id}
+            gabc={(primaryChantContent || secondaryChantContent).data}
+            description={(primaryChantContent || secondaryChantContent).description}
             className="mb-4"
           />
-        </div>
-      )}
-      
-      {(primaryAntiphonAfter.length > 0 || secondaryAntiphonAfter.length > 0) && (
-        <div className="text-dominican-burgundy mt-2 font-medium">
-          {renderBilingualContent(primaryAntiphonAfter, secondaryAntiphonAfter)}
         </div>
       )}
       
