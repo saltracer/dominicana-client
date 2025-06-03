@@ -286,7 +286,9 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   
   return <div className={cn("mb-6", className)}>
       {title.length > 0 && <div className="flex items-center gap-2 mb-2">
-          <h4 className="font-garamond text-xl font-semibold">{title[0]}</h4>
+          <h4 className="font-garamond text-xl font-semibold">
+            {component.type === "hymn" ? "Hymn" : title[0]}
+          </h4>
           {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
               <Volume2 className="h-3 w-3" />
             </Button>}
@@ -300,7 +302,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <div className="mt-4">
           <ChantNotationRenderer key={(primaryChantContent || secondaryChantContent).gregobase_id} gabc={(primaryChantContent || secondaryChantContent).data} description={(primaryChantContent || secondaryChantContent).description} className="mb-4" />
         </div>}
-      
+
       {component.scriptureRef && <div className="mt-2 text-xs text-gray-500">
           {component.scriptureRef.book} {component.scriptureRef.chapter}:{component.scriptureRef.verse} 
           ({component.scriptureRef.translation})
