@@ -293,10 +293,10 @@ Salve Regina: Sung from the day after Pentecost until the First Sunday of Advent
     const dateFormatted = format(date, 'EEEE, MMMM d, yyyy');
     const isOctave = false; // You can implement Easter octave logic here
     
-    let title = 'Night Prayer';
+    let title = 'Compline';
     if (compline) {
       const titleContent = this.renderContent(compline.title, preferences);
-      title = titleContent[0] || 'Night Prayer';
+      title = titleContent[0] || ['Compline'];
     }
     
     return {
