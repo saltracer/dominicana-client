@@ -149,6 +149,7 @@ const ComplineDisplay: React.FC = () => {
     const marianAntiphon = LiturgyService.getComponent(marianAntiphonId);
     const renderedComponents = compline ? {
       introduction: compline.components.introduction ? LiturgyService.getComponent(compline.components.introduction) : null,
+      examen: compline.components.examen ? LiturgyService.getComponent(compline.components.examen) : null,
       hymn: compline.components.hymn ? LiturgyService.getComponent(compline.components.hymn) : null,
       psalmody: compline.components.psalmody?.map(id => LiturgyService.getComponent(id)).filter(Boolean) || [],
       reading: compline.components.reading ? LiturgyService.getComponent(compline.components.reading) : null,
@@ -179,6 +180,8 @@ const ComplineDisplay: React.FC = () => {
       </div>
       
       {renderedComponents.introduction && <LiturgyPart component={renderedComponents.introduction} preferences={preferences} className="bg-dominican-light-gray/30 p-4 rounded-md" />}
+      
+      {renderedComponents.examen && <LiturgyPart component={renderedComponents.examen} preferences={preferences} />}
       
       {renderedComponents.hymn && <LiturgyPart component={renderedComponents.hymn} preferences={preferences} />}
       

@@ -4,8 +4,8 @@
     "id": "compline-introduction",
     "type": "introduction",
     "title": {
-      "en": ["O God, come to my assistance"],
-      "la": ["Deus, in adjutorium"]
+      "en": ["Introduction"],
+      "la": ["Introduction"]
     },
     "content": {
       "en": [
@@ -35,6 +35,26 @@
     "rubric": {
       "en": ["The Alleluia is omitted during Lent."],
       "la": ["Alleluia omittitur tempore Quadragesimae."]
+    }
+  },
+  "examen": {
+    "id": "examen",
+    "type": "examen",
+    "title": {
+      "en": ["Examination of Conscience"],
+      "la": ["Examen"]
+    },
+    "content": {
+      "en": [
+        ""
+      ],
+      "la": [
+        ""
+      ]
+    },
+    "rubric": {
+      "en": ["In private prayers of compline, a moment for private examen is used. In communal prayer, a penitential prayer from the Missal can be used."],
+      "la": ["In orationibus privatis completorii, momentum pro examen privato usum fit. In orationibus communibus, oratio paenitentialis ex Missali usus fit."]
     }
   },
   "compline-short-responsory": {
@@ -67,8 +87,8 @@
     "id": "nunc-dimittis",
     "type": "canticle",
     "title": {
-      "en": ["Nunc Dimittis"],
-      "la": ["Nunc Dimittis"]
+      "en": ["Canticle"],
+      "la": ["Canticum"]
     },
     "antiphon": {
       "before": {

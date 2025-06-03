@@ -37,7 +37,7 @@ export interface ScriptureReference {
 
 export interface LiturgyComponent {
   id: string;
-  type: 'psalm' | 'hymn' | 'reading' | 'prayer' | 'responsory' | 'canticle' | 'antiphon' | 'introduction' | 'conclusion';
+  type: 'psalm' | 'hymn' | 'examen' | 'reading' | 'prayer' | 'responsory' | 'canticle' | 'antiphon' | 'introduction' | 'conclusion';
   title?: MultiLanguageContent;
   content: MultiLanguageContent;
   rubric?: MultiLanguageContent;
@@ -66,6 +66,7 @@ export interface LiturgyTemplate {
   components: {
     introduction?: string; // component ID
     opening?: string[];
+    examen?: string;
     hymn?: string;
     psalmody?: string[];
     reading?: string;
