@@ -296,7 +296,7 @@ Salve Regina: Sung from the day after Pentecost until the First Sunday of Advent
     let title = 'Compline';
     if (compline) {
       const titleContent = this.renderContent(compline.title, preferences);
-      title = titleContent[0][0] || 'Compline';
+      title = titleContent[0] || 'Compline';
     }
     
     return {
