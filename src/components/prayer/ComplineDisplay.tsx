@@ -40,7 +40,15 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   // Helper function to render content based on chant notation preference
   const renderContentLine = (line: string) => {
     if (preferences.chantNotationEnabled) {
-      return <ReactMarkdown>{line}</ReactMarkdown>;
+      return (
+        <ReactMarkdown
+          components={{
+            p: ({node, ...props}) => <span {...props} />
+          }}
+        >
+          {line}
+        </ReactMarkdown>
+      );
     } else {
       return removeMarkdown(line);
     }
