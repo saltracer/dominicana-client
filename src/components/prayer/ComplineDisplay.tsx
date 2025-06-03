@@ -1,17 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
-import { LiturgyComponent } from '@/lib/liturgical/types/liturgy-types';
+import { LiturgyComponent, MultiLanguageContent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
+import ReactMarkdown from 'react-markdown';
+import removeMarkdown from 'remove-markdown';
 import { useLiturgicalDay } from '@/context/LiturgicalDayContext';
 import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
 import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChantNotationRenderer from './ChantNotationRenderer';
+
 interface LiturgyPartProps {
   component: LiturgyComponent;
   preferences: any;
   className?: string;
 }
+
 const LiturgyPart: React.FC<LiturgyPartProps> = ({
   component,
   preferences,
@@ -25,16 +29,48 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   const secondaryLang = preferences.secondaryLanguage;
   const showBilingual = preferences.displayMode === 'bilingual' && secondaryLang && secondaryLang !== primaryLang;
   const title = component.title ? LiturgyService.renderContent(component.title, preferences) : [];
-  const primaryContent = LiturgyService.renderContentForLanguage(component.content, primaryLang);
-  const secondaryContent = showBilingual ? LiturgyService.renderContentForLanguage(component.content, secondaryLang) : [];
-  const primaryAntiphonBefore = component.antiphon?.before ? LiturgyService.renderContentForLanguage(component.antiphon.before, primaryLang) : [];
-  const secondaryAntiphonBefore = showBilingual && component.antiphon?.before ? LiturgyService.renderContentForLanguage(component.antiphon.before, secondaryLang) : [];
-  const primaryAntiphonAfter = component.antiphon?.after ? LiturgyService.renderContentForLanguage(component.antiphon.after, primaryLang) : [];
-  const secondaryAntiphonAfter = showBilingual && component.antiphon?.after ? LiturgyService.renderContentForLanguage(component.antiphon.after, secondaryLang) : [];
+  
+  // Helper function to safely get content with fallback to empty array
+  const getContent = (content: any, lang: string): string[][] => {
+    if (!content) return [];
+    const result = LiturgyService.renderContentForLanguage(content, lang as LanguageCode);
+    return Array.isArray(result) && result.length > 0 ? result : [];
+  };
+
+  // Helper function to render content based on chant notation preference
+  const renderContentLine = (line: string) => {
+    if (preferences.chantNotationEnabled) {
+      return (
+        <ReactMarkdown
+          components={{
+            p: ({node, ...props}) => <span {...props} />
+          }}
+        >
+          {line}
+        </ReactMarkdown>
+      );
+    } else {
+      return removeMarkdown(line);
+    }
+  };
+
+  // Get content for primary language
+  const primaryContent = getContent(component.content, primaryLang);
+  
+  // Get content for secondary language if needed
+  const secondaryContent = showBilingual ? getContent(component.content, secondaryLang) : [];
+  
+  // Get antiphons for primary language
+  const primaryAntiphonBefore = getContent(component.antiphon?.before, primaryLang);
+  const primaryAntiphonAfter = getContent(component.antiphon?.after, primaryLang);
+  
+  // Get antiphons for secondary language if needed
+  const secondaryAntiphonBefore = showBilingual ? getContent(component.antiphon?.before, secondaryLang) : [];
+  const secondaryAntiphonAfter = showBilingual ? getContent(component.antiphon?.after, secondaryLang) : [];
 
   // Get rubrics for each language
-  const primaryRubric = component.rubric ? LiturgyService.renderContentForLanguage(component.rubric, primaryLang) : [];
-  const secondaryRubric = showBilingual && component.rubric ? LiturgyService.renderContentForLanguage(component.rubric, secondaryLang) : [];
+  const primaryRubric = getContent(component.rubric, primaryLang);
+  const secondaryRubric = showBilingual ? getContent(component.rubric, secondaryLang) : [];
   const hasAudio = component.audio && component.audio.length > 0;
 
   // Get chant content for each language
@@ -43,91 +79,245 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   const handleChantToggle = () => {
     setShowChant(!showChant);
   };
-  const renderLanguageColumn = (content: string[], antiphonBefore: string[], antiphonAfter: string[], rubric: string[], langCode: string, langLabel: string, chantContent: any) => <div className="space-y-2">
+
+  const renderLanguageColumn = (
+    content: string[][], 
+    antiphonBefore: string[][], 
+    antiphonAfter: string[][], 
+    rubric: string[][], 
+    langCode: string, 
+    langLabel: string, 
+    chantContent: any
+  ) => (
+    <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
         <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide">
           {langLabel}
         </h5>
-        {chantContent && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
+        {chantContent && preferences.chantNotationEnabled && (
+          <Button 
+            size="sm" 
+            variant={showChant ? "default" : "outline"} 
+            className="p-1 h-7 w-7"
+            onClick={handleChantToggle}
+          >
             <Music className="h-3 w-3" />
-          </Button>}
+          </Button>
+        )}
       </div>
       
-      {rubric.length > 0 && preferences.showRubrics && <div className="text-sm italic text-gray-600 mb-2">
-          {rubric.map((line, index) => <p key={index} className="text-dominican-burgundy">{line}</p>)}
-        </div>}
+      {/* Render rubrics */}
+      {rubric.length > 0 && preferences.showRubrics && (
+        <div className="text-sm italic text-dominican-burgundy mb-4">
+          {rubric.map((paragraph, pIndex) => (
+            <div key={`rubric-${pIndex}`} className="mb-2">
+              {paragraph.map((line, lIndex) => (
+                <p key={`rubric-${pIndex}-${lIndex}`}>
+                  {renderContentLine(line)}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       
-      {antiphonBefore.length > 0 && <div className="text-dominican-burgundy mb-2 font-medium">
-          {antiphonBefore.map((line, index) => <p key={index} className={cn(line === "" ? "my-2" : "", line.startsWith('[LA]') || line.startsWith('[EN]') ? "text-sm text-gray-600 italic" : "")} style={{
-        fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-      }}>
-              {line}
-            </p>)}
-        </div>}
+      {/* Render antiphons before */}
+      {antiphonBefore.length > 0 && (
+        <div className="text-dominican-burgundy mb-4 font-medium">
+          {antiphonBefore.map((paragraph, pIndex) => (
+            <div 
+              key={`antiphon-before-${pIndex}`} 
+              className={cn(
+                "mb-2",
+                paragraph.some(line => line.startsWith('[')) ? "text-sm text-gray-600 italic" : ""
+              )}
+            >
+              {paragraph.map((line, lIndex) => (
+                <p 
+                  key={`antiphon-before-${pIndex}-${lIndex}`}
+                  style={{
+                    fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
+                             preferences.fontSize === 'small' ? '0.875rem' : '1rem'
+                  }}
+                >
+                  {renderContentLine(line)}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       
-      <div className="space-y-2">
-        {content.map((line, index) => <p key={index} className={cn(line === "" ? "my-2" : "", line.startsWith('[LA]') || line.startsWith('[EN]') ? "text-sm text-gray-600 italic" : "")} style={{
-        fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-      }}>
-            {line}
-          </p>)}
+      {/* Main content */}
+      <div className="space-y-4">
+        {content.map((paragraph, pIndex) => (
+          <div 
+            key={`content-${pIndex}`}
+            className={cn(
+              paragraph.some(line => line.startsWith('[')) ? "text-sm text-gray-600 italic" : ""
+            )}
+          >
+            {paragraph.map((line, lIndex) => (
+              <div
+                key={`line-${pIndex}-${lIndex}`}
+                className={cn(
+                  line === "" ? "my-2" : "", 
+                  line.startsWith('[LA]') || line.startsWith('[EN]')
+                    ? "text-sm text-gray-600 italic" 
+                    : "text-base", 
+                  preferences.textSize === "large" ? "text-lg" : "",
+                  preferences.textSize === "xlarge" ? "text-xl" : ""
+                )}
+              >
+                {renderContentLine(line)}
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
       
-      {showChant && chantContent && <div className="mt-4">
-          <ChantNotationRenderer key={chantContent.gregobase_id} gabc={chantContent.data} description={chantContent.description} className="mb-4" />
-        </div>}
+      {/* Chant notation */}
+      {showChant && chantContent && preferences.chantNotationEnabled && (
+        <div className="mt-6">
+          <ChantNotationRenderer 
+            key={chantContent.gregobase_id} 
+            gabc={chantContent.data} 
+            description={chantContent.description} 
+            className="my-4" 
+          />
+        </div>
+      )}
       
-      {antiphonAfter.length > 0 && <div className="text-dominican-burgundy mt-2 font-medium">
-          {antiphonAfter.map((line, index) => <p key={index} className={cn(line === "" ? "my-2" : "", line.startsWith('[LA]') || line.startsWith('[EN]') ? "text-sm text-gray-600 italic" : "")} style={{
-        fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-      }}>
-              {line}
-            </p>)}
-        </div>}
-    </div>;
-  const renderBilingualContent = (primary: string[], secondary: string[]) => {
+      {/* Antiphons after */}
+      {antiphonAfter.length > 0 && (
+        <div className="text-dominican-burgundy mt-4 font-medium">
+          {antiphonAfter.map((paragraph, pIndex) => (
+            <div 
+              key={`antiphon-after-${pIndex}`}
+              className={cn(
+                "mt-2",
+                paragraph.some(line => line.startsWith('[')) ? "text-sm text-gray-600 italic" : ""
+              )}
+            >
+              {paragraph.map((line, lIndex) => (
+                <p 
+                  key={`antiphon-after-${pIndex}-${lIndex}`}
+                  style={{
+                    fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
+                             preferences.fontSize === 'small' ? '0.875rem' : '1rem'
+                  }}
+                >
+                  {renderContentLine(line)}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderBilingualContent = (primary: string[][], secondary: string[][]) => {
     if (!showBilingual || secondary.length === 0) {
-      return <div className="space-y-2">
-          {primaryRubric.length > 0 && preferences.showRubrics && <div className="text-sm italic text-gray-600 mb-2">
-              {primaryRubric.map((line, index) => <p key={index}>{line}</p>)}
-            </div>}
-          {primary.map((line, index) => <p key={index} className={cn(line === "" ? "my-2" : "", line.startsWith('[LA]') || line.startsWith('[EN]') ? "text-sm text-gray-600 italic" : "")} style={{
-          fontSize: preferences.fontSize === 'large' ? '1.125rem' : preferences.fontSize === 'small' ? '0.875rem' : '1rem'
-        }}>
-              {line}
-            </p>)}
-        </div>;
+      return (
+        <div className="space-y-4">
+          {/* Render primary content only */}
+          {primaryRubric.length > 0 && preferences.showRubrics && (
+            <div className="text-sm italic text-dominican-burgundy mb-4">
+              {primaryRubric.map((paragraph, pIndex) => (
+                <div key={`rubric-${pIndex}`} className="mb-2">
+                  {paragraph.map((line, lIndex) => (
+                    <p key={`rubric-${pIndex}-${lIndex}`}>
+                      {renderContentLine(line)}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Main content */}
+          <div className="space-y-4">
+            {primary.map((paragraph, pIndex) => (
+              <div 
+                key={`content-${pIndex}`}
+                className={cn(
+                  paragraph.some(line => line.startsWith('[')) ? "text-sm text-gray-600 italic" : ""
+                )}
+              >
+                {paragraph.map((line, lIndex) => (
+                  <div
+                    key={`bilingual-${pIndex}-${lIndex}`}
+                    className={cn(
+                      line === "" ? "my-2" : "", 
+                      line.startsWith('[LA]') || line.startsWith('[EN]')
+                        ? "text-sm text-gray-600 italic" 
+                        : "text-base", 
+                      preferences.textSize === "large" ? "text-lg" : "",
+                      preferences.textSize === "xlarge" ? "text-xl" : ""
+                    )}
+                  >
+                    {renderContentLine(line)}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     }
 
     // Bilingual side-by-side layout
-    return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-        {renderLanguageColumn(primary, primaryAntiphonBefore, primaryAntiphonAfter, primaryRubric, primaryLang, primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase(), primaryChantContent)}
-        {renderLanguageColumn(secondary, secondaryAntiphonBefore, secondaryAntiphonAfter, secondaryRubric, secondaryLang, secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase(), secondaryChantContent)}
-      </div>;
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
+        {renderLanguageColumn(
+          primary, 
+          primaryAntiphonBefore, 
+          primaryAntiphonAfter, 
+          primaryRubric, 
+          primaryLang, 
+          primaryLang === 'en' ? 'English' : primaryLang === 'la' ? 'Latin' : primaryLang.toUpperCase(), 
+          primaryChantContent
+        )}
+        {renderLanguageColumn(
+          secondary, 
+          secondaryAntiphonBefore, 
+          secondaryAntiphonAfter, 
+          secondaryRubric, 
+          secondaryLang, 
+          secondaryLang === 'en' ? 'English' : secondaryLang === 'la' ? 'Latin' : secondaryLang?.toUpperCase(), 
+          secondaryChantContent
+        )}
+      </div>
+    );
   };
+  
   return <div className={cn("mb-6", className)}>
       {title.length > 0 && <div className="flex items-center gap-2 mb-2">
-          <h4 className="font-garamond text-xl font-semibold">{title[0]}</h4>
+          <h4 className="font-garamond text-xl font-semibold">
+            {component.type === "hymn" ? "Hymn" : title[0]}
+          </h4>
           {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
               <Volume2 className="h-3 w-3" />
             </Button>}
-          {!showBilingual && (primaryChantContent || secondaryChantContent) && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
+          {!showBilingual && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
               <Music className="h-3 w-3" />
             </Button>}
         </div>}
       
       {renderBilingualContent(primaryContent, secondaryContent)}
       
-      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && <div className="mt-4">
+      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <div className="mt-4">
           <ChantNotationRenderer key={(primaryChantContent || secondaryChantContent).gregobase_id} gabc={(primaryChantContent || secondaryChantContent).data} description={(primaryChantContent || secondaryChantContent).description} className="mb-4" />
         </div>}
-      
+
       {component.scriptureRef && <div className="mt-2 text-xs text-gray-500">
           {component.scriptureRef.book} {component.scriptureRef.chapter}:{component.scriptureRef.verse} 
           ({component.scriptureRef.translation})
         </div>}
     </div>;
 };
+
 const ComplineDisplay: React.FC = () => {
   const {
     selectedDate

@@ -1,10 +1,16 @@
+
 export type LanguageCode = 'en' | 'la' | 'fr' | 'es' | 'de' | 'it';
 export type AudioType = 'spoken' | 'chant' | 'organ';
 export type ChantNotation = 'modern' | 'gregorian' | 'solesmes';
 export type BibleTranslation = 'NRSV' | 'NAB' | 'RSV' | 'DRA' | 'VULGATE';
 
+/**
+ * Represents content in multiple languages, where each language maps to an array of paragraphs.
+ * Each paragraph is an array of strings, where each string represents a line of text.
+ * Empty strings can be used to create additional vertical space between lines within a paragraph.
+ */
 export interface MultiLanguageContent {
-  [key: string]: string[];
+  [key: string]: string[][];
 }
 
 export interface AudioResource {
@@ -91,6 +97,7 @@ export interface UserLiturgyPreferences {
   audioEnabled: boolean;
   audioTypes: AudioType[];
   chantNotation: ChantNotation;
+  chantNotationEnabled: boolean;
   fontSize: 'small' | 'medium' | 'large';
   showRubrics: boolean;
 }

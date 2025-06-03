@@ -4,27 +4,27 @@
     "id": "sunday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Sunday Prayer"],
-      "la": ["Sunday Prayer"]
+      "en": [["Sunday Prayer"]],
+      "la": [["Sunday Prayer"]]
     },
     "content": {
       "en": [
-        "Lord our God,",
+        ["Lord our God,",
         "restore us again by the repose of sleep",
         "after the fatigue of our daily work,",
         "so that, continually renewed by your help,",
         "we may serve you in body and soul.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Domine Deus noster,",
+        ["Domine Deus noster,",
         "quiete nos rursum per soporem recreare",
         "post laborem quotidianum,",
         "ut, continenter renovati tuo auxilio,",
         "tibi servire possimus corpore et anima.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -32,29 +32,29 @@
     "id": "monday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Monday Prayer"],
-      "la": ["Monday Prayer"]
+      "en": [["Monday Prayer"]],
+      "la": [["Monday Prayer"]]
     },
     "content": {
       "en": [
-        "Lord our God,",
+        ["Lord our God,",
         "be gracious and forgive the sins of your people.",
         "Free us from the bonds of darkness",
         "that hold us tight,",
         "and let us enter into your light",
         "to rest in your peace.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Domine Deus noster,",
+        ["Domine Deus noster,",
         "propitius esto et dimitte peccata populi tui.",
         "Libera nos a vinculis tenebrarum",
         "quae nos constringunt,",
         "et fac nos introire in lucem tuam",
         "ut requiescamus in pace tua.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -62,27 +62,27 @@
     "id": "tuesday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Tuesday Prayer"],
-      "la": ["Tuesday Prayer"]
+      "en": [["Tuesday Prayer"]],
+      "la": [["Tuesday Prayer"]]
     },
     "content": {
       "en": [
-        "Lord God almighty,",
+        ["Lord God almighty,",
         "grant that we who have been renewed",
         "by the mystery of this evening's prayer",
         "may sleep in peace",
         "and rise tomorrow to serve you with joy.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Domine Deus omnipotens,",
+        ["Domine Deus omnipotens,",
         "concede ut qui mysterio vespertinae orationis",
         "renovati sumus,",
         "in pace dormiamus",
         "et cras ad te serviendum laeti surgamus.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -90,12 +90,12 @@
     "id": "wednesday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Wednesday Prayer"],
-      "la": ["Wednesday Prayer"]
+      "en": [["Wednesday Prayer"]],
+      "la": [["Wednesday Prayer"]]
     },
     "content": {
       "en": [
-        "Lord,",
+        ["Lord,",
         "watch over your family",
         "and keep in your care",
         "those who trust in you,",
@@ -103,10 +103,10 @@
         "from all anxiety",
         "and live in your peace.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Domine,",
+        ["Domine,",
         "custodi familiam tuam",
         "et in tua pietate conserva",
         "qui in te sperant,",
@@ -114,7 +114,7 @@
         "liberati",
         "in pace tua vivant.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -122,12 +122,12 @@
     "id": "thursday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Thursday Prayer"],
-      "la": ["Thursday Prayer"]
+      "en": [["Thursday Prayer"]],
+      "la": [["Thursday Prayer"]]
     },
     "content": {
       "en": [
-        "Merciful God,",
+        ["Merciful God,",
         "you have made this day",
         "and brought it to its close.",
         "Watch over us through the darkness",
@@ -135,10 +135,10 @@
         "and bring us safely",
         "to the morning light.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Deus misericors,",
+        ["Deus misericors,",
         "qui hanc diem fecisti",
         "et ad finem perduxisti,",
         "custodi nos per tenebras",
@@ -146,7 +146,7 @@
         "et salvi perducas",
         "ad lucem matutinarn.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -154,12 +154,12 @@
     "id": "friday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Friday Prayer"],
-      "la": ["Friday Prayer"]
+      "en": [["Friday Prayer"]],
+      "la": [["Friday Prayer"]]
     },
     "content": {
       "en": [
-        "Father of mercy,",
+        ["Father of mercy,",
         "from the beginning of time",
         "your Word has been at work",
         "in our world.",
@@ -167,10 +167,10 @@
         "made flesh,",
         "and keep us in your love.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Pater misericordiarum,",
+        ["Pater misericordiarum,",
         "ab initio temporis",
         "Verbum tuum operatum est",
         "in mundo nostro.",
@@ -178,7 +178,7 @@
         "caro factum,",
         "et conserva nos in amore tuo.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   },
@@ -186,12 +186,12 @@
     "id": "saturday-prayer",
     "type": "prayer",
     "title": {
-      "en": ["Saturday Prayer"],
-      "la": ["Saturday Prayer"]
+      "en": [["Saturday Prayer"]],
+      "la": [["Saturday Prayer"]]
     },
     "content": {
       "en": [
-        "God of love,",
+        ["God of love,",
         "as we end another week",
         "of serving you,",
         "grant us peaceful rest",
@@ -199,10 +199,10 @@
         "to welcome the Lord's Day",
         "with renewed joy.",
         "Through Christ our Lord.",
-        "Amen."
+        "Amen."]
       ],
       "la": [
-        "Deus caritatis,",
+        ["Deus caritatis,",
         "cum aliam hebdomadam",
         "tibi serviendi finimus,",
         "concede nobis requiem pacificam",
@@ -210,7 +210,7 @@
         "ut Diem Domini",
         "renovato gaudio suscipiamus.",
         "Per Christum Dominum nostrum.",
-        "Amen."
+        "Amen."]
       ]
     }
   }
