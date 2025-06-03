@@ -38,22 +38,34 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   };
 
   // Helper function to render content based on chant notation preference
+  const processAsterisks = (text: string, isMarkdown: boolean): string => {
+    if (!isMarkdown) {
+      // Remove asterisks when not using markdown
+      let first_text = text.replace(/\*(\s|$)/g, '$1');
+      return first_text.replace(/\†(\s|$)/g, '$1');
+    }
+    return text;
+  };
+  
+  // Then in renderContentLine:
   const renderContentLine = (line: string) => {
+    const processedLine = processAsterisks(line, preferences.chantNotationEnabled);
+    
     if (preferences.chantNotationEnabled) {
       return (
         <ReactMarkdown
           components={{
             p: ({node, ...props}) => <span {...props} />,
             blockquote: ({node, ...props}) => (
-              <blockquote className="pl-4 " {...props} />
+              <blockquote className="pl-4" {...props} />
             )
           }}
         >
-          {line}
+          {processedLine}
         </ReactMarkdown>
       );
     } else {
-      return removeMarkdown(line);
+      return removeMarkdown(processedLine);
     }
   };
 
