@@ -11,7 +11,7 @@ const LiturgicalCalendarPage: React.FC = () => {
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 mb-8 max-w-3xl">
+      <p className="text-gray-700 dark:text-gray-200 mb-8">
         The liturgical calendar for the Order of Preachers includes both the general 
         calendar of the Roman Catholic Church and special celebrations specific to the 
         Dominican Order. Explore feasts, solemnities, memorials, and other celebrations 
