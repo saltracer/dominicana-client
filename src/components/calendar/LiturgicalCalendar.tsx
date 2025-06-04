@@ -68,7 +68,7 @@ const LiturgicalCalendar: React.FC = () => {
         <Button
           onClick={prevMonth}
           variant="ghost"
-          className="text-dominican-burgundy hover:bg-dominican-burgundy/10"
+          className="text-dominican-burgundy hover:bg-dominican-burgundy/10 dark:hover:bg-dominican-burgundy/50"
         >
           <ChevronLeft />
         </Button>
@@ -78,7 +78,7 @@ const LiturgicalCalendar: React.FC = () => {
         <Button
           onClick={nextMonth}
           variant="ghost"
-          className="text-dominican-burgundy hover:bg-dominican-burgundy/10"
+          className="text-dominican-burgundy hover:bg-dominican-burgundy/10 dark:hover:bg-dominican-burgundy/50"
         >
           <ChevronRight />
         </Button>
