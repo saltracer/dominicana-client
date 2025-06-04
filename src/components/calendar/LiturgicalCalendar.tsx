@@ -93,7 +93,7 @@ const LiturgicalCalendar: React.FC = () => {
 
     for (let i = 0; i < 7; i++) {
       days.push(
-        <div className="text-center text-xs font-medium text-gray-600 uppercase" key={i}>
+        <div className="text-center text-xs font-medium dark:text-gray-200 text-gray-600 uppercase" key={i}>
           {format(addDays(weekStart, i), dateFormat)}
         </div>
       );
@@ -163,8 +163,8 @@ const LiturgicalCalendar: React.FC = () => {
         days.push(
           <div
             className={cn(
-              "h-24 border border-dominican-light-gray p-1 relative",
-              !isSameMonth(day, monthStart) && "bg-gray-100 text-gray-400",
+              "h-24 border border-dominican-light-gray dark:border-gray-600 dark:bg-gray-900 p-1 relative",
+              !isSameMonth(day, monthStart) && "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-400",
               seasonClass && `${seasonClass}-bg`,
               isSameDay(day, selectedDate) && "ring-2 ring-dominican-burgundy ring-inset"
             )}
@@ -200,8 +200,8 @@ const LiturgicalCalendar: React.FC = () => {
 
             {/* Multiple celebrations indicator */}
             {celebrationsCount > 1 && (
-              <div className="absolute bottom-1 right-1">
-                <Badge variant="outline" className="text-[10px] h-5 bg-white">+{celebrationsCount - 1}</Badge>
+              <div className="absolute bottom-1 right-1 dark:bg-dominican-dark-gray">
+                <Badge variant="outline" className="text-[10px] h-5 bg-white dark:bg-gray-300 dark:text-gray-700">+{celebrationsCount - 1}</Badge>
               </div>
             )}
           </div>
@@ -221,8 +221,8 @@ const LiturgicalCalendar: React.FC = () => {
   return (
     <>
       <div className="lg:grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-4 mb-6 lg:mb-0">
-          <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">Liturgical Calendar</h2>
+        <div className="lg:col-span-2 bg-white dark:bg-dominican-light-gray rounded-lg shadow-md p-4 mb-6 lg:mb-0">
+          <h2 className="font-garamond text-2xl font-bold text-dominican-burgundy dark:text-white mb-4">Liturgical Calendar</h2>
           <div className="calendar">
             {renderHeader()}
             {renderDays()}
@@ -257,7 +257,7 @@ const LiturgicalCalendar: React.FC = () => {
         </div>
         
         <div className="bg-white dark:bg-dominican-light-gray rounded-lg shadow-md p-4">
-          <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+          <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy dark:text-white mb-4">
             {format(selectedDate, 'EEEE, MMMM d, yyyy')}
           </h3>
           
