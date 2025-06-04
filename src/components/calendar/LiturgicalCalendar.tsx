@@ -279,10 +279,10 @@ const LiturgicalCalendar: React.FC = () => {
                   )}>
                     <div className="flex justify-between items-center">
                       <span className="font-garamond text-lg font-semibold">{celebration.name}</span>
-                      <span className="text-sm">{celebration.rank}</span>
                       {celebration.isDominican && (
                         <span className="text-xs px-2 py-0.5 rounded bg-dominican-burgundy text-white">Dominican</span>
                       )}
+                      <span className="text-sm">{celebration.rank}</span>
                     </div>
                   </div>
                   
