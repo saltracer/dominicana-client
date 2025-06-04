@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -111,14 +110,14 @@ const LiturgyOfHoursPage: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="font-garamond text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
+    <div className="container mx-auto px-4 py-8 liturgy-page">
+      <h1 className="text-3xl md:text-4xl font-bold text-dominican-burgundy mb-2">
         Liturgy of the Hours
       </h1>
       <div className="text-center mb-6">
         <span className="inline-block w-20 h-1 bg-dominican-gold"></span>
       </div>
-      <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
+      <p className="liturgy-text text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
         The Liturgy of the Hours, also known as the Divine Office, is the official prayer 
         of the Church marking the hours of each day. It sanctifies the day with prayer and 
         is an essential part of Dominican life.
@@ -128,7 +127,7 @@ const LiturgyOfHoursPage: React.FC = () => {
         <div className="flex items-center justify-between p-4 border-b border-dominican-light-gray dark:border-border">
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-dominican-burgundy" />
-            <span className="font-medium text-foreground">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
+            <span className="liturgy-text font-medium text-foreground">Prayers for day: {format(selectedDate, 'EEEE, MMMM d, yyyy')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleShare}>
@@ -158,26 +157,26 @@ const LiturgyOfHoursPage: React.FC = () => {
             {/* Content based on selected hour */}
             {selectedHour === "office-of-readings" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Office of Readings
                 </h3>
                 
                 <div className="space-y-6">
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
-                    <p className="mb-2 text-foreground">V. Lord, open my lips.</p>
-                    <p className="mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
+                    <h4 className="text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
+                    <p className="liturgy-content mb-2 text-foreground">V. Lord, open my lips.</p>
+                    <p className="liturgy-content mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
                     
-                    <p className="mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
+                    <p className="liturgy-content mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
                     
                     <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                       <h5 className="font-medium mb-2 text-foreground">Psalm 95</h5>
-                      <p className="mb-2 text-foreground">Come, let us sing to the Lord<br />
+                      <p className="liturgy-content mb-2 text-foreground">Come, let us sing to the Lord<br />
                       and shout with joy to the Rock who saves us.<br />
                       Let us approach him with praise and thanksgiving<br />
                       and sing joyful songs to the Lord.</p>
                       
-                      <p className="mb-2 text-foreground">The Lord is God, the mighty God,<br />
+                      <p className="liturgy-content mb-2 text-foreground">The Lord is God, the mighty God,<br />
                       the great king over all the gods.<br />
                       He holds in his hands the depths of the earth<br />
                       and the highest mountains as well.<br />
@@ -187,15 +186,15 @@ const LiturgyOfHoursPage: React.FC = () => {
                   </section>
                   
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2">Hymn</h4>
-                    <p className="mb-2">
+                    <h4 className="text-xl font-semibold mb-2">Hymn</h4>
+                    <p className="liturgy-content mb-2">
                       The golden star of morn<br />
                       Is climbing in the sky;<br />
                       The birth-day of the world<br />
                       Breaks to the wakeful eye.
                     </p>
                     
-                    <p className="mb-2">
+                    <p className="liturgy-content mb-2">
                       Christ our eternal Dawn,<br />
                       Sheds on our night its ray;<br />
                       No evening shall descend<br />
@@ -204,12 +203,12 @@ const LiturgyOfHoursPage: React.FC = () => {
                   </section>
                   
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2">Psalmody</h4>
-                    <p className="mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
+                    <h4 className="text-xl font-semibold mb-2">Psalmody</h4>
+                    <p className="liturgy-content mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
                     
                     <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                       <h5 className="font-medium mb-2">Psalm 37:1-11</h5>
-                      <p className="mb-2">
+                      <p className="liturgy-content mb-2">
                         Do not fret because of the wicked;<br />
                         do not envy those who do evil:<br />
                         for they wither quickly like grass<br />
@@ -219,7 +218,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                   </section>
                   
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2">Readings</h4>
+                    <h4 className="text-xl font-semibold mb-2">Readings</h4>
                     <div className="mb-4">
                       <h5 className="font-medium mb-2">First Reading</h5>
                       <p className="italic mb-2">From the prophet Isaiah 52:13-53:12</p>
@@ -234,8 +233,8 @@ const LiturgyOfHoursPage: React.FC = () => {
                   </section>
                   
                   <section>
-                    <h4 className="font-garamond text-xl font-semibold mb-2">Concluding Prayer</h4>
-                    <p className="mb-4">
+                    <h4 className="text-xl font-semibold mb-2">Concluding Prayer</h4>
+                    <p className="liturgy-content mb-4">
                       Father,<br />
                       through our observance of Lent,<br />
                       help us to understand the meaning<br />
@@ -247,7 +246,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                       — Amen.
                     </p>
                     
-                    <p className="mb-2">Let us praise the Lord.</p>
+                    <p className="liturgy-content mb-2">Let us praise the Lord.</p>
                     <p>— And give him thanks.</p>
                   </section>
                 </div>
@@ -256,7 +255,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "morning-prayer" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Morning Prayer (Lauds)
                 </h3>
                 <div className="text-center py-10">
@@ -267,7 +266,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "daytime-prayer" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Daytime Prayer (Terce)
                 </h3>
                 <div className="text-center py-10">
@@ -278,7 +277,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "midday-prayer" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Midday Prayer (Sext)
                 </h3>
                 <div className="text-center py-10">
@@ -289,7 +288,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "afternoon-prayer" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Afternoon Prayer (None)
                 </h3>
                 <div className="text-center py-10">
@@ -300,7 +299,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {selectedHour === "evening-prayer" && (
               <div>
-                <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+                <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                   Evening Prayer (Vespers)
                 </h3>
                 <div className="text-center py-10">
@@ -329,26 +328,26 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {/* Sample content for Office of Readings */}
             <TabsContent value="office-of-readings" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Office of Readings
               </h3>
               
               <div className="space-y-6">
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
-                  <p className="mb-2 text-foreground">V. Lord, open my lips.</p>
-                  <p className="mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
+                  <h4 className="text-xl font-semibold mb-2 text-foreground">Invitatory</h4>
+                  <p className="liturgy-content mb-2 text-foreground">V. Lord, open my lips.</p>
+                  <p className="liturgy-content mb-4 text-foreground">R. And my mouth will proclaim your praise.</p>
                   
-                  <p className="mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
+                  <p className="liturgy-content mb-2 text-foreground">Antiphon: Come, let us worship Christ the Lord, who for our sake endured temptation and suffering.</p>
                   
                   <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                     <h5 className="font-medium mb-2 text-foreground">Psalm 95</h5>
-                    <p className="mb-2 text-foreground">Come, let us sing to the Lord<br />
+                    <p className="liturgy-content mb-2 text-foreground">Come, let us sing to the Lord<br />
                     and shout with joy to the Rock who saves us.<br />
                     Let us approach him with praise and thanksgiving<br />
                     and sing joyful songs to the Lord.</p>
                     
-                    <p className="mb-2 text-foreground">The Lord is God, the mighty God,<br />
+                    <p className="liturgy-content mb-2 text-foreground">The Lord is God, the mighty God,<br />
                     the great king over all the gods.<br />
                     He holds in his hands the depths of the earth<br />
                     and the highest mountains as well.<br />
@@ -358,15 +357,15 @@ const LiturgyOfHoursPage: React.FC = () => {
                 </section>
                 
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2">Hymn</h4>
-                  <p className="mb-2">
+                  <h4 className="text-xl font-semibold mb-2">Hymn</h4>
+                  <p className="liturgy-content mb-2">
                     The golden star of morn<br />
                     Is climbing in the sky;<br />
                     The birth-day of the world<br />
                     Breaks to the wakeful eye.
                   </p>
                   
-                  <p className="mb-2">
+                  <p className="liturgy-content mb-2">
                     Christ our eternal Dawn,<br />
                     Sheds on our night its ray;<br />
                     No evening shall descend<br />
@@ -375,12 +374,12 @@ const LiturgyOfHoursPage: React.FC = () => {
                 </section>
                 
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2">Psalmody</h4>
-                  <p className="mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
+                  <h4 className="text-xl font-semibold mb-2">Psalmody</h4>
+                  <p className="liturgy-content mb-2">Ant. 1: Surrender to God, and he will do everything for you.</p>
                   
                   <div className="bg-dominican-light-gray/50 dark:bg-muted/20 p-4 rounded-md mb-4">
                     <h5 className="font-medium mb-2">Psalm 37:1-11</h5>
-                    <p className="mb-2">
+                    <p className="liturgy-content mb-2">
                       Do not fret because of the wicked;<br />
                       do not envy those who do evil:<br />
                       for they wither quickly like grass<br />
@@ -390,7 +389,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                 </section>
                 
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2">Readings</h4>
+                  <h4 className="text-xl font-semibold mb-2">Readings</h4>
                   <div className="mb-4">
                     <h5 className="font-medium mb-2">First Reading</h5>
                     <p className="italic mb-2">From the prophet Isaiah 52:13-53:12</p>
@@ -405,8 +404,8 @@ const LiturgyOfHoursPage: React.FC = () => {
                 </section>
                 
                 <section>
-                  <h4 className="font-garamond text-xl font-semibold mb-2">Concluding Prayer</h4>
-                  <p className="mb-4">
+                  <h4 className="text-xl font-semibold mb-2">Concluding Prayer</h4>
+                  <p className="liturgy-content mb-4">
                     Father,<br />
                     through our observance of Lent,<br />
                     help us to understand the meaning<br />
@@ -418,7 +417,7 @@ const LiturgyOfHoursPage: React.FC = () => {
                     — Amen.
                   </p>
                   
-                  <p className="mb-2">Let us praise the Lord.</p>
+                  <p className="liturgy-content mb-2">Let us praise the Lord.</p>
                   <p>— And give him thanks.</p>
                 </section>
               </div>
@@ -426,7 +425,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             
             {/* Placeholder content for other hours */}
             <TabsContent value="morning-prayer" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Morning Prayer (Lauds)
               </h3>
               <div className="text-center py-10">
@@ -435,7 +434,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="daytime-prayer" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Daytime Prayer (Terce)
               </h3>
               <div className="text-center py-10">
@@ -444,7 +443,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="midday-prayer" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Midday Prayer (Sext)
               </h3>
               <div className="text-center py-10">
@@ -453,7 +452,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="afternoon-prayer" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Afternoon Prayer (None)
               </h3>
               <div className="text-center py-10">
@@ -462,7 +461,7 @@ const LiturgyOfHoursPage: React.FC = () => {
             </TabsContent>
             
             <TabsContent value="evening-prayer" className="p-6">
-              <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
+              <h3 className="text-2xl font-bold text-dominican-burgundy mb-4">
                 Evening Prayer (Vespers)
               </h3>
               <div className="text-center py-10">

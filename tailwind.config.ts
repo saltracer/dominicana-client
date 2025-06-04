@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -129,6 +128,9 @@ export default {
 			fontFamily: {
 				'garamond': ['"EB Garamond"', 'serif'],
 				'inter': ['Inter', 'sans-serif'],
+				// Liturgy-specific fonts
+				'liturgy-heading': ['"Cormorant Garamond"', 'serif'],
+				'liturgy-body': ['"Libre Baskerville"', 'serif'],
 			}
 		}
 	},

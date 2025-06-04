@@ -10,18 +10,19 @@
     "content": {
       "en": [
         ["O God, come to my assistance.",
-        "_O Lord, make haste to help me._",
+        "> _O Lord, make haste to help me._",
         "Glory be to the Father and to the Son",
-        "> **and to the Holy Spirit,**",
+        "> and to the Holy Spirit,",
         "as it was in the beginning, is now,",
         "> and will be for ever. Amen."]
       ],
       "la": [
         ["Deus, in adjutorium meum intende.",
-        "Domine, ad adjuvandum me festina.",
-        "Gloria Patri et Filio et Spiritui Sancto,",
-        "sicut erat in principio, et nunc, et semper, ",
-        "et in saecula saeculorum. Amen."]
+        "> _Domine, ad adjuvandum me festina._",
+        "Gloria Patri et Filio*",
+        "> et Spiritui Sancto,",
+        "sicut erat in principio, et nunc, et semper*",
+        "> et in saecula saeculorum. Amen."]
       ]
     },
     "chant": {
