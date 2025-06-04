@@ -256,7 +256,7 @@ const LiturgicalCalendar: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="bg-white dark:bg-dominican-light-gray rounded-lg shadow-md p-4">
           <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-4">
             {format(selectedDate, 'EEEE, MMMM d, yyyy')}
           </h3>
@@ -304,7 +304,7 @@ const LiturgicalCalendar: React.FC = () => {
                   )}
                   
                   {celebration.description && (
-                    <p className="text-gray-700 text-sm mb-3">
+                    <p className="text-gray-700 dark:text-gray-200 text-sm mb-3">
                       {formatDescriptionPreview(celebration.description)}
                     </p>
                   )}
@@ -320,7 +320,7 @@ const LiturgicalCalendar: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-gray-600">
+            <div className="text-gray-600 dark:text-gray-200">
               <p>No celebrations or feasts on this day.</p>
             </div>
           )}
