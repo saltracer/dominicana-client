@@ -9,6 +9,7 @@ import type { Saint } from '@/lib/liturgical/saints/saint-types';
 import SaintsTimeline from './SaintsTimeline';
 import SaintsFeastMonth from './SaintsFeastMonth';
 import { SaintsInfoCard } from './SaintsInfoCard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SaintsListProps {
   selectedSaint: Saint | null;
