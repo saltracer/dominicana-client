@@ -127,8 +127,10 @@ export default {
 				'fade-out': 'fade-out 0.3s ease-in-out',
 			},
 			fontFamily: {
-				'garamond': ['"EB Garamond"', 'serif'],
-				'inter': ['Inter', 'sans-serif'],
+				'garamond': ['"Cormorant Garamond"', 'serif'],
+				'inter': ['"Libre Baskerville"', 'serif'],
+				'liturgy': ['"Libre Baskerville"', 'serif'],
+				'heading': ['"Cormorant Garamond"', 'serif'],
 			}
 		}
 	},
