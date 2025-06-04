@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Book } from '@/lib/types';
 
 export const fetchBooks = async (): Promise<Book[]> => {
-  console.log('booksService - Fetching all books');
+  //console.log('booksService - Fetching all books');
   const { data, error } = await supabase
     .from('books')
     .select('*')
@@ -14,7 +14,7 @@ export const fetchBooks = async (): Promise<Book[]> => {
     throw error;
   }
 
-  console.log('booksService - Raw books data from Supabase:', data);
+  //console.log('booksService - Raw books data from Supabase:', data);
 
   // Transform to match the Book type
   const books: Book[] = data.map(book => {
@@ -30,15 +30,15 @@ export const fetchBooks = async (): Promise<Book[]> => {
       epubSamplePath: book.epub_sample_path || undefined,
     };
     
-    console.log(`booksService - Transformed book ${book.id}:`, {
-      ...transformedBook,
-      epubPath: transformedBook.epubPath ? `[PRESENT: ${transformedBook.epubPath.substring(0, 30)}...]` : '[NOT PRESENT]'
-    });
+    //console.log(`booksService - Transformed book ${book.id}:`, {
+    //  ...transformedBook,
+    //  epubPath: transformedBook.epubPath ? `[PRESENT: ${transformedBook.epubPath.substring(0, 30)}...]` : '[NOT PRESENT]'
+    //});
     
     return transformedBook;
   });
 
-  console.log('booksService - Returning books count:', books.length);
+  //console.log('booksService - Returning books count:', books.length);
   return books;
 };
 

@@ -27,10 +27,10 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
   // Add debugging for URL and component lifecycle
   useEffect(() => {
-    console.log('BookReader - Component mounted');
-    console.log('BookReader - Received book URL:', url);
-    console.log('BookReader - Book title:', title);
-    console.log('BookReader - User role:', userRole);
+    //console.log('BookReader - Component mounted');
+    //console.log('BookReader - Received book URL:', url);
+    //console.log('BookReader - Book title:', title);
+    //console.log('BookReader - User role:', userRole);
     
     // Update dimensions on mount
     if (containerRef.current) {
@@ -58,8 +58,8 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
           
           // For debugging, check a small part of the response
           return response.blob().then(blob => {
-            console.log('BookReader - Response blob size:', blob.size);
-            console.log('BookReader - Response blob type:', blob.type);
+            //console.log('BookReader - Response blob size:', blob.size);
+            //console.log('BookReader - Response blob type:', blob.type);
             
             // Log the first few bytes of the file to check if it's a valid EPUB
             const reader = new FileReader();

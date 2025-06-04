@@ -24,9 +24,9 @@ const LibraryPage: React.FC = () => {
     const loadBooks = async () => {
       setLoading(true);
       try {
-        console.log('LibraryPage - Fetching books');
+        //console.log('LibraryPage - Fetching books');
         const data = await fetchBooks();
-        console.log('LibraryPage - Books data received:', data);
+        //console.log('LibraryPage - Books data received:', data);
         setBooks(data);
       } catch (error) {
         console.error('LibraryPage - Failed to load books:', error);
