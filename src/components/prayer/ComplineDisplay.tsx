@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent, MultiLanguageContent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
@@ -123,7 +124,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {/* Render rubrics */}
       {rubric.length > 0 && preferences.showRubrics && (
-        <div className="text-sm italic text-dominican-burgundy mb-4">
+        <div className="liturgy-rubric text-dominican-burgundy mb-4">
           {rubric.map((paragraph, pIndex) => (
             <div key={`rubric-${pIndex}`} className="mb-2">
               {paragraph.map((line, lIndex) => (
@@ -138,7 +139,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {/* Render antiphons before */}
       {antiphonBefore.length > 0 && (
-        <div className="text-dominican-burgundy mb-4 font-medium">
+        <div className="liturgy-antiphon text-dominican-burgundy mb-4">
           {antiphonBefore.map((paragraph, pIndex) => (
             <div 
               key={`antiphon-before-${pIndex}`} 
@@ -150,6 +151,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
               {paragraph.map((line, lIndex) => (
                 <p 
                   key={`antiphon-before-${pIndex}-${lIndex}`}
+                  className="liturgy-text"
                   style={{
                     fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
                              preferences.fontSize === 'small' ? '0.875rem' : '1rem'
@@ -179,7 +181,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                   line === "" ? "my-2" : "", 
                   line.startsWith('[LA]') || line.startsWith('[EN]')
                     ? "text-sm text-gray-600 italic" 
-                    : "text-base", 
+                    : "liturgy-content", 
                   preferences.textSize === "large" ? "text-lg" : "",
                   preferences.textSize === "xlarge" ? "text-xl" : ""
                 )}
@@ -205,7 +207,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {/* Antiphons after */}
       {antiphonAfter.length > 0 && (
-        <div className="text-dominican-burgundy mt-4 font-medium">
+        <div className="liturgy-antiphon text-dominican-burgundy mt-4">
           {antiphonAfter.map((paragraph, pIndex) => (
             <div 
               key={`antiphon-after-${pIndex}`}
@@ -217,6 +219,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
               {paragraph.map((line, lIndex) => (
                 <p 
                   key={`antiphon-after-${pIndex}-${lIndex}`}
+                  className="liturgy-text"
                   style={{
                     fontSize: preferences.fontSize === 'large' ? '1.125rem' : 
                              preferences.fontSize === 'small' ? '0.875rem' : '1rem'
@@ -238,7 +241,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
         <div className="space-y-4">
           {/* Render primary content only */}
           {primaryRubric.length > 0 && preferences.showRubrics && (
-            <div className="text-sm italic text-dominican-burgundy mb-4">
+            <div className="liturgy-rubric text-dominican-burgundy mb-4">
               {primaryRubric.map((paragraph, pIndex) => (
                 <div key={`rubric-${pIndex}`} className="mb-2">
                   {paragraph.map((line, lIndex) => (
@@ -267,7 +270,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
                       line === "" ? "my-2" : "", 
                       line.startsWith('[LA]') || line.startsWith('[EN]')
                         ? "text-sm text-gray-600 italic" 
-                        : "text-base", 
+                        : "liturgy-content", 
                       preferences.textSize === "large" ? "text-lg" : "",
                       preferences.textSize === "xlarge" ? "text-xl" : ""
                     )}
@@ -309,7 +312,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   
   return <div className={cn("mb-6", className)}>
       {title.length > 0 && <div className="flex items-center gap-2 mb-2">
-          <h4 className="font-garamond text-xl font-semibold">
+          <h4 className="text-xl font-semibold">
             {component.type === "hymn" ? "Hymn" : title[0]}
           </h4>
           {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
@@ -375,12 +378,12 @@ const ComplineDisplay: React.FC = () => {
   }
   return <div className={cn(`space-y-6 ${info.seasonClass}`)}>
       <div className="mb-6">
-        <h3 className="font-garamond text-2xl font-bold text-dominican-burgundy mb-2">
+        <h3 className="text-2xl font-bold text-dominican-burgundy mb-2">
           {info.title}
         </h3>
-        <p className="text-gray-600 mb-2">{info.dateFormatted}</p>
+        <p className="liturgy-text text-gray-600 mb-2">{info.dateFormatted}</p>
         {info.isOctave && <div className="bg-dominican-gold/20 border-l-4 border-dominican-gold p-3 mb-4">
-            During the Octave of Easter, we use the same Night Prayer each day.
+            <p className="liturgy-text">During the Octave of Easter, we use the same Night Prayer each day.</p>
           </div>}
       </div>
       
@@ -391,7 +394,7 @@ const ComplineDisplay: React.FC = () => {
       {renderedComponents.hymn && <LiturgyPart component={renderedComponents.hymn} preferences={preferences} />}
       
       {renderedComponents.psalmody.length > 0 && <div className="space-y-4">
-          <h4 className="font-garamond text-xl font-semibold mb-2">Psalmody</h4>
+          <h4 className="text-xl font-semibold mb-2">Psalmody</h4>
           {renderedComponents.psalmody.map((psalm, i) => <LiturgyPart key={i} component={psalm!} preferences={preferences} className="bg-dominican-light-gray/20 p-4 rounded-md" />)}
         </div>}
       
