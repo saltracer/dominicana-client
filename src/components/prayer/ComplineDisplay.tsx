@@ -387,7 +387,7 @@ const ComplineDisplay: React.FC = () => {
           </div>}
       </div>
       
-      {renderedComponents.introduction && <LiturgyPart component={renderedComponents.introduction} preferences={preferences} className="bg-dominican-light-gray/30 p-4 rounded-md" />}
+      {renderedComponents.introduction && <LiturgyPart component={renderedComponents.introduction} preferences={preferences} className="light:bg-dominican-light-gray/20 p-4 rounded-md" />}
       
       {renderedComponents.examen && <LiturgyPart component={renderedComponents.examen} preferences={preferences} />}
       
@@ -395,14 +395,14 @@ const ComplineDisplay: React.FC = () => {
       
       {renderedComponents.psalmody.length > 0 && <div className="space-y-4">
           <h4 className="text-xl font-semibold mb-2">Psalmody</h4>
-          {renderedComponents.psalmody.map((psalm, i) => <LiturgyPart key={i} component={psalm!} preferences={preferences} className="bg-dominican-light-gray/20 p-4 rounded-md" />)}
+          {renderedComponents.psalmody.map((psalm, i) => <LiturgyPart key={i} component={psalm!} preferences={preferences} className="light:bg-dominican-light-gray/20 p-4 rounded-md" />)}
         </div>}
       
       {renderedComponents.reading && <LiturgyPart component={renderedComponents.reading} preferences={preferences} />}
       
       {renderedComponents.responsory && <LiturgyPart component={renderedComponents.responsory} preferences={preferences} className="font-medium" />}
       
-      {renderedComponents.canticle && <LiturgyPart component={renderedComponents.canticle} preferences={preferences} className="bg-dominican-light-gray/20 p-4 rounded-md" />}
+      {renderedComponents.canticle && <LiturgyPart component={renderedComponents.canticle} preferences={preferences} className="light:bg-dominican-light-gray/20 p-4 rounded-md" />}
       
       {renderedComponents.prayer && <LiturgyPart component={renderedComponents.prayer} preferences={preferences} />}
       
