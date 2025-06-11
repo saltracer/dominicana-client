@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useTheme } from '@/context/ThemeContext'
 
 interface ChantNotationRendererProps {
   gabc: string;
@@ -24,9 +25,13 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
   const [libraryLoaded, setLibraryLoaded] = useState(false);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === 'dark';
+
   const renderChant = useCallback(async () => {
     if (!containerRef.current || !gabc) return;
-
+    console.log("Rendering chant notation into container:", containerRef.current.id || "No ID");
+    console.log("Rendering chant notation into container:", containerRef.current || "No ID");
     try {
       setLoading(true);
       setError(null);
@@ -43,11 +48,29 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
         containerRef.current.innerHTML = '';
       }
 
-      // Set up rendering context
+      // Set up rendering context      
+      // First, check if dark mode is active
+      
       const ctxt = new window.exsurge.ChantContext();
       ctxt.lyricTextFont = "'Crimson Text', serif";
-      ctxt.lyricTextSize = 16;
+      
+      //ctxt.setTextColor("#F00");
+      ctxt.setRubricColor((isDarkMode ? "#D00" : "#D00"));
+
+      ctxt.dividerLineColor = isDarkMode ? "#FFFFFF" : "#000000";
+      ctxt.staffLineColor = isDarkMode ? "#FFFFFF" : "#000000";
+      ctxt.neumeLineColor = isDarkMode ? "#FFFFFF" : "#000000"; // White for dark mode, black for light mode
       ctxt.dropCapTextFont = "'Crimson Text', serif";
+
+      
+      ctxt.textStyles.dropCap.size = 64;
+      ctxt.textStyles.dropCap.color = isDarkMode ? "#FFFFFF" : "#000000"; // White for dark mode, black for light mode
+
+      ctxt.textStyles.lyric.size = 16;
+      ctxt.textStyles.lyric.color = isDarkMode ? "#FFFFFF" : "#000000"; // White for dark mode, black for light mode
+
+      ctxt.autoColoring = false;
+      ctxt.autoColor = false;
 
       // Parse the GABC notation
       const mappings = window.exsurge.Gabc.createMappingsFromSource(ctxt, gabc);
@@ -71,7 +94,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [gabc]);
+  }, [gabc, isDarkMode]);
 
   // Load exsurge and set up initial render
   useEffect(() => {
@@ -141,7 +164,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
   if (loading) {
     return (
-      <div ref={containerRef} className={className}>
+      <div id="chant-notation-container" ref={containerRef} className={className}>
         {description && (
           <p className="text-sm text-amber-700 mb-2">{description}</p>
         )}
@@ -157,7 +180,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
       {description && (
         <p className="text-sm text-amber-700 mb-2">{description}</p>
       )}
-      <div 
+      <div id="chant-notation-container"
         ref={containerRef}
         className="chant-notation-container p-4 rounded overflow-x-auto min-h-[100px]"
       >
