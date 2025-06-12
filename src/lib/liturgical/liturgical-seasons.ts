@@ -599,3 +599,10 @@ export function getChristTheKingSunday(year: number): Date {
   christTheKing.setDate(firstAdvent.getDate() - 7) // Sunday before Advent
   return christTheKing
 }
+
+export function getMaryMotherOfChurchMonday(year: number): Date {
+  const pentecost = getPentecostSunday(year)
+  const maryMotherChurch = new Date(pentecost)
+  maryMotherChurch.setDate(pentecost.getDate() + 1) // Monday after Pentecost
+  return maryMotherChurch
+}
