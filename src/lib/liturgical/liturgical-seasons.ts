@@ -522,6 +522,13 @@ export function getPentecostSunday(year: number): Date {
   return pentecost
 }
 
+export function getMaryMotherChurchMonday(year: number): Date {
+  const pentecost = getPentecostSunday(year)
+  const maryMotherChurch = new Date(pentecost)
+  maryMotherChurch.setDate(pentecost.getDate() + 1) // Monday after Pentecost
+  return maryMotherChurch
+}
+
 export function getLaetareSunday(year: number): Date {
   const easter = calculateEaster(year)
   const laetareSunday = new Date(easter)

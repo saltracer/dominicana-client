@@ -6,6 +6,7 @@ import {
   getHolyWeekDates,
   getEasterOctaveDates,
   getPentecostSunday,
+  getMaryMotherChurchMonday,
   getLaetareSunday,
   getHolyThursday,
   getGoodFriday,
@@ -131,6 +132,12 @@ export function moveableGeneralCelebrations(year: number): FixedCelebration[] {
   const pentecostMonth = pentecostDate.getMonth() + 1
   const pentecostDay = pentecostDate.getDate()
   const pentecostString = `${pentecostMonth.toString().padStart(2, "0")}-${pentecostDay.toString().padStart(2, "0")}`
+
+  // Get Mary Mother of the Church (The day after pentcost)
+  const maryMotherChurchDate = getMaryMotherChurchMonday(year)
+  const maryMotherChurchMonth = maryMotherChurchDate.getMonth() + 1
+  const maryMotherChurchDay = maryMotherChurchDate.getDate()
+  const maryMotherChurchString = `${maryMotherChurchMonth.toString().padStart(2, "0")}-${maryMotherChurchDay.toString().padStart(2, "0")}`
 
   // Get Trinity Sunday (1 week after Pentecost)
   const trinitySundayDate = getTrinitySunday(year)
@@ -513,6 +520,22 @@ export function moveableGeneralCelebrations(year: number): FixedCelebration[] {
         "This event, which fulfilled Christ's promise to send the Advocate, marks the birth of the Church and the beginning of its mission to the world.",
         "The apostles, filled with the Holy Spirit, began to speak in different languages, symbolizing the universal nature of the Church.",
         "Pentecost concludes the Easter season and celebrates the ongoing presence and work of the Holy Spirit in the Church and in the lives of believers.",
+      ],
+    },
+    {
+      id: "mary-mother-church",
+      name: "Mary, Mother of the Church",
+      date: maryMotherChurchString,
+      rank: CelebrationRank.SOLEMNITY,
+      color: LiturgicalColor.WHITE,
+      proper: "Proper of Time",
+      type: "universal",
+      short_desc: "Celebrates Mary as the Mother of the Church.",
+      description: [
+        "Mary, Mother of the Church, celebrated on the Monday after Pentecost, commemorates Mary as the Mother of the Church.",
+        "This feast celebrates Mary's role as the Mother of the Church and her role in the salvation of humanity.",
+        "Mary's role as the Mother of the Church is a reflection of her role as the Mother of Christ and the Mother of the faithful.",
+        "This feast, established in 2018 by Pope Francis, invites us to reflect on Mary's role as the Mother of the Church and to pray for her intercession.",
       ],
     },
     {
