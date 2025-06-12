@@ -30,8 +30,8 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
 
   const renderChant = useCallback(async () => {
     if (!containerRef.current || !gabc) return;
-    console.log("Rendering chant notation into container:", containerRef.current.id || "No ID");
-    console.log("Rendering chant notation into container:", containerRef.current || "No ID");
+    // console.log("Rendering chant notation into container:", containerRef.current.id || "No ID");
+    // console.log("Rendering chant notation into container:", containerRef.current || "No ID");
     try {
       setLoading(true);
       setError(null);
@@ -78,7 +78,7 @@ const ChantNotationRenderer: React.FC<ChantNotationRendererProps> = ({
       
       // Perform layout with current container width
       score.performLayout(ctxt);
-      const containerWidth = containerRef.current?.offsetWidth;
+      const containerWidth = ( containerRef.current?.offsetWidth - 75);
       //console.log("Performing layout: Container width is:", containerWidth);
       score.layoutChantLines(ctxt, containerWidth || 1000);
       
