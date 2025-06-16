@@ -91,7 +91,7 @@ export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
     title: sanitizeInput(bookData.title),
     author: sanitizeInput(bookData.author),
     year: bookData.year,
-    category: bookData.category,
+    category: bookData.category, // Keep original type to match enum
     cover_image: sanitizeInput(bookData.coverImage),
     description: sanitizeInput(bookData.description),
     epub_path: bookData.epubPath,
