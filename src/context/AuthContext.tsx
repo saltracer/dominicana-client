@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logAdminAction, logSecurityEvent } from '@/services/auditService';
+import { validateUserRole, checkRateLimit } from '@/utils/inputValidation';
 
 export type UserRole = 'free' | 'authenticated' | 'subscribed' | 'admin';
 
@@ -37,6 +39,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
+        
+        // Log auth events for security monitoring
+        if (event === 'SIGNED_IN') {
+          logSecurityEvent('user_signed_in', 'low', { userId: currentSession?.user?.id });
+        } else if (event === 'SIGNED_OUT') {
+          logSecurityEvent('user_signed_out', 'low');
+        }
         
         // When auth state changes, check user role
         if (currentSession?.user) {
@@ -95,9 +104,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateUserRole = async (email: string, role: UserRole) => {
+    // Rate limiting for role updates
+    const rateLimitKey = `role_update_${user?.id}`;
+    if (!checkRateLimit(rateLimitKey, 3, 300000)) { // 3 attempts per 5 minutes
+      await logSecurityEvent('role_update_rate_limit_exceeded', 'high', { 
+        email, 
+        attemptedRole: role 
+      });
+      throw new Error('Too many role update attempts. Please wait before trying again.');
+    }
+
     // Only admins can update roles
     if (userRole !== 'admin') {
+      await logSecurityEvent('unauthorized_role_update_attempt', 'high', { 
+        email, 
+        attemptedRole: role,
+        currentUserRole: userRole 
+      });
       throw new Error('Unauthorized: Only admins can update roles');
+    }
+
+    // Validate the role
+    if (!validateUserRole(role)) {
+      await logSecurityEvent('invalid_role_update_attempt', 'medium', { 
+        email, 
+        attemptedRole: role 
+      });
+      throw new Error('Invalid role specified');
     }
 
     try {
@@ -109,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (userError || !userData) {
+        await logSecurityEvent('role_update_user_not_found', 'medium', { email });
         throw new Error(`User not found with email: ${email}`);
       }
 
@@ -127,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       let error;
+      const oldRole = existingRole?.role;
       
       if (existingRole) {
         // Update existing role
@@ -154,22 +189,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       
+      // Log the successful role update
+      await logAdminAction('update_user_role', 'user_roles', userId, {
+        email,
+        oldRole,
+        newRole: role
+      });
+      
       // If updating the current user's role, refresh the role state
       if (user && user.id === userId) {
         await checkUserRole();
       }
     } catch (error) {
       console.error('Error updating user role:', error);
+      await logSecurityEvent('role_update_failed', 'medium', { 
+        email, 
+        attemptedRole: role,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
       throw error;
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    return supabase.auth.signInWithPassword({ email, password });
+    const rateLimitKey = `signin_${email}`;
+    if (!checkRateLimit(rateLimitKey, 5, 900000)) { // 5 attempts per 15 minutes
+      await logSecurityEvent('signin_rate_limit_exceeded', 'high', { email });
+      return {
+        error: { message: 'Too many sign-in attempts. Please wait before trying again.' },
+        data: null
+      };
+    }
+
+    const result = await supabase.auth.signInWithPassword({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+
+    if (result.error) {
+      await logSecurityEvent('failed_signin_attempt', 'medium', { 
+        email,
+        error: result.error.message 
+      });
+    }
+
+    return result;
   };
 
   const signUp = async (email: string, password: string) => {
-    return supabase.auth.signUp({ email, password });
+    const rateLimitKey = `signup_${email}`;
+    if (!checkRateLimit(rateLimitKey, 3, 3600000)) { // 3 attempts per hour
+      await logSecurityEvent('signup_rate_limit_exceeded', 'medium', { email });
+      return {
+        error: { message: 'Too many sign-up attempts. Please wait before trying again.' },
+        data: null
+      };
+    }
+
+    return supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
   };
 
   const signOut = async () => {

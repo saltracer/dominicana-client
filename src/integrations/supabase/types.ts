@@ -301,6 +301,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       migrate_initial_books: {
         Args: Record<PropertyKey, never>
         Returns: undefined
