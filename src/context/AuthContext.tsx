@@ -223,10 +223,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const result = await supabase.auth.signInWithPassword({ 
       email, 
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
+      password
     });
 
     if (result.error) {
@@ -251,10 +248,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return supabase.auth.signUp({ 
       email, 
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
+      password
     });
   };
 
