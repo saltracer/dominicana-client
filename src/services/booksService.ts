@@ -91,7 +91,7 @@ export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
     title: sanitizeInput(bookData.title),
     author: sanitizeInput(bookData.author),
     year: bookData.year,
-    category: bookData.category, // Keep original type to match enum
+    category: bookData.category as "Theology" | "Philosophy" | "Spiritual" | "Mysticism" | "Science" | "Natural History",
     cover_image: sanitizeInput(bookData.coverImage),
     description: sanitizeInput(bookData.description),
     epub_path: bookData.epubPath,
@@ -135,7 +135,7 @@ export const updateBook = async (id: number, bookData: Partial<Omit<Book, 'id'>>
   if (bookData.title !== undefined) updateData.title = sanitizeInput(bookData.title);
   if (bookData.author !== undefined) updateData.author = sanitizeInput(bookData.author);
   if (bookData.year !== undefined) updateData.year = bookData.year;
-  if (bookData.category !== undefined) updateData.category = bookData.category;
+  if (bookData.category !== undefined) updateData.category = bookData.category as "Theology" | "Philosophy" | "Spiritual" | "Mysticism" | "Science" | "Natural History";
   if (bookData.coverImage !== undefined) updateData.cover_image = sanitizeInput(bookData.coverImage);
   if (bookData.description !== undefined) updateData.description = sanitizeInput(bookData.description);
   if (bookData.epubPath !== undefined) updateData.epub_path = bookData.epubPath;
