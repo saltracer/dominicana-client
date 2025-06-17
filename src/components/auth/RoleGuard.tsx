@@ -17,6 +17,12 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   const { user, loading, userRole } = useAuth();
   const location = useLocation();
 
+  // Free access doesn't require authentication - return children immediately
+  if (requiredRole === 'free') {
+    return children;
+  }
+
+  // For all other roles, wait for loading to complete
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -33,11 +39,6 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   };
 
   const hasRequiredRole = roleHierarchy[userRole] >= roleHierarchy[requiredRole];
-
-  // Free access doesn't require login
-  if (requiredRole === 'free') {
-    return children;
-  }
 
   // For authenticated or higher roles, check if user is logged in
   if (!user) {
