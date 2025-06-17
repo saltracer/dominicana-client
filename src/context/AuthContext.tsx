@@ -36,22 +36,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      async (event, currentSession) => {
+        console.log('Auth state change:', event, currentSession?.user?.id);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
         // Log auth events for security monitoring
         if (event === 'SIGNED_IN') {
-          logSecurityEvent('user_signed_in', 'low', { userId: currentSession?.user?.id });
+          await logSecurityEvent('user_signed_in', 'low', { 
+            userId: currentSession?.user?.id,
+            email: currentSession?.user?.email 
+          });
         } else if (event === 'SIGNED_OUT') {
-          logSecurityEvent('user_signed_out', 'low');
+          await logSecurityEvent('user_signed_out', 'low');
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed for user:', currentSession?.user?.id);
         }
         
         // When auth state changes, check user role
         if (currentSession?.user) {
-          setTimeout(() => {
-            fetchUserRole(currentSession.user.id);
-          }, 0);
+          await fetchUserRole(currentSession.user.id);
         } else {
           setUserRole('free');
         }
@@ -59,21 +63,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      
-      if (currentSession?.user) {
-        fetchUserRole(currentSession.user.id);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          await logSecurityEvent('session_retrieval_error', 'medium', { error: error.message });
+        }
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        
+        if (currentSession?.user) {
+          await fetchUserRole(currentSession.user.id);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        await logSecurityEvent('auth_initialization_error', 'high', { 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        });
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const fetchUserRole = async (userId: string) => {
     try {
+      console.log('Fetching role for user:', userId);
       const { data: roles, error } = await supabase
         .from('user_roles')
         .select('role')
@@ -81,18 +103,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.error('Error fetching user role:', error);
-        setUserRole('authenticated'); // Default role if error
+        if (error.code === 'PGRST116') {
+          // No role record found, user is authenticated but no specific role
+          console.log('No role record found for user, defaulting to authenticated');
+          setUserRole('authenticated');
+        } else {
+          console.error('Error fetching user role:', error);
+          await logSecurityEvent('role_fetch_error', 'medium', { 
+            userId, 
+            error: error.message 
+          });
+          setUserRole('authenticated'); // Default role if error
+        }
         return;
       }
 
       if (roles?.role) {
+        console.log('User role found:', roles.role);
         setUserRole(roles.role as UserRole);
       } else {
+        console.log('No role specified, defaulting to authenticated');
         setUserRole('authenticated'); // Default role if no specific role is assigned
       }
     } catch (error) {
-      console.error('Error in fetchUserRole:', error);
+      console.error('Exception in fetchUserRole:', error);
+      await logSecurityEvent('role_fetch_exception', 'medium', { 
+        userId, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
       setUserRole('authenticated'); // Default role if exception
     }
   };
@@ -221,19 +259,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    const result = await supabase.auth.signInWithPassword({ 
-      email, 
-      password
-    });
-
-    if (result.error) {
-      await logSecurityEvent('failed_signin_attempt', 'medium', { 
-        email,
-        error: result.error.message 
+    try {
+      const result = await supabase.auth.signInWithPassword({ 
+        email, 
+        password
       });
-    }
 
-    return result;
+      if (result.error) {
+        await logSecurityEvent('failed_signin_attempt', 'medium', { 
+          email,
+          error: result.error.message 
+        });
+      } else {
+        await logSecurityEvent('successful_signin', 'low', { 
+          email,
+          userId: result.data?.user?.id 
+        });
+      }
+
+      return result;
+    } catch (error) {
+      await logSecurityEvent('signin_exception', 'high', { 
+        email,
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      return {
+        error: { message: 'An unexpected error occurred during sign-in' },
+        data: null
+      };
+    }
   };
 
   const signUp = async (email: string, password: string) => {
@@ -246,15 +300,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    return supabase.auth.signUp({ 
-      email, 
-      password
-    });
+    try {
+      // Get current URL to construct proper redirect URL
+      const currentUrl = window.location.origin;
+      
+      const result = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: `${currentUrl}/auth?verified=true`
+        }
+      });
+
+      if (result.error) {
+        await logSecurityEvent('failed_signup_attempt', 'medium', { 
+          email,
+          error: result.error.message 
+        });
+      } else {
+        await logSecurityEvent('successful_signup', 'low', { 
+          email,
+          userId: result.data?.user?.id 
+        });
+      }
+
+      return result;
+    } catch (error) {
+      await logSecurityEvent('signup_exception', 'high', { 
+        email,
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      return {
+        error: { message: 'An unexpected error occurred during sign-up' },
+        data: null
+      };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUserRole('free');
+    try {
+      await supabase.auth.signOut();
+      setUserRole('free');
+      await logSecurityEvent('user_signed_out', 'low');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      await logSecurityEvent('signout_error', 'medium', { 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
   };
 
   const value = {

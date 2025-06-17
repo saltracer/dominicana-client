@@ -64,14 +64,19 @@ export const validateUserRole = (role: string): boolean => {
   return validRoles.includes(role);
 };
 
-export const rateLimitTracker = new Map<string, { count: number; resetTime: number }>();
+// Enhanced rate limiting with better tracking
+export const rateLimitTracker = new Map<string, { count: number; resetTime: number; firstAttempt: number }>();
 
 export const checkRateLimit = (key: string, maxRequests: number = 5, windowMs: number = 60000): boolean => {
   const now = Date.now();
   const entry = rateLimitTracker.get(key);
   
   if (!entry || now > entry.resetTime) {
-    rateLimitTracker.set(key, { count: 1, resetTime: now + windowMs });
+    rateLimitTracker.set(key, { 
+      count: 1, 
+      resetTime: now + windowMs,
+      firstAttempt: now 
+    });
     return true;
   }
   
@@ -81,4 +86,63 @@ export const checkRateLimit = (key: string, maxRequests: number = 5, windowMs: n
   
   entry.count++;
   return true;
+};
+
+// Security utility functions
+export const sanitizeFileName = (filename: string): string => {
+  // Remove directory traversal attempts and dangerous characters
+  return filename
+    .replace(/[^a-zA-Z0-9._-]/g, '')
+    .replace(/\.\./g, '')
+    .substring(0, 255); // Limit filename length
+};
+
+export const validateFileType = (file: File, allowedTypes: string[]): boolean => {
+  return allowedTypes.includes(file.type);
+};
+
+export const validateFileSize = (file: File, maxSizeBytes: number): boolean => {
+  return file.size <= maxSizeBytes;
+};
+
+// Input sanitization for SQL injection prevention (additional layer)
+export const sanitizeSqlInput = (input: string): string => {
+  if (!input) return '';
+  
+  // Remove SQL injection patterns
+  return input
+    .replace(/['";\\]/g, '') // Remove quotes and backslashes
+    .replace(/--/g, '') // Remove SQL comments
+    .replace(/\/\*|\*\//g, '') // Remove block comments
+    .trim();
+};
+
+// Content Security Policy helpers
+export const isValidUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return ['http:', 'https:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+};
+
+// Enhanced logging for security events
+export const logSecurityAttempt = (
+  type: 'login' | 'signup' | 'role_change' | 'file_upload' | 'admin_action',
+  details: Record<string, any>
+) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    type,
+    timestamp,
+    userAgent: navigator.userAgent,
+    url: window.location.href,
+    ...details
+  };
+  
+  console.log('Security Attempt:', logEntry);
+  
+  // In production, send to secure logging service
+  // await sendToSecurityLog(logEntry);
 };
