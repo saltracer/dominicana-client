@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Lightbulb, Heart, Flame } from 'lucide-react';
+import { MessageSquare, Lightbulb, Heart, Flame, BookOpen } from 'lucide-react';
 
 const PreachingLandingPage: React.FC = () => {
   return (
@@ -24,7 +23,7 @@ const PreachingLandingPage: React.FC = () => {
         </div>
 
         {/* Preaching Resources */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <Card className="border-amber-200 dark:border-amber-800 hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="font-garamond text-2xl text-dominican-black dark:text-foreground flex items-center">
@@ -52,6 +51,40 @@ const PreachingLandingPage: React.FC = () => {
               <Link to="/preaching/daily-reflections">
                 <Button className="w-full bg-dominican-burgundy">
                   Read Today's Reflection
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200 dark:border-amber-800 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="font-garamond text-2xl text-dominican-black dark:text-foreground flex items-center">
+                <BookOpen className="mr-3" size={28} />
+                Blog Posts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                Read insightful articles, reflections, and practical guidance for preaching 
+                in the Dominican tradition from various contributors.
+              </p>
+              <div className="space-y-3 mb-6">
+                <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded">
+                  <h4 className="font-semibold text-dominican-black dark:text-foreground mb-1">Latest Articles</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Fresh insights and reflections</p>
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded">
+                  <h4 className="font-semibold text-dominican-black dark:text-foreground mb-1">Practical Guidance</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Tips for effective preaching</p>
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-950/30 p-3 rounded">
+                  <h4 className="font-semibold text-dominican-black dark:text-foreground mb-1">Spiritual Reflections</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Contemplative insights</p>
+                </div>
+              </div>
+              <Link to="/preaching/blog">
+                <Button className="w-full bg-dominican-burgundy">
+                  Explore Blog Posts
                 </Button>
               </Link>
             </CardContent>

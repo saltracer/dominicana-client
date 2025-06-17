@@ -1,188 +1,183 @@
 
-import React from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/layout/Layout";
-import HomePage from "./pages/HomePage";
-import NotFound from "./pages/NotFound";
-import { AuthProvider } from "./context/AuthContext";
-import AuthPage from "./pages/AuthPage";
-import RequireAuth from "./components/auth/RequireAuth";
-import RoleGuard from "./components/auth/RoleGuard";
-import UnauthorizedPage from "./pages/UnauthorizedPage";
-import SubscriptionPage from "./pages/SubscriptionPage";
-import AdminPanel from "./pages/admin/AdminPanel";
-import SettingsPage from "./pages/SettingsPage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from '@/context/ThemeContext';
+import { AuthProvider } from '@/context/AuthContext';
+import { LiturgicalDayProvider } from '@/context/LiturgicalDayContext';
+import Layout from '@/components/layout/Layout';
+import RoleGuard from '@/components/auth/RoleGuard';
 
-// New content pages
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsOfServicePage from "./pages/TermsOfServicePage";
-
-// Landing Pages
-import PrayerLandingPage from "./pages/PrayerLandingPage";
-import StudyLandingPage from "./pages/StudyLandingPage";
-import CommunityLandingPage from "./pages/CommunityLandingPage";
-import PreachingLandingPage from "./pages/PreachingLandingPage";
+// Pages
+import Index from '@/pages/Index';
+import HomePage from '@/pages/HomePage';
+import AboutPage from '@/pages/AboutPage';
+import ContactPage from '@/pages/ContactPage';
+import AuthPage from '@/pages/AuthPage';
+import SettingsPage from '@/pages/SettingsPage';
+import SubscriptionPage from '@/pages/SubscriptionPage';
+import UnauthorizedPage from '@/pages/UnauthorizedPage';
+import NotFound from '@/pages/NotFound';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
+import TermsOfServicePage from '@/pages/TermsOfServicePage';
 
 // Prayer Pages
-import LiturgyOfHoursPage from "./pages/prayer/LiturgyOfHoursPage";
-import RosaryPage from "./pages/prayer/RosaryPage";
+import PrayerLandingPage from '@/pages/PrayerLandingPage';
+import LiturgyOfHoursPage from '@/pages/prayer/LiturgyOfHoursPage';
+import RosaryPage from '@/pages/prayer/RosaryPage';
 
-// Study Pages
-import LibraryPage from "./pages/study/LibraryPage";
-import BookPage from "./pages/study/BookPage";
-
-// Community Pages
-import LiturgicalCalendarPage from "./pages/community/LiturgicalCalendarPage";
-import SaintsPage from "./pages/community/SaintsPage";
-import ProvincesPage from "./pages/community/ProvincesPage";
+// Study Pages  
+import StudyLandingPage from '@/pages/StudyLandingPage';
+import LibraryPage from '@/pages/study/LibraryPage';
+import BookPage from '@/pages/study/BookPage';
 
 // Preaching Pages
-import DailyReflectionsPage from "./pages/preaching/DailyReflectionsPage";
+import PreachingLandingPage from '@/pages/PreachingLandingPage';
+import DailyReflectionsPage from '@/pages/preaching/DailyReflectionsPage';
+import BlogIndexPage from '@/pages/preaching/BlogIndexPage';
+import BlogPostPage from '@/pages/preaching/BlogPostPage';
 
-// Create QueryClient outside of the component to prevent recreation on every render
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Community Pages
+import CommunityLandingPage from '@/pages/CommunityLandingPage';
+import SaintsPage from '@/pages/community/SaintsPage';
+import LiturgicalCalendarPage from '@/pages/community/LiturgicalCalendarPage';
+import ProvincesPage from '@/pages/community/ProvincesPage';
 
-const App = () => {
+// Admin Pages
+import AdminPanel from '@/pages/admin/AdminPanel';
+import BlogAdminPage from '@/pages/admin/BlogAdminPage';
+import BlogEditorPage from '@/pages/admin/BlogEditorPage';
+import BlogEditPage from '@/pages/admin/BlogEditPage';
+
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/unauthorized" element={<UnauthorizedPage />} />
-                <Route path="/subscription" element={<SubscriptionPage />} />
-                
-                {/* Content Pages - Public Access */}
+        <LiturgicalDayProvider>
+          <Router>
+            <Layout>
+              <Routes>
+                {/* Main Routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/auth" element={<AuthPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-                
-                {/* Landing Pages - Public Access */}
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+                {/* Authenticated Routes */}
+                <Route 
+                  path="/settings" 
+                  element={
+                    <RoleGuard requiredRole="authenticated">
+                      <SettingsPage />
+                    </RoleGuard>
+                  } 
+                />
+                <Route 
+                  path="/subscription" 
+                  element={
+                    <RoleGuard requiredRole="authenticated">
+                      <SubscriptionPage />
+                    </RoleGuard>
+                  } 
+                />
+
+                {/* Prayer Routes - Free Access */}
                 <Route path="/prayer" element={<PrayerLandingPage />} />
+                <Route 
+                  path="/prayer/liturgy-of-hours/*" 
+                  element={
+                    <RoleGuard requiredRole="free">
+                      <LiturgyOfHoursPage />
+                    </RoleGuard>
+                  } 
+                />
+                <Route 
+                  path="/prayer/rosary" 
+                  element={
+                    <RoleGuard requiredRole="free">
+                      <RosaryPage />
+                    </RoleGuard>
+                  } 
+                />
+
+                {/* Study Routes */}
                 <Route path="/study" element={<StudyLandingPage />} />
-                <Route path="/community" element={<CommunityLandingPage />} />
-                <Route path="/preaching" element={<PreachingLandingPage />} />
-                
-                {/* Settings Route - Requires Authentication */}
-                <Route path="/settings" element={
-                  <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
-                    <SettingsPage />
-                  </RoleGuard>
-                } />
-                
-                {/* Prayer Routes - Updated with URL parameters */}
-                <Route path="/prayer/liturgy-of-the-hours" element={
-                  <RoleGuard requiredRole="free">
-                    <LiturgyOfHoursPage />
-                  </RoleGuard>
-                } />
-                <Route path="/prayer/liturgy-of-the-hours/:hour" element={
-                  <RoleGuard requiredRole="free">
-                    <LiturgyOfHoursPage />
-                  </RoleGuard>
-                } />
-                <Route path="/prayer/liturgy-of-the-hours/:hour/:date" element={
-                  <RoleGuard requiredRole="free">
-                    <LiturgyOfHoursPage />
-                  </RoleGuard>
-                } />
-                <Route path="/prayer/rosary" element={
-                  <RoleGuard requiredRole="free">
-                    <RosaryPage />
-                  </RoleGuard>
-                } />
-                
-                {/* Study Routes - Library browsing is free, reading books requires auth */}
-                <Route path="/study/library" element={
-                  <RoleGuard requiredRole="free">
-                    <LibraryPage />
-                  </RoleGuard>
-                } />
-                <Route path="/books/:id" element={
-                  <RoleGuard requiredRole="authenticated" fallbackPath="/auth">
-                    <BookPage />
-                  </RoleGuard>
-                } />
-                
-                {/* Community Routes - All community pages are public */}
-                <Route path="/community/liturgical-calendar" element={
-                  <RoleGuard requiredRole="free">
-                    <LiturgicalCalendarPage />
-                  </RoleGuard>
-                } />
-                <Route path="/community/saints">
-                  <Route index element={
-                    <RoleGuard requiredRole="free">
-                      <SaintsPage />
+                <Route 
+                  path="/study/library" 
+                  element={
+                    <RoleGuard requiredRole="authenticated">
+                      <LibraryPage />
                     </RoleGuard>
-                  } />
-                  <Route path=":saintId" element={
-                    <RoleGuard requiredRole="free">
-                      <SaintsPage />
+                  } 
+                />
+                <Route 
+                  path="/study/book/:id" 
+                  element={
+                    <RoleGuard requiredRole="authenticated">
+                      <BookPage />
                     </RoleGuard>
-                  } />
-                </Route>
-                <Route path="/community/provinces" element={
-                  <RoleGuard requiredRole="free">
-                    <ProvincesPage />
-                  </RoleGuard>
-                } />
-                
+                  } 
+                />
+
                 {/* Preaching Routes */}
-                <Route path="/preaching/daily-reflections" element={
-                  <RoleGuard requiredRole="free">
-                    <DailyReflectionsPage />
-                  </RoleGuard>
-                } />
-                
+                <Route path="/preaching" element={<PreachingLandingPage />} />
+                <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
+                <Route path="/preaching/blog" element={<BlogIndexPage />} />
+                <Route path="/preaching/blog/:slug" element={<BlogPostPage />} />
+
+                {/* Community Routes */}
+                <Route path="/community" element={<CommunityLandingPage />} />
+                <Route path="/community/saints" element={<SaintsPage />} />
+                <Route path="/community/calendar" element={<LiturgicalCalendarPage />} />
+                <Route path="/community/provinces" element={<ProvincesPage />} />
+
                 {/* Admin Routes */}
-                <Route path="/admin" element={
-                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
-                    <AdminPanel />
-                  </RoleGuard>
-                } />
-                
-                {/* Add routes for books management and book editing */}
-                <Route path="/admin/books" element={
-                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
-                    <AdminPanel />
-                  </RoleGuard>
-                } />
-                
-                <Route path="/admin/books/edit/:id" element={
-                  <RoleGuard requiredRole="admin" fallbackPath="/unauthorized">
-                    <AdminPanel />
-                  </RoleGuard>
-                } />
-                
-                {/* Catch-all route */}
+                <Route 
+                  path="/admin" 
+                  element={
+                    <RoleGuard requiredRole="admin">
+                      <AdminPanel />
+                    </RoleGuard>
+                  } 
+                />
+                <Route 
+                  path="/admin/blog" 
+                  element={
+                    <RoleGuard requiredRole="admin">
+                      <BlogAdminPage />
+                    </RoleGuard>
+                  } 
+                />
+                <Route 
+                  path="/admin/blog/new" 
+                  element={
+                    <RoleGuard requiredRole="admin">
+                      <BlogEditorPage />
+                    </RoleGuard>
+                  } 
+                />
+                <Route 
+                  path="/admin/blog/edit/:id" 
+                  element={
+                    <RoleGuard requiredRole="admin">
+                      <BlogEditPage />
+                    </RoleGuard>
+                  } 
+                />
+
+                {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+              </Routes>
+            </Layout>
+            <Toaster />
+          </Router>
+        </LiturgicalDayProvider>
       </AuthProvider>
-    </QueryClientProvider>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;

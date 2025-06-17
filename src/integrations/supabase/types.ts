@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          author_name: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["blog_post_status"]
+          tags: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name: string
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["blog_post_status"]
+          tags?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["blog_post_status"]
+          tags?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       books: {
         Row: {
           author: string
@@ -311,6 +359,7 @@ export type Database = {
       }
     }
     Enums: {
+      blog_post_status: "draft" | "published" | "archived"
       book_category:
         | "Theology"
         | "Philosophy"
@@ -452,6 +501,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      blog_post_status: ["draft", "published", "archived"],
       book_category: [
         "Theology",
         "Philosophy",
