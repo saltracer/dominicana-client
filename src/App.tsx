@@ -50,21 +50,21 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Layout>
-          <Routes>
+        <Routes>
+          <Route path="/" element={<Layout />}>
             {/* Main Routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route index element={<Index />} />
+            <Route path="home" element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="auth" element={<AuthPage />} />
+            <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="unauthorized" element={<UnauthorizedPage />} />
 
             {/* Authenticated Routes */}
             <Route 
-              path="/settings" 
+              path="settings" 
               element={
                 <RoleGuard requiredRole="authenticated">
                   <SettingsPage />
@@ -72,7 +72,7 @@ function App() {
               } 
             />
             <Route 
-              path="/subscription" 
+              path="subscription" 
               element={
                 <RoleGuard requiredRole="authenticated">
                   <SubscriptionPage />
@@ -81,9 +81,9 @@ function App() {
             />
 
             {/* Prayer Routes - Free Access */}
-            <Route path="/prayer" element={<PrayerLandingPage />} />
+            <Route path="prayer" element={<PrayerLandingPage />} />
             <Route 
-              path="/prayer/liturgy-of-hours/*" 
+              path="prayer/liturgy-of-hours/*" 
               element={
                 <RoleGuard requiredRole="free">
                   <LiturgyOfHoursPage />
@@ -91,7 +91,7 @@ function App() {
               } 
             />
             <Route 
-              path="/prayer/rosary" 
+              path="prayer/rosary" 
               element={
                 <RoleGuard requiredRole="free">
                   <RosaryPage />
@@ -100,9 +100,9 @@ function App() {
             />
 
             {/* Study Routes */}
-            <Route path="/study" element={<StudyLandingPage />} />
+            <Route path="study" element={<StudyLandingPage />} />
             <Route 
-              path="/study/library" 
+              path="study/library" 
               element={
                 <RoleGuard requiredRole="authenticated">
                   <LibraryPage />
@@ -110,7 +110,7 @@ function App() {
               } 
             />
             <Route 
-              path="/study/book/:id" 
+              path="study/book/:id" 
               element={
                 <RoleGuard requiredRole="authenticated">
                   <BookPage />
@@ -119,20 +119,20 @@ function App() {
             />
 
             {/* Preaching Routes */}
-            <Route path="/preaching" element={<PreachingLandingPage />} />
-            <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
-            <Route path="/preaching/blog" element={<BlogIndexPage />} />
-            <Route path="/preaching/blog/:slug" element={<BlogPostPage />} />
+            <Route path="preaching" element={<PreachingLandingPage />} />
+            <Route path="preaching/daily-reflections" element={<DailyReflectionsPage />} />
+            <Route path="preaching/blog" element={<BlogIndexPage />} />
+            <Route path="preaching/blog/:slug" element={<BlogPostPage />} />
 
             {/* Community Routes */}
-            <Route path="/community" element={<CommunityLandingPage />} />
-            <Route path="/community/saints" element={<SaintsPage />} />
-            <Route path="/community/calendar" element={<LiturgicalCalendarPage />} />
-            <Route path="/community/provinces" element={<ProvincesPage />} />
+            <Route path="community" element={<CommunityLandingPage />} />
+            <Route path="community/saints" element={<SaintsPage />} />
+            <Route path="community/calendar" element={<LiturgicalCalendarPage />} />
+            <Route path="community/provinces" element={<ProvincesPage />} />
 
             {/* Admin Routes */}
             <Route 
-              path="/admin" 
+              path="admin" 
               element={
                 <RoleGuard requiredRole="admin">
                   <AdminPanel />
@@ -140,7 +140,7 @@ function App() {
               } 
             />
             <Route 
-              path="/admin/blog" 
+              path="admin/blog" 
               element={
                 <RoleGuard requiredRole="admin">
                   <BlogAdminPage />
@@ -148,7 +148,7 @@ function App() {
               } 
             />
             <Route 
-              path="/admin/blog/new" 
+              path="admin/blog/new" 
               element={
                 <RoleGuard requiredRole="admin">
                   <BlogEditorPage />
@@ -156,7 +156,7 @@ function App() {
               } 
             />
             <Route 
-              path="/admin/blog/edit/:id" 
+              path="admin/blog/edit/:id" 
               element={
                 <RoleGuard requiredRole="admin">
                   <BlogEditPage />
@@ -166,8 +166,8 @@ function App() {
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+          </Route>
+        </Routes>
         <Toaster />
       </Router>
     </AuthProvider>
