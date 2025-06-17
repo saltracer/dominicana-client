@@ -13,7 +13,22 @@ interface BlogPostCardProps {
 
 const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   const publishedDate = post.published_at ? new Date(post.published_at) : null;
-  const tags = Array.isArray(post.tags) ? post.tags : [];
+  
+  // Handle tags properly - they come from the database as Json but should be strings
+  const tags = (() => {
+    if (!post.tags) return [];
+    if (typeof post.tags === 'string') {
+      try {
+        return JSON.parse(post.tags) as string[];
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(post.tags)) {
+      return post.tags.filter(tag => typeof tag === 'string') as string[];
+    }
+    return [];
+  })();
 
   return (
     <Card className="hover:shadow-lg transition-shadow">

@@ -84,7 +84,22 @@ const BlogPostPage: React.FC = () => {
   }
 
   const publishedDate = post.published_at ? new Date(post.published_at) : null;
-  const tags = Array.isArray(post.tags) ? post.tags : [];
+  
+  // Handle tags properly - they come from the database as Json but should be strings
+  const tags = (() => {
+    if (!post.tags) return [];
+    if (typeof post.tags === 'string') {
+      try {
+        return JSON.parse(post.tags) as string[];
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(post.tags)) {
+      return post.tags.filter(tag => typeof tag === 'string') as string[];
+    }
+    return [];
+  })();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 dark:from-amber-950/20 to-orange-50 dark:to-orange-950/20 py-8">

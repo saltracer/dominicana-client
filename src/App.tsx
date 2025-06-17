@@ -1,9 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
-import { LiturgicalDayProvider } from '@/context/LiturgicalDayContext';
 import Layout from '@/components/layout/Layout';
 import RoleGuard from '@/components/auth/RoleGuard';
 
@@ -50,133 +48,129 @@ import BlogEditPage from '@/pages/admin/BlogEditPage';
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <LiturgicalDayProvider>
-          <Router>
-            <Layout>
-              <Routes>
-                {/* Main Routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Main Routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-                {/* Authenticated Routes */}
-                <Route 
-                  path="/settings" 
-                  element={
-                    <RoleGuard requiredRole="authenticated">
-                      <SettingsPage />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/subscription" 
-                  element={
-                    <RoleGuard requiredRole="authenticated">
-                      <SubscriptionPage />
-                    </RoleGuard>
-                  } 
-                />
+            {/* Authenticated Routes */}
+            <Route 
+              path="/settings" 
+              element={
+                <RoleGuard requiredRole="authenticated">
+                  <SettingsPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/subscription" 
+              element={
+                <RoleGuard requiredRole="authenticated">
+                  <SubscriptionPage />
+                </RoleGuard>
+              } 
+            />
 
-                {/* Prayer Routes - Free Access */}
-                <Route path="/prayer" element={<PrayerLandingPage />} />
-                <Route 
-                  path="/prayer/liturgy-of-hours/*" 
-                  element={
-                    <RoleGuard requiredRole="free">
-                      <LiturgyOfHoursPage />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/prayer/rosary" 
-                  element={
-                    <RoleGuard requiredRole="free">
-                      <RosaryPage />
-                    </RoleGuard>
-                  } 
-                />
+            {/* Prayer Routes - Free Access */}
+            <Route path="/prayer" element={<PrayerLandingPage />} />
+            <Route 
+              path="/prayer/liturgy-of-hours/*" 
+              element={
+                <RoleGuard requiredRole="free">
+                  <LiturgyOfHoursPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/prayer/rosary" 
+              element={
+                <RoleGuard requiredRole="free">
+                  <RosaryPage />
+                </RoleGuard>
+              } 
+            />
 
-                {/* Study Routes */}
-                <Route path="/study" element={<StudyLandingPage />} />
-                <Route 
-                  path="/study/library" 
-                  element={
-                    <RoleGuard requiredRole="authenticated">
-                      <LibraryPage />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/study/book/:id" 
-                  element={
-                    <RoleGuard requiredRole="authenticated">
-                      <BookPage />
-                    </RoleGuard>
-                  } 
-                />
+            {/* Study Routes */}
+            <Route path="/study" element={<StudyLandingPage />} />
+            <Route 
+              path="/study/library" 
+              element={
+                <RoleGuard requiredRole="authenticated">
+                  <LibraryPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/study/book/:id" 
+              element={
+                <RoleGuard requiredRole="authenticated">
+                  <BookPage />
+                </RoleGuard>
+              } 
+            />
 
-                {/* Preaching Routes */}
-                <Route path="/preaching" element={<PreachingLandingPage />} />
-                <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
-                <Route path="/preaching/blog" element={<BlogIndexPage />} />
-                <Route path="/preaching/blog/:slug" element={<BlogPostPage />} />
+            {/* Preaching Routes */}
+            <Route path="/preaching" element={<PreachingLandingPage />} />
+            <Route path="/preaching/daily-reflections" element={<DailyReflectionsPage />} />
+            <Route path="/preaching/blog" element={<BlogIndexPage />} />
+            <Route path="/preaching/blog/:slug" element={<BlogPostPage />} />
 
-                {/* Community Routes */}
-                <Route path="/community" element={<CommunityLandingPage />} />
-                <Route path="/community/saints" element={<SaintsPage />} />
-                <Route path="/community/calendar" element={<LiturgicalCalendarPage />} />
-                <Route path="/community/provinces" element={<ProvincesPage />} />
+            {/* Community Routes */}
+            <Route path="/community" element={<CommunityLandingPage />} />
+            <Route path="/community/saints" element={<SaintsPage />} />
+            <Route path="/community/calendar" element={<LiturgicalCalendarPage />} />
+            <Route path="/community/provinces" element={<ProvincesPage />} />
 
-                {/* Admin Routes */}
-                <Route 
-                  path="/admin" 
-                  element={
-                    <RoleGuard requiredRole="admin">
-                      <AdminPanel />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/admin/blog" 
-                  element={
-                    <RoleGuard requiredRole="admin">
-                      <BlogAdminPage />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/admin/blog/new" 
-                  element={
-                    <RoleGuard requiredRole="admin">
-                      <BlogEditorPage />
-                    </RoleGuard>
-                  } 
-                />
-                <Route 
-                  path="/admin/blog/edit/:id" 
-                  element={
-                    <RoleGuard requiredRole="admin">
-                      <BlogEditPage />
-                    </RoleGuard>
-                  } 
-                />
+            {/* Admin Routes */}
+            <Route 
+              path="/admin" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <AdminPanel />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/admin/blog" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <BlogAdminPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/admin/blog/new" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <BlogEditorPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="/admin/blog/edit/:id" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <BlogEditPage />
+                </RoleGuard>
+              } 
+            />
 
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-            <Toaster />
-          </Router>
-        </LiturgicalDayProvider>
-      </AuthProvider>
-    </ThemeProvider>
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+        <Toaster />
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -60,7 +60,24 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
       setExcerpt(post.excerpt || '');
       setFeaturedImage(post.featured_image || '');
       setStatus(post.status);
-      setTags(Array.isArray(post.tags) ? post.tags : []);
+      
+      // Handle tags properly - they come from the database as Json
+      const postTags = (() => {
+        if (!post.tags) return [];
+        if (typeof post.tags === 'string') {
+          try {
+            return JSON.parse(post.tags) as string[];
+          } catch {
+            return [];
+          }
+        }
+        if (Array.isArray(post.tags)) {
+          return post.tags.filter(tag => typeof tag === 'string') as string[];
+        }
+        return [];
+      })();
+      
+      setTags(postTags);
     } catch (error) {
       console.error('Error loading blog post:', error);
       toast.error('Failed to load blog post');
