@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,30 +33,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRole, setUserRole] = useState<UserRole>('free');
 
   useEffect(() => {
+    let isMounted = true;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
+        if (!isMounted) return;
+
         console.log('Auth state change:', event, currentSession?.user?.id);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
         // Log auth events for security monitoring
-        if (event === 'SIGNED_IN') {
-          await logSecurityEvent('user_signed_in', 'low', { 
-            userId: currentSession?.user?.id,
-            email: currentSession?.user?.email 
-          });
-        } else if (event === 'SIGNED_OUT') {
-          await logSecurityEvent('user_signed_out', 'low');
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed for user:', currentSession?.user?.id);
+        try {
+          if (event === 'SIGNED_IN') {
+            await logSecurityEvent('user_signed_in', 'low', { 
+              userId: currentSession?.user?.id,
+              email: currentSession?.user?.email 
+            });
+          } else if (event === 'SIGNED_OUT') {
+            await logSecurityEvent('user_signed_out', 'low');
+          } else if (event === 'TOKEN_REFRESHED') {
+            console.log('Token refreshed for user:', currentSession?.user?.id);
+          }
+        } catch (error) {
+          console.error('Error logging auth event:', error);
         }
         
         // When auth state changes, check user role
         if (currentSession?.user) {
-          await fetchUserRole(currentSession.user.id);
+          try {
+            await fetchUserRole(currentSession.user.id);
+          } catch (error) {
+            console.error('Error fetching user role in auth state change:', error);
+            setUserRole('authenticated'); // Fallback role
+          }
         } else {
           setUserRole('free');
+        }
+
+        // Ensure loading is set to false after processing auth state
+        if (isMounted) {
+          setLoading(false);
         }
       }
     );
@@ -67,6 +84,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         
+        if (!isMounted) return;
+
         if (error) {
           console.error('Error getting session:', error);
           await logSecurityEvent('session_retrieval_error', 'medium', { error: error.message });
@@ -76,21 +95,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
         
         if (currentSession?.user) {
-          await fetchUserRole(currentSession.user.id);
+          try {
+            await fetchUserRole(currentSession.user.id);
+          } catch (error) {
+            console.error('Error fetching user role in initialization:', error);
+            setUserRole('authenticated'); // Fallback role
+          }
+        } else {
+          setUserRole('free');
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
-        await logSecurityEvent('auth_initialization_error', 'high', { 
-          error: error instanceof Error ? error.message : 'Unknown error' 
-        });
+        if (isMounted) {
+          await logSecurityEvent('auth_initialization_error', 'high', { 
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          });
+          setUserRole('free'); // Fallback to free role
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserRole = async (userId: string) => {
