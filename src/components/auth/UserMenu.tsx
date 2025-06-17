@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings } from 'lucide-react';
+import { toast } from 'sonner';
 
 const UserMenu: React.FC = () => {
   const { user, signOut, userRole } = useAuth();
+  const navigate = useNavigate();
 
   if (!user) {
     return (
@@ -26,7 +28,14 @@ const UserMenu: React.FC = () => {
   }
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+      toast.success('Signed out successfully');
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+      toast.error('Failed to sign out. Please try again.');
+    }
   };
 
   // Get initials from email
