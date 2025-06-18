@@ -112,7 +112,7 @@ function App() {
             <Route 
               path="study/library" 
               element={
-                <RoleGuard requiredRole="authenticated">
+                <RoleGuard requiredRole="free">
                   <LibraryPage />
                 </RoleGuard>
               } 

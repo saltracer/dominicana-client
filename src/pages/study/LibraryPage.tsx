@@ -17,16 +17,15 @@ const LibraryPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { userRole } = useAuth();
   
-  // Check if user is admin
+  // Check if user is admin or can read books
   const isAdmin = userRole === 'admin';
+  const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
   
   useEffect(() => {
     const loadBooks = async () => {
       setLoading(true);
       try {
-        //console.log('LibraryPage - Fetching books');
         const data = await fetchBooks();
-        //console.log('LibraryPage - Books data received:', data);
         setBooks(data);
       } catch (error) {
         console.error('LibraryPage - Failed to load books:', error);
@@ -52,9 +51,7 @@ const LibraryPage: React.FC = () => {
   });
   
   const categories = ['all', ...new Set(books.map(book => book.category.toLowerCase()))];
-  const canReadBooks = userRole === 'authenticated' || userRole === 'subscribed' || userRole === 'admin';
   
-  // Add a debug function for book links
   const handleBookClick = (book: Book) => {
     console.log('LibraryPage - Book clicked:', book);
     console.log('LibraryPage - Book epubPath:', book.epubPath);
@@ -174,7 +171,7 @@ const LibraryPage: React.FC = () => {
                           title={!book.epubPath ? "No digital version available" : undefined}
                           onClick={() => handleBookClick(book)}
                         >
-                          <Link to={canReadBooks ? `/books/${book.id}` : `/auth`}>
+                          <Link to={canReadBooks ? `/study/book/${book.id}` : `/auth`}>
                             {canReadBooks ? (book.epubPath ? "Read Book" : "No Digital Version") : "Login to Read"}
                           </Link>
                         </Button>
@@ -195,10 +192,10 @@ const LibraryPage: React.FC = () => {
         
         {!canReadBooks && (
           <div className="m-6 p-4 bg-dominican-burgundy/10 dark:bg-dominican-burgundy/20 rounded-md">
-            <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Login Required</h3>
+            <h3 className="font-garamond text-xl font-bold text-dominican-burgundy mb-2">Login Required to Read</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               A free account is required to access the full text of books in our digital library. 
-              Please log in or create an account to continue.
+              You can browse our collection freely, but please log in or create an account to read the books.
             </p>
             <Button asChild className="bg-dominican-burgundy hover:bg-dominican-burgundy/90">
               <Link to="/auth">
