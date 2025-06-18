@@ -45,6 +45,8 @@ import AdminPanel from '@/pages/admin/AdminPanel';
 import BlogAdminPage from '@/pages/admin/BlogAdminPage';
 import BlogEditorPage from '@/pages/admin/BlogEditorPage';
 import BlogEditPage from '@/pages/admin/BlogEditPage';
+import BookAdminPage from '@/pages/admin/BookAdminPage';
+import BookEditPage from '@/pages/admin/BookEditPage';
 
 function App() {
   return (
@@ -170,6 +172,22 @@ function App() {
               element={
                 <RoleGuard requiredRole="admin">
                   <BlogEditPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="admin/books" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <BookAdminPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="admin/books/edit/:id" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <BookEditPage />
                 </RoleGuard>
               } 
             />

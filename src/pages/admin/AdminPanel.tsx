@@ -3,8 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Settings, FileText } from 'lucide-react';
-import BooksManager from '@/components/admin/BooksManager';
+import { Users, Settings, FileText, BookOpen } from 'lucide-react';
 
 const AdminPanel: React.FC = () => {
   return (
@@ -30,6 +29,22 @@ const AdminPanel: React.FC = () => {
             </p>
             <Link to="/admin/blog">
               <Button className="w-full">Go to Blog Management</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Library Books</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold mb-2">Manage</div>
+            <p className="text-xs text-muted-foreground mb-4">
+              Add, edit, and manage books in the study library.
+            </p>
+            <Link to="/admin/books">
+              <Button className="w-full">Go to Books Management</Button>
             </Link>
           </CardContent>
         </Card>
@@ -64,9 +79,6 @@ const AdminPanel: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Books Management Section */}
-      <BooksManager />
     </div>
   );
 };
