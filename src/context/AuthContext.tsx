@@ -32,6 +32,170 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<UserRole>('free');
 
+  // Enhanced localStorage cleanup function
+  const clearAllAuthStorage = () => {
+    try {
+      // Get all possible storage keys that could contain auth data
+      const keysToRemove: string[] = [];
+      
+      // Check localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (
+          key.includes('supabase') || 
+          key.includes('auth') || 
+          key.includes('sb-') ||
+          key.startsWith('sb.') ||
+          key.includes('access_token') ||
+          key.includes('refresh_token')
+        )) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      // Remove all auth-related keys from localStorage
+      keysToRemove.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+          console.log('Cleared localStorage key:', key);
+        } catch (error) {
+          console.warn('Failed to clear localStorage key:', key, error);
+        }
+      });
+      
+      // Check and clear sessionStorage too
+      const sessionKeysToRemove: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (
+          key.includes('supabase') || 
+          key.includes('auth') || 
+          key.includes('sb-') ||
+          key.startsWith('sb.') ||
+          key.includes('access_token') ||
+          key.includes('refresh_token')
+        )) {
+          sessionKeysToRemove.push(key);
+        }
+      }
+      
+      sessionKeysToRemove.forEach(key => {
+        try {
+          sessionStorage.removeItem(key);
+          console.log('Cleared sessionStorage key:', key);
+        } catch (error) {
+          console.warn('Failed to clear sessionStorage key:', key, error);
+        }
+      });
+      
+      console.log('Auth storage cleanup completed');
+    } catch (error) {
+      console.error('Error during auth storage cleanup:', error);
+    }
+  };
+
+  // Enhanced session validation
+  const validateSession = async (currentSession: Session | null): Promise<boolean> => {
+    if (!currentSession) return false;
+    
+    try {
+      // Check if the token is close to expiry (within 5 minutes)
+      const expiresAt = currentSession.expires_at;
+      if (expiresAt && expiresAt * 1000 - Date.now() < 300000) { // 5 minutes
+        console.log('Token is close to expiry, will be refreshed automatically');
+      }
+      
+      // Try to make a simple authenticated request to validate the session
+      const { data, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        console.error('Session validation failed:', error);
+        await logSecurityEvent('session_validation_failed', 'medium', { 
+          error: error.message 
+        });
+        return false;
+      }
+      
+      return !!data.user;
+    } catch (error) {
+      console.error('Exception during session validation:', error);
+      return false;
+    }
+  };
+
+  // Enhanced auth state handler with better error recovery
+  const handleAuthStateChange = async (event: string, currentSession: Session | null) => {
+    console.log('Auth state change:', event, currentSession?.user?.id);
+    
+    try {
+      // Handle specific auth events
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully for user:', currentSession?.user?.id);
+        await logSecurityEvent('token_refreshed', 'low', { 
+          userId: currentSession?.user?.id 
+        });
+      } else if (event === 'SIGNED_OUT') {
+        console.log('User signed out - clearing state');
+        setSession(null);
+        setUser(null);
+        setUserRole('free');
+        clearAllAuthStorage();
+        await logSecurityEvent('user_signed_out', 'low');
+        return;
+      } else if (event === 'SIGNED_IN') {
+        await logSecurityEvent('user_signed_in', 'low', { 
+          userId: currentSession?.user?.id,
+          email: currentSession?.user?.email 
+        });
+      }
+      
+      // Validate session if present
+      if (currentSession) {
+        const isValid = await validateSession(currentSession);
+        if (!isValid) {
+          console.log('Invalid session detected, signing out user');
+          await logSecurityEvent('invalid_session_detected', 'medium', {
+            userId: currentSession?.user?.id
+          });
+          // Force sign out to clean up invalid state
+          await supabase.auth.signOut();
+          return;
+        }
+      }
+      
+      // Update state
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      
+      // Fetch user role if authenticated
+      if (currentSession?.user) {
+        // Use setTimeout to prevent potential deadlocks with Supabase calls
+        setTimeout(async () => {
+          try {
+            await fetchUserRole(currentSession.user.id);
+          } catch (error) {
+            console.error('Error fetching user role in auth state change:', error);
+            setUserRole('authenticated'); // Fallback role
+          }
+        }, 0);
+      } else {
+        setUserRole('free');
+      }
+      
+    } catch (error) {
+      console.error('Error in auth state change handler:', error);
+      await logSecurityEvent('auth_state_change_error', 'high', { 
+        event,
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      
+      // On error, clear state to prevent inconsistent auth state
+      setSession(null);
+      setUser(null);
+      setUserRole('free');
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -39,39 +203,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         if (!isMounted) return;
-
-        console.log('Auth state change:', event, currentSession?.user?.id);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+        await handleAuthStateChange(event, currentSession);
         
-        // Log auth events for security monitoring
-        try {
-          if (event === 'SIGNED_IN') {
-            await logSecurityEvent('user_signed_in', 'low', { 
-              userId: currentSession?.user?.id,
-              email: currentSession?.user?.email 
-            });
-          } else if (event === 'SIGNED_OUT') {
-            await logSecurityEvent('user_signed_out', 'low');
-          } else if (event === 'TOKEN_REFRESHED') {
-            console.log('Token refreshed for user:', currentSession?.user?.id);
-          }
-        } catch (error) {
-          console.error('Error logging auth event:', error);
-        }
-        
-        // When auth state changes, check user role
-        if (currentSession?.user) {
-          try {
-            await fetchUserRole(currentSession.user.id);
-          } catch (error) {
-            console.error('Error fetching user role in auth state change:', error);
-            setUserRole('authenticated'); // Fallback role
-          }
-        } else {
-          setUserRole('free');
-        }
-
         // Ensure loading is set to false after processing auth state
         if (isMounted) {
           setLoading(false);
@@ -89,6 +222,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error) {
           console.error('Error getting session:', error);
           await logSecurityEvent('session_retrieval_error', 'medium', { error: error.message });
+          // Clear potentially corrupted auth state
+          clearAllAuthStorage();
+        }
+        
+        // Validate the session if it exists
+        if (currentSession) {
+          const isValid = await validateSession(currentSession);
+          if (!isValid) {
+            console.log('Initial session validation failed, clearing auth state');
+            clearAllAuthStorage();
+            setSession(null);
+            setUser(null);
+            setUserRole('free');
+            return;
+          }
         }
         
         setSession(currentSession);
@@ -111,6 +259,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             error: error instanceof Error ? error.message : 'Unknown error' 
           });
           setUserRole('free'); // Fallback to free role
+          clearAllAuthStorage(); // Clear potentially corrupted state
         }
       } finally {
         if (isMounted) {
@@ -294,6 +443,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      // Clear any existing invalid auth state before signing in
+      clearAllAuthStorage();
+      
       const result = await supabase.auth.signInWithPassword({ 
         email, 
         password
@@ -386,6 +538,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setUserRole('free');
       
+      // Clear all auth storage before making the API call
+      clearAllAuthStorage();
+      
       // Sign out from Supabase (this will trigger the auth state change)
       const { error } = await supabase.auth.signOut();
       
@@ -394,45 +549,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await logSecurityEvent('signout_error', 'medium', { 
           error: error.message 
         });
-        throw error;
+        // Even if Supabase signOut fails, we've cleared local state
+        // This ensures the user appears signed out in the UI
       }
       
-      // Clear any remaining auth-related items from localStorage
-      // This ensures complete cleanup of authentication data
-      const authKeys = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.includes('supabase') || key.includes('auth') || key.includes('sb-'))) {
-          authKeys.push(key);
-        }
-      }
-      
-      authKeys.forEach(key => {
-        try {
-          localStorage.removeItem(key);
-          console.log('Cleared localStorage key:', key);
-        } catch (error) {
-          console.warn('Failed to clear localStorage key:', key, error);
-        }
-      });
-      
-      // Also clear sessionStorage for extra security
-      const sessionKeys = [];
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key && (key.includes('supabase') || key.includes('auth') || key.includes('sb-'))) {
-          sessionKeys.push(key);
-        }
-      }
-      
-      sessionKeys.forEach(key => {
-        try {
-          sessionStorage.removeItem(key);
-          console.log('Cleared sessionStorage key:', key);
-        } catch (error) {
-          console.warn('Failed to clear sessionStorage key:', key, error);
-        }
-      });
+      // Additional cleanup - ensure all storage is cleared again
+      setTimeout(() => {
+        clearAllAuthStorage();
+      }, 100);
       
       console.log('User signed out successfully and storage cleared');
       await logSecurityEvent('user_signed_out_complete', 'low');
@@ -442,6 +566,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await logSecurityEvent('signout_error', 'medium', { 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
+      
+      // Even on error, ensure local state is cleared
+      setSession(null);
+      setUser(null);
+      setUserRole('free');
+      clearAllAuthStorage();
+      
       throw error;
     }
   };
