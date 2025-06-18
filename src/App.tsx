@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
@@ -6,10 +7,10 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { ToastContainer } from 'sonner';
+import { Toaster } from 'sonner';
 
 // Import page components
-import Index from './pages';
+import Index from './pages/Index';
 import AuthPage from './pages/AuthPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
@@ -20,23 +21,23 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 import SettingsPage from './pages/SettingsPage';
 
 // Prayer Section Pages
-import PrayerLandingPage from './pages/prayer/PrayerLandingPage';
+import PrayerLandingPage from './pages/PrayerLandingPage';
 import LiturgyOfHoursPage from './pages/prayer/LiturgyOfHoursPage';
 import RosaryPage from './pages/prayer/RosaryPage';
 
 // Study Section Pages
-import StudyLandingPage from './pages/study/StudyLandingPage';
+import StudyLandingPage from './pages/StudyLandingPage';
 import LibraryPage from './pages/study/LibraryPage';
 import BookPage from './pages/study/BookPage';
 
 // Preaching Section Pages
-import PreachingLandingPage from './pages/preaching/PreachingLandingPage';
+import PreachingLandingPage from './pages/PreachingLandingPage';
 import BlogIndexPage from './pages/preaching/BlogIndexPage';
 import BlogPostPage from './pages/preaching/BlogPostPage';
 import DailyReflectionsPage from './pages/preaching/DailyReflectionsPage';
 
 // Community Section Pages
-import CommunityLandingPage from './pages/community/CommunityLandingPage';
+import CommunityLandingPage from './pages/CommunityLandingPage';
 import LiturgicalCalendarPage from './pages/community/LiturgicalCalendarPage';
 import SaintsPage from './pages/community/SaintsPage';
 import ProvincesPage from './pages/community/ProvincesPage';
@@ -80,7 +81,7 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <ToastContainer />
+        <Toaster />
           <Routes>
             {/* Main Application Routes */}
             <Route path="/" element={<Index />} />
