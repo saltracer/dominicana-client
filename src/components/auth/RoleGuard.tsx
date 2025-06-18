@@ -31,6 +31,11 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
     );
   }
 
+  // For authenticated or higher roles, check if user is logged in
+  if (!user) {
+    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
+  }
+
   const roleHierarchy: Record<UserRole, number> = {
     'free': 0,
     'authenticated': 1,
@@ -39,11 +44,6 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   };
 
   const hasRequiredRole = roleHierarchy[userRole] >= roleHierarchy[requiredRole];
-
-  // For authenticated or higher roles, check if user is logged in
-  if (!user) {
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
-  }
 
   // Check if user has the required role
   if (!hasRequiredRole) {
