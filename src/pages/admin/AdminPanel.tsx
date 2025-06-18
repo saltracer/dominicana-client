@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Book, Settings, FileText } from 'lucide-react';
+import { Users, Settings, FileText } from 'lucide-react';
 import BooksManager from '@/components/admin/BooksManager';
 
 const AdminPanel: React.FC = () => {
@@ -17,7 +17,7 @@ const AdminPanel: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
@@ -36,29 +36,17 @@ const AdminPanel: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Books</CardTitle>
-            <Book className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold mb-2">Library</div>
-            <p className="text-xs text-muted-foreground mb-4">
-              Manage books in the digital library.
-            </p>
-            <Button className="w-full" disabled>Coming Soon</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Users</CardTitle>
+            <CardTitle className="text-sm font-medium">User Roles</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold mb-2">Manage</div>
             <p className="text-xs text-muted-foreground mb-4">
-              User management and roles.
+              Manage user roles and permissions through the authentication context.
             </p>
-            <Button className="w-full" disabled>Coming Soon</Button>
+            <p className="text-xs text-gray-500">
+              User role management is available through the application's authentication system.
+            </p>
           </CardContent>
         </Card>
 
@@ -70,7 +58,7 @@ const AdminPanel: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold mb-2">System</div>
             <p className="text-xs text-muted-foreground mb-4">
-              Application configuration.
+              Application configuration and system settings.
             </p>
             <Button className="w-full" disabled>Coming Soon</Button>
           </CardContent>
