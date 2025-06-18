@@ -83,7 +83,15 @@ function App() {
             {/* Prayer Routes - Free Access */}
             <Route path="prayer" element={<PrayerLandingPage />} />
             <Route 
-              path="prayer/liturgy-of-hours/*" 
+              path="prayer/liturgy-of-the-hours" 
+              element={
+                <RoleGuard requiredRole="free">
+                  <LiturgyOfHoursPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="prayer/liturgy-of-the-hours/*" 
               element={
                 <RoleGuard requiredRole="free">
                   <LiturgyOfHoursPage />
@@ -127,7 +135,9 @@ function App() {
             {/* Community Routes */}
             <Route path="community" element={<CommunityLandingPage />} />
             <Route path="community/saints" element={<SaintsPage />} />
+            <Route path="community/saints/:saintId" element={<SaintsPage />} />
             <Route path="community/calendar" element={<LiturgicalCalendarPage />} />
+            <Route path="community/liturgical-calendar" element={<LiturgicalCalendarPage />} />
             <Route path="community/provinces" element={<ProvincesPage />} />
 
             {/* Admin Routes */}
