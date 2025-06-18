@@ -51,6 +51,7 @@ const mainMenu: MenuItem[] = [
     path: '/preaching',
     submenu: [
       { title: 'Daily Reflections', path: '/preaching/daily-reflections' },
+      { title: 'Blog', path: '/preaching/blog' },
     ],
   },
 ];
