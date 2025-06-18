@@ -671,7 +671,7 @@ export const dominicanSaints: Saint[] = [
   {
     id: "osanna-andreasi",
     name: "Bl. Osanna Andreasi",
-    feast_day: "06-20",
+    feast_day: "06-18",
     short_bio: "Dominican tertiary, mystic, and stigmatic",
     biography: [
       "Blessed Osanna Andreasi was born on January 17, 1449, in Carbonarola, near Mantua, Italy, to a noble family. From an early age, she showed great piety and a desire for prayer and penance.",
