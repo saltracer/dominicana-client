@@ -375,24 +375,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Signing out user...');
       
-      // Clear local state first
+      // Log the sign out attempt for security monitoring
+      await logSecurityEvent('user_signout_initiated', 'low', {
+        userId: user?.id,
+        email: user?.email
+      });
+      
+      // Clear local state immediately to prevent UI issues
       setSession(null);
       setUser(null);
       setUserRole('free');
       
-      // Then sign out from Supabase
+      // Sign out from Supabase (this will trigger the auth state change)
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('Error signing out:', error);
+        console.error('Error signing out from Supabase:', error);
         await logSecurityEvent('signout_error', 'medium', { 
           error: error.message 
         });
         throw error;
       }
       
-      console.log('User signed out successfully');
-      await logSecurityEvent('user_signed_out', 'low');
+      // Clear any remaining auth-related items from localStorage
+      // This ensures complete cleanup of authentication data
+      const authKeys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('supabase') || key.includes('auth') || key.includes('sb-'))) {
+          authKeys.push(key);
+        }
+      }
+      
+      authKeys.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+          console.log('Cleared localStorage key:', key);
+        } catch (error) {
+          console.warn('Failed to clear localStorage key:', key, error);
+        }
+      });
+      
+      // Also clear sessionStorage for extra security
+      const sessionKeys = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key.includes('supabase') || key.includes('auth') || key.includes('sb-'))) {
+          sessionKeys.push(key);
+        }
+      }
+      
+      sessionKeys.forEach(key => {
+        try {
+          sessionStorage.removeItem(key);
+          console.log('Cleared sessionStorage key:', key);
+        } catch (error) {
+          console.warn('Failed to clear sessionStorage key:', key, error);
+        }
+      });
+      
+      console.log('User signed out successfully and storage cleared');
+      await logSecurityEvent('user_signed_out_complete', 'low');
       
     } catch (error) {
       console.error('Error during sign out:', error);

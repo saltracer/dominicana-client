@@ -29,11 +29,21 @@ const UserMenu: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
+      console.log('UserMenu - Initiating sign out...');
+      
+      // Show loading state immediately
+      toast.info('Signing out...');
+      
       await signOut();
+      
+      console.log('UserMenu - Sign out completed, navigating to home...');
       toast.success('Signed out successfully');
-      navigate('/');
+      
+      // Navigate to home page after successful sign out
+      navigate('/', { replace: true });
+      
     } catch (error) {
-      console.error('Sign out failed:', error);
+      console.error('UserMenu - Sign out failed:', error);
       toast.error('Failed to sign out. Please try again.');
     }
   };
