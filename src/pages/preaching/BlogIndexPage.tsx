@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,14 +21,24 @@ const BlogIndexPage: React.FC = () => {
   const loadPosts = async () => {
     try {
       setLoading(true);
+      console.log('BlogIndexPage - Loading posts...');
+      
       const { data, error } = await blogService.getPublishedPosts(20);
       
-      if (error) throw error;
+      console.log('BlogIndexPage - Response:', { data, error });
+      
+      if (error) {
+        console.error('BlogIndexPage - Error loading posts:', error);
+        throw error;
+      }
       
       setPosts(data || []);
+      console.log('BlogIndexPage - Posts loaded:', data?.length || 0);
     } catch (error) {
-      console.error('Error loading blog posts:', error);
+      console.error('BlogIndexPage - Error in loadPosts:', error);
       toast.error('Failed to load blog posts');
+      // Don't keep loading state if there's an error
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -43,13 +52,19 @@ const BlogIndexPage: React.FC = () => {
 
     try {
       setSearching(true);
+      console.log('BlogIndexPage - Searching for:', searchTerm);
+      
       const { data, error } = await blogService.searchPosts(searchTerm.trim());
       
-      if (error) throw error;
+      if (error) {
+        console.error('BlogIndexPage - Search error:', error);
+        throw error;
+      }
       
       setPosts(data || []);
+      console.log('BlogIndexPage - Search results:', data?.length || 0);
     } catch (error) {
-      console.error('Error searching blog posts:', error);
+      console.error('BlogIndexPage - Error searching blog posts:', error);
       toast.error('Failed to search blog posts');
     } finally {
       setSearching(false);
@@ -61,6 +76,8 @@ const BlogIndexPage: React.FC = () => {
       handleSearch();
     }
   };
+
+  console.log('BlogIndexPage - Current state:', { loading, postsCount: posts.length, searching });
 
   if (loading) {
     return (
