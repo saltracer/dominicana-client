@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 const UserMenu: React.FC = () => {
@@ -72,12 +72,6 @@ const UserMenu: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem disabled className="flex justify-between">
           <span>Role:</span> <span className="font-medium">{userRole}</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex items-center w-full cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/settings" className="flex items-center w-full cursor-pointer">
