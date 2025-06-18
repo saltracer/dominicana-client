@@ -47,6 +47,7 @@ import BlogEditorPage from '@/pages/admin/BlogEditorPage';
 import BlogEditPage from '@/pages/admin/BlogEditPage';
 import BookAdminPage from '@/pages/admin/BookAdminPage';
 import BookEditPage from '@/pages/admin/BookEditPage';
+import UserAdminPage from '@/pages/admin/UserAdminPage';
 
 function App() {
   return (
@@ -188,6 +189,14 @@ function App() {
               element={
                 <RoleGuard requiredRole="admin">
                   <BookEditPage />
+                </RoleGuard>
+              } 
+            />
+            <Route 
+              path="admin/users" 
+              element={
+                <RoleGuard requiredRole="admin">
+                  <UserAdminPage />
                 </RoleGuard>
               } 
             />

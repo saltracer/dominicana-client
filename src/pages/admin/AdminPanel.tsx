@@ -51,17 +51,17 @@ const AdminPanel: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">User Roles</CardTitle>
+            <CardTitle className="text-sm font-medium">User Management</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold mb-2">Manage</div>
             <p className="text-xs text-muted-foreground mb-4">
-              Manage user roles and permissions through the authentication context.
+              Manage user accounts and role assignments.
             </p>
-            <p className="text-xs text-gray-500">
-              User role management is available through the application's authentication system.
-            </p>
+            <Link to="/admin/users">
+              <Button className="w-full">Go to User Management</Button>
+            </Link>
           </CardContent>
         </Card>
 
