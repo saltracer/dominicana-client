@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User } from 'lucide-react';
+import { Calendar, User, Clock, BookOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import type { BlogPost } from '@/services/blogService';
 
@@ -14,7 +14,7 @@ interface BlogPostCardProps {
 const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   const publishedDate = post.published_at ? new Date(post.published_at) : null;
   
-  // Handle tags properly - they come from the database as Json but should be strings
+  // Handle tags properly
   const tags = (() => {
     if (!post.tags) return [];
     if (typeof post.tags === 'string') {
@@ -42,7 +42,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
         </div>
       )}
       <CardHeader>
-        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
           <div className="flex items-center gap-1">
             <User size={14} />
             <span>{post.author_name}</span>
@@ -51,6 +51,12 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
             <div className="flex items-center gap-1">
               <Calendar size={14} />
               <span>{format(publishedDate, 'MMM d, yyyy')}</span>
+            </div>
+          )}
+          {post.reading_time_minutes && (
+            <div className="flex items-center gap-1">
+              <Clock size={14} />
+              <span>{post.reading_time_minutes} min read</span>
             </div>
           )}
         </div>
@@ -66,7 +72,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
             {post.excerpt}
           </p>
         )}
-        {tags.length > 0 && (
+        <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-2">
             {tags.slice(0, 3).map((tag, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
@@ -79,7 +85,13 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
               </Badge>
             )}
           </div>
-        )}
+          {post.word_count && (
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <BookOpen size={12} />
+              <span>{post.word_count} words</span>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

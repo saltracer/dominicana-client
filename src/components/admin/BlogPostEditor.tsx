@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -9,9 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Save, ArrowLeft, X } from 'lucide-react';
+import { Save, ArrowLeft, X, Clock, BookOpen } from 'lucide-react';
 import { blogService, type BlogPost, type BlogPostInsert, type BlogPostUpdate } from '@/services/blogService';
 import { toast } from 'sonner';
+import RichTextEditor from '@/components/editor/RichTextEditor';
+import '@/components/editor/quill-custom.css';
 
 interface BlogPostEditorProps {
   isEdit?: boolean;
@@ -32,6 +33,9 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
   const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('draft');
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
+  const [mediaAttachments, setMediaAttachments] = useState<string[]>([]);
+  const [wordCount, setWordCount] = useState(0);
+  const [readingTime, setReadingTime] = useState(1);
 
   useEffect(() => {
     if (isEdit && id) {
@@ -60,8 +64,10 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
       setExcerpt(post.excerpt || '');
       setFeaturedImage(post.featured_image || '');
       setStatus(post.status);
+      setWordCount(post.word_count || 0);
+      setReadingTime(post.reading_time_minutes || 1);
       
-      // Handle tags properly - they come from the database as Json
+      // Handle tags properly
       const postTags = (() => {
         if (!post.tags) return [];
         if (typeof post.tags === 'string') {
@@ -78,6 +84,24 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
       })();
       
       setTags(postTags);
+
+      // Handle media attachments
+      const attachments = (() => {
+        if (!post.media_attachments) return [];
+        if (typeof post.media_attachments === 'string') {
+          try {
+            return JSON.parse(post.media_attachments) as string[];
+          } catch {
+            return [];
+          }
+        }
+        if (Array.isArray(post.media_attachments)) {
+          return post.media_attachments as string[];
+        }
+        return [];
+      })();
+      
+      setMediaAttachments(attachments);
     } catch (error) {
       console.error('Error loading blog post:', error);
       toast.error('Failed to load blog post');
@@ -110,10 +134,12 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
         title: title.trim(),
         slug: slug.trim() || blogService.generateSlug(title),
         content: content.trim(),
+        content_type: 'html',
         excerpt: excerpt.trim() || null,
         featured_image: featuredImage.trim() || null,
         status,
         tags: JSON.stringify(tags),
+        media_attachments: JSON.stringify(mediaAttachments),
         author_name: user.email || 'Unknown Author',
         ...(status === 'published' && { published_at: new Date().toISOString() })
       };
@@ -138,6 +164,23 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleMediaUpload = (mediaUrl: string, type: 'image' | 'video') => {
+    setMediaAttachments(prev => [...prev, mediaUrl]);
+  };
+
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    
+    // Calculate word count and reading time
+    const textContent = newContent.replace(/<[^>]*>/g, '');
+    const words = textContent.split(/\s+/).filter(word => word.length > 0);
+    const newWordCount = words.length;
+    const newReadingTime = Math.max(1, Math.round(newWordCount / 200));
+    
+    setWordCount(newWordCount);
+    setReadingTime(newReadingTime);
   };
 
   const addTag = () => {
@@ -168,17 +211,30 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>
               {isEdit ? 'Edit Blog Post' : 'Create New Blog Post'}
             </CardTitle>
-            <Button variant="outline" onClick={() => navigate('/admin/blog')}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
+            <div className="flex items-center gap-4">
+              {/* Word count and reading time display */}
+              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-1">
+                  <BookOpen size={14} />
+                  <span>{wordCount} words</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock size={14} />
+                  <span>{readingTime} min read</span>
+                </div>
+              </div>
+              <Button variant="outline" onClick={() => navigate('/admin/blog')}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -252,11 +308,31 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
               <Input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={handleTagKeyPress}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const trimmedTag = newTag.trim();
+                    if (trimmedTag && !tags.includes(trimmedTag)) {
+                      setTags([...tags, trimmedTag]);
+                      setNewTag('');
+                    }
+                  }
+                }}
                 placeholder="Add a tag..."
                 className="flex-1"
               />
-              <Button type="button" onClick={addTag}>Add</Button>
+              <Button 
+                type="button" 
+                onClick={() => {
+                  const trimmedTag = newTag.trim();
+                  if (trimmedTag && !tags.includes(trimmedTag)) {
+                    setTags([...tags, trimmedTag]);
+                    setNewTag('');
+                  }
+                }}
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag, index) => (
@@ -264,23 +340,20 @@ const BlogPostEditor: React.FC<BlogPostEditorProps> = ({ isEdit = false }) => {
                   {tag}
                   <X 
                     className="h-3 w-3 cursor-pointer" 
-                    onClick={() => removeTag(tag)}
+                    onClick={() => setTags(tags.filter(t => t !== tag))}
                   />
                 </Badge>
               ))}
             </div>
           </div>
 
-          {/* Content */}
+          {/* Rich Text Content Editor */}
           <div>
-            <Label htmlFor="content">Content *</Label>
-            <Textarea
-              id="content"
+            <Label>Content *</Label>
+            <RichTextEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your blog post content here..."
-              rows={20}
-              className="font-mono"
+              onChange={handleContentChange}
+              onMediaUpload={handleMediaUpload}
             />
           </div>
 

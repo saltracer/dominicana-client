@@ -14,46 +14,58 @@ export type Database = {
           author_id: string | null
           author_name: string
           content: string
+          content_type: string | null
           created_at: string
           excerpt: string | null
           featured_image: string | null
           id: string
+          media_attachments: Json | null
           published_at: string | null
+          reading_time_minutes: number | null
           slug: string
           status: Database["public"]["Enums"]["blog_post_status"]
           tags: Json | null
           title: string
           updated_at: string
+          word_count: number | null
         }
         Insert: {
           author_id?: string | null
           author_name: string
           content: string
+          content_type?: string | null
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          media_attachments?: Json | null
           published_at?: string | null
+          reading_time_minutes?: number | null
           slug: string
           status?: Database["public"]["Enums"]["blog_post_status"]
           tags?: Json | null
           title: string
           updated_at?: string
+          word_count?: number | null
         }
         Update: {
           author_id?: string | null
           author_name?: string
           content?: string
+          content_type?: string | null
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
           id?: string
+          media_attachments?: Json | null
           published_at?: string | null
+          reading_time_minutes?: number | null
           slug?: string
           status?: Database["public"]["Enums"]["blog_post_status"]
           tags?: Json | null
           title?: string
           updated_at?: string
+          word_count?: number | null
         }
         Relationships: []
       }

@@ -4,10 +4,11 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ArrowLeft } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock, BookOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { blogService, type BlogPost } from '@/services/blogService';
 import { toast } from 'sonner';
+import BlogContentRenderer from '@/components/blog/BlogContentRenderer';
 
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -85,7 +86,7 @@ const BlogPostPage: React.FC = () => {
 
   const publishedDate = post.published_at ? new Date(post.published_at) : null;
   
-  // Handle tags properly - they come from the database as Json but should be strings
+  // Handle tags properly
   const tags = (() => {
     if (!post.tags) return [];
     if (typeof post.tags === 'string') {
@@ -146,6 +147,18 @@ const BlogPostPage: React.FC = () => {
                       <span>{format(publishedDate, 'MMMM d, yyyy')}</span>
                     </div>
                   )}
+                  {post.word_count && (
+                    <div className="flex items-center gap-2">
+                      <BookOpen size={16} />
+                      <span>{post.word_count} words</span>
+                    </div>
+                  )}
+                  {post.reading_time_minutes && (
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} />
+                      <span>{post.reading_time_minutes} min read</span>
+                    </div>
+                  )}
                 </div>
 
                 {post.excerpt && (
@@ -165,12 +178,11 @@ const BlogPostPage: React.FC = () => {
                 )}
               </header>
 
-              {/* Content */}
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                <div className="whitespace-pre-wrap leading-relaxed">
-                  {post.content}
-                </div>
-              </div>
+              {/* Rich Content */}
+              <BlogContentRenderer 
+                content={post.content}
+                className="mb-8"
+              />
             </CardContent>
           </Card>
         </article>

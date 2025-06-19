@@ -1,0 +1,87 @@
+
+/* Custom Quill Editor Styles */
+.ql-editor {
+  min-height: 300px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-toolbar {
+  border-top: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.ql-container {
+  border-bottom: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+}
+
+.ql-editor iframe {
+  max-width: 100%;
+  margin: 10px 0;
+}
+
+.ql-editor video {
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid #dc2626;
+  padding-left: 16px;
+  margin-left: 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.ql-editor pre {
+  background-color: #f3f4f6;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.ql-editor code {
+  background-color: #f3f4f6;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+/* Dark mode support */
+.dark .ql-toolbar {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark .ql-container {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark .ql-editor {
+  color: #f9fafb;
+}
+
+.dark .ql-editor pre {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark .ql-editor code {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark .ql-editor blockquote {
+  color: #9ca3af;
+}
