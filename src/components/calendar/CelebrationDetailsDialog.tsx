@@ -49,12 +49,17 @@ const CelebrationDetailsDialog: React.FC<CelebrationDetailsDialogProps> = ({
   };
 
   // Format description with proper paragraphs
-  const formatDescription = (description: string | undefined) => {
+  const formatDescription = (description: string | string[] | undefined) => {
     if (!description) return null;
-
+    //console.log(typeof description);
+    //console.log(description);
     // If the description is already an array (from joined paragraphs), split it back
-    const paragraphs = description.split(/(?<=\.|\?|\!) (?=[A-Z])/);
-    return paragraphs.map((paragraph, index) => <p key={index} className="text-gray-700 mb-3 dark:text-gray-200">{paragraph}</p>);
+    const paragraphs = description;//.split(/(?<=\.|\?|\!) (?=[A-Z])/);
+    if (Array.isArray(paragraphs)) {
+      return paragraphs.map((paragraph, index) => <p key={index} className="text-gray-700 mb-3 dark:text-gray-200">{paragraph}</p>);
+    } else {
+      return <p className="text-gray-700 mb-3 dark:text-gray-200">{paragraphs}</p>;
+    }
   };
   return <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" ref={dialogRef}>
