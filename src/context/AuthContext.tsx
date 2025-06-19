@@ -443,13 +443,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      console.log('Starting sign-in process for:', email);
+      
       // Clear any existing invalid auth state before signing in
       clearAllAuthStorage();
       
+      console.log('Cleared auth storage, attempting Supabase sign in');
       const result = await supabase.auth.signInWithPassword({ 
         email, 
         password
       });
+
+      console.log('Sign in result:', result.error ? 'Error' : 'Success', result.error?.message);
 
       if (result.error) {
         await logSecurityEvent('failed_signin_attempt', 'medium', { 
@@ -457,6 +462,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           error: result.error.message 
         });
       } else {
+        console.log('Sign in successful, session should be established');
         await logSecurityEvent('successful_signin', 'low', { 
           email,
           userId: result.data?.user?.id 
@@ -465,6 +471,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return result;
     } catch (error) {
+      console.error('Exception during sign-in:', error);
       await logSecurityEvent('signin_exception', 'high', { 
         email,
         error: error instanceof Error ? error.message : 'Unknown error' 
