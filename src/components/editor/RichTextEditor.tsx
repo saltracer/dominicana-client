@@ -98,6 +98,29 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     clipboard: {
       matchVisual: false,
+      // Preserve HTML attributes when pasting
+      matchers: [
+        ['img', function(node: any, delta: any) {
+          const ops = delta.ops || [];
+          ops.forEach((op: any) => {
+            if (op.insert && op.insert.image) {
+              const img = node;
+              // Preserve existing width/height attributes
+              const width = img.getAttribute('width');
+              const height = img.getAttribute('height');
+              const style = img.getAttribute('style');
+              
+              if (width || height || style) {
+                op.attributes = op.attributes || {};
+                if (width) op.attributes.width = width;
+                if (height) op.attributes.height = height;
+                if (style) op.attributes.style = style;
+              }
+            }
+          });
+          return delta;
+        }]
+      ]
     }
   }), []);
 
@@ -105,7 +128,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'link', 'image', 'video', 'code-block'
+    'link', 'image', 'video', 'code-block',
+    'width', 'height', 'style' // Add these to preserve image dimensions
   ];
 
   // Add image resize functionality after component mounts
@@ -122,6 +146,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         if (!img.classList.contains('ql-image-resizable')) {
           img.classList.add('ql-image-resizable');
           img.style.cursor = 'pointer';
+          
+          // Ensure images with existing dimensions maintain them
+          const width = img.getAttribute('width');
+          const height = img.getAttribute('height');
+          const style = img.getAttribute('style');
+          
+          if (width && !img.style.width) {
+            img.style.width = `${width}px`;
+          }
+          if (height && !img.style.height) {
+            img.style.height = `${height}px`;
+          }
         }
       });
     };
@@ -246,8 +282,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         hideResizeBox();
         
         // Trigger content change to update the saved content
-        quill.blur();
-        quill.focus();
+        const currentContent = quill.root.innerHTML;
+        onChange(currentContent);
       };
 
       document.addEventListener('mousemove', handleMouseMove);
@@ -259,6 +295,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     
     // Listen for content changes to add resize to new images
     quill.on('text-change', () => {
+      setTimeout(addResizeCapabilities, 100);
+    });
+
+    // Also run when content is set (like when loading existing content)
+    quill.on('editor-change', () => {
       setTimeout(addResizeCapabilities, 100);
     });
 
@@ -275,7 +316,34 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       document.removeEventListener('click', handleImageClick);
       hideResizeBox();
     };
-  }, []);
+  }, [onChange]);
+
+  // Run addResizeCapabilities when value changes (content loaded)
+  React.useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    
+    setTimeout(() => {
+      const images = quill.container.querySelectorAll('img');
+      images.forEach((img: HTMLImageElement) => {
+        if (!img.classList.contains('ql-image-resizable')) {
+          img.classList.add('ql-image-resizable');
+          img.style.cursor = 'pointer';
+          
+          // Preserve existing dimensions from attributes
+          const width = img.getAttribute('width');
+          const height = img.getAttribute('height');
+          
+          if (width && !img.style.width) {
+            img.style.width = `${width}px`;
+          }
+          if (height && !img.style.height) {
+            img.style.height = `${height}px`;
+          }
+        }
+      });
+    }, 200);
+  }, [value]);
 
   const handleImageUpload = async () => {
     const input = document.createElement('input');
@@ -403,6 +471,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         formats={formats}
         className="min-h-[400px]"
         style={{ border: 'none' }}
+        preserveWhitespace={true}
       />
 
       {uploading && (
