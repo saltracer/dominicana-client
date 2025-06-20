@@ -23,8 +23,9 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({
       'allowfullscreen', 'controls', 'type', 'class', 'style'
     ],
     ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|blob|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
-    // Preserve style attributes for images to maintain resize functionality
-    ALLOWED_STYLE: ['width', 'height', 'max-width', 'display', 'margin'],
+    // Allow inline styles but restrict to safe properties
+    ADD_ATTR: ['style'],
+    FORBID_ATTR: [],
   });
 
   return (
