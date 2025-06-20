@@ -1,5 +1,6 @@
+
 import React, { useRef, useMemo, useState } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -7,38 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, Link, Video, Image as ImageIcon } from 'lucide-react';
-
-// Custom image blot with resize capabilities
-const BlockEmbed = Quill.import('blots/block/embed');
-
-class ImageBlot extends BlockEmbed {
-  static blotName = 'image';
-  static tagName = 'img';
-
-  static create(value: any) {
-    const node = super.create();
-    if (typeof value === 'string') {
-      node.setAttribute('src', value);
-    } else {
-      node.setAttribute('src', value.src);
-      if (value.width) node.setAttribute('width', value.width);
-      if (value.height) node.setAttribute('height', value.height);
-    }
-    node.setAttribute('contenteditable', 'false');
-    node.classList.add('ql-image-resizable');
-    return node;
-  }
-
-  static value(node: HTMLImageElement) {
-    return {
-      src: node.getAttribute('src'),
-      width: node.getAttribute('width'),
-      height: node.getAttribute('height')
-    };
-  }
-}
-
-Quill.register(ImageBlot);
 
 // Custom toolbar with media buttons
 const CustomToolbar = ({ onImageUpload, onVideoEmbed, onLinkEmbed }: {
@@ -147,6 +116,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     let selectedImage: HTMLImageElement | null = null;
     let resizeBox: HTMLDivElement | null = null;
 
+    const addResizeCapabilities = () => {
+      const images = quill.container.querySelectorAll('img');
+      images.forEach((img: HTMLImageElement) => {
+        if (!img.classList.contains('ql-image-resizable')) {
+          img.classList.add('ql-image-resizable');
+          img.style.cursor = 'pointer';
+        }
+      });
+    };
+
     const handleImageClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'IMG' && target.classList.contains('ql-image-resizable')) {
@@ -171,22 +150,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       resizeBox.style.top = `${rect.top - editorRect.top + quill.container.scrollTop}px`;
       resizeBox.style.width = `${rect.width}px`;
       resizeBox.style.height = `${rect.height}px`;
-      resizeBox.style.border = '2px dashed #3b82f6';
-      resizeBox.style.background = 'rgba(59, 130, 246, 0.1)';
-      resizeBox.style.pointerEvents = 'auto';
-      resizeBox.style.zIndex = '10';
 
       // Add resize handles
       const handles = ['nw', 'ne', 'sw', 'se'];
       handles.forEach(pos => {
         const handle = document.createElement('div');
         handle.className = `ql-resize-handle ql-resize-${pos}`;
-        handle.style.position = 'absolute';
-        handle.style.width = '8px';
-        handle.style.height = '8px';
-        handle.style.background = '#3b82f6';
-        handle.style.border = '1px solid white';
-        handle.style.cursor = `${pos}-resize`;
 
         switch (pos) {
           case 'nw':
@@ -261,8 +230,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
         img.style.width = `${newWidth}px`;
         img.style.height = `${newHeight}px`;
-        img.setAttribute('width', newWidth.toString());
-        img.setAttribute('height', newHeight.toString());
 
         if (resizeBox) {
           resizeBox.style.width = `${newWidth}px`;
@@ -280,7 +247,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       document.addEventListener('mouseup', handleMouseUp);
     };
 
+    // Add resize capabilities to existing images and new ones
+    addResizeCapabilities();
+    
+    // Listen for content changes to add resize to new images
+    quill.on('text-change', () => {
+      setTimeout(addResizeCapabilities, 100);
+    });
+
     quill.container.addEventListener('click', handleImageClick);
+    
     document.addEventListener('click', (e) => {
       if (!quill.container.contains(e.target as Node)) {
         hideResizeBox();
