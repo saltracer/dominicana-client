@@ -8,9 +8,37 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, Link, Video, Image as ImageIcon } from 'lucide-react';
 
-// Import and register the image resize module
-import ImageResize from 'quill-image-resize-module';
-Quill.register('modules/imageResize', ImageResize);
+// Custom image blot with resize capabilities
+const BlockEmbed = Quill.import('blots/block/embed');
+
+class ImageBlot extends BlockEmbed {
+  static blotName = 'image';
+  static tagName = 'img';
+
+  static create(value: any) {
+    const node = super.create();
+    if (typeof value === 'string') {
+      node.setAttribute('src', value);
+    } else {
+      node.setAttribute('src', value.src);
+      if (value.width) node.setAttribute('width', value.width);
+      if (value.height) node.setAttribute('height', value.height);
+    }
+    node.setAttribute('contenteditable', 'false');
+    node.classList.add('ql-image-resizable');
+    return node;
+  }
+
+  static value(node: HTMLImageElement) {
+    return {
+      src: node.getAttribute('src'),
+      width: node.getAttribute('width'),
+      height: node.getAttribute('height')
+    };
+  }
+}
+
+Quill.register(ImageBlot);
 
 // Custom toolbar with media buttons
 const CustomToolbar = ({ onImageUpload, onVideoEmbed, onLinkEmbed }: {
@@ -99,10 +127,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         image: () => handleImageUpload(),
       }
     },
-    imageResize: {
-      parchment: Quill.import('parchment'),
-      modules: ['Resize', 'DisplaySize', 'Toolbar']
-    },
     clipboard: {
       matchVisual: false,
     }
@@ -112,9 +136,163 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'link', 'image', 'video', 'code-block',
-    'width', 'height'
+    'link', 'image', 'video', 'code-block'
   ];
+
+  // Add image resize functionality after component mounts
+  React.useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+
+    let selectedImage: HTMLImageElement | null = null;
+    let resizeBox: HTMLDivElement | null = null;
+
+    const handleImageClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' && target.classList.contains('ql-image-resizable')) {
+        selectedImage = target as HTMLImageElement;
+        showResizeBox(selectedImage);
+      } else {
+        hideResizeBox();
+      }
+    };
+
+    const showResizeBox = (img: HTMLImageElement) => {
+      hideResizeBox();
+      
+      resizeBox = document.createElement('div');
+      resizeBox.className = 'ql-image-resize-box';
+      
+      const rect = img.getBoundingClientRect();
+      const editorRect = quill.container.getBoundingClientRect();
+      
+      resizeBox.style.position = 'absolute';
+      resizeBox.style.left = `${rect.left - editorRect.left + quill.container.scrollLeft}px`;
+      resizeBox.style.top = `${rect.top - editorRect.top + quill.container.scrollTop}px`;
+      resizeBox.style.width = `${rect.width}px`;
+      resizeBox.style.height = `${rect.height}px`;
+      resizeBox.style.border = '2px dashed #3b82f6';
+      resizeBox.style.background = 'rgba(59, 130, 246, 0.1)';
+      resizeBox.style.pointerEvents = 'auto';
+      resizeBox.style.zIndex = '10';
+
+      // Add resize handles
+      const handles = ['nw', 'ne', 'sw', 'se'];
+      handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = `ql-resize-handle ql-resize-${pos}`;
+        handle.style.position = 'absolute';
+        handle.style.width = '8px';
+        handle.style.height = '8px';
+        handle.style.background = '#3b82f6';
+        handle.style.border = '1px solid white';
+        handle.style.cursor = `${pos}-resize`;
+
+        switch (pos) {
+          case 'nw':
+            handle.style.top = '-4px';
+            handle.style.left = '-4px';
+            break;
+          case 'ne':
+            handle.style.top = '-4px';
+            handle.style.right = '-4px';
+            break;
+          case 'sw':
+            handle.style.bottom = '-4px';
+            handle.style.left = '-4px';
+            break;
+          case 'se':
+            handle.style.bottom = '-4px';
+            handle.style.right = '-4px';
+            break;
+        }
+
+        handle.addEventListener('mousedown', (e) => startResize(e, pos, img));
+        resizeBox.appendChild(handle);
+      });
+
+      quill.container.appendChild(resizeBox);
+    };
+
+    const hideResizeBox = () => {
+      if (resizeBox) {
+        resizeBox.remove();
+        resizeBox = null;
+      }
+      selectedImage = null;
+    };
+
+    const startResize = (e: MouseEvent, position: string, img: HTMLImageElement) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = img.offsetWidth;
+      const startHeight = img.offsetHeight;
+      const aspectRatio = startWidth / startHeight;
+
+      const handleMouseMove = (e: MouseEvent) => {
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+
+        switch (position) {
+          case 'se':
+            newWidth = startWidth + (e.clientX - startX);
+            newHeight = newWidth / aspectRatio;
+            break;
+          case 'sw':
+            newWidth = startWidth - (e.clientX - startX);
+            newHeight = newWidth / aspectRatio;
+            break;
+          case 'ne':
+            newWidth = startWidth + (e.clientX - startX);
+            newHeight = newWidth / aspectRatio;
+            break;
+          case 'nw':
+            newWidth = startWidth - (e.clientX - startX);
+            newHeight = newWidth / aspectRatio;
+            break;
+        }
+
+        // Minimum size constraints
+        newWidth = Math.max(50, newWidth);
+        newHeight = Math.max(50, newHeight);
+
+        img.style.width = `${newWidth}px`;
+        img.style.height = `${newHeight}px`;
+        img.setAttribute('width', newWidth.toString());
+        img.setAttribute('height', newHeight.toString());
+
+        if (resizeBox) {
+          resizeBox.style.width = `${newWidth}px`;
+          resizeBox.style.height = `${newHeight}px`;
+        }
+      };
+
+      const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        hideResizeBox();
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    quill.container.addEventListener('click', handleImageClick);
+    document.addEventListener('click', (e) => {
+      if (!quill.container.contains(e.target as Node)) {
+        hideResizeBox();
+      }
+    });
+
+    return () => {
+      quill.container.removeEventListener('click', handleImageClick);
+      document.removeEventListener('click', handleImageClick);
+      hideResizeBox();
+    };
+  }, []);
 
   const handleImageUpload = async () => {
     const input = document.createElement('input');
