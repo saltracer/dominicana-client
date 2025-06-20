@@ -21,7 +21,7 @@ const AuthPage: React.FC = () => {
 
   const from = location.state?.from?.pathname || '/';
 
-  // Clear any lingering timeout on unmount
+  // Clear timeout on unmount
   useEffect(() => {
     return () => {
       if (authTimeout) {
@@ -35,7 +35,7 @@ const AuthPage: React.FC = () => {
   }
 
   const toggleMode = () => {
-    // Clear any ongoing loading state when switching modes
+    // Clear any ongoing timeout when switching modes
     if (authTimeout) {
       clearTimeout(authTimeout);
       setAuthTimeout(null);
@@ -44,35 +44,6 @@ const AuthPage: React.FC = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
     setEmail('');
     setPassword('');
-  };
-
-  const clearPotentiallyCorruptedAuthStorage = () => {
-    try {
-      // Clear all possible auth-related localStorage keys that might be corrupted
-      const keysToCheck = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (
-          key.includes('supabase') || 
-          key.includes('sb-') ||
-          key.startsWith('sb.') ||
-          key.includes('auth-token')
-        )) {
-          keysToCheck.push(key);
-        }
-      }
-      
-      keysToCheck.forEach(key => {
-        try {
-          localStorage.removeItem(key);
-          console.log('Cleared potentially corrupted auth key:', key);
-        } catch (error) {
-          console.warn('Failed to clear localStorage key:', key, error);
-        }
-      });
-    } catch (error) {
-      console.error('Error clearing potentially corrupted auth storage:', error);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,27 +56,21 @@ const AuthPage: React.FC = () => {
 
     setIsLoading(true);
 
-    // Set a timeout to prevent indefinite loading state
+    // Set a timeout to prevent indefinite loading - increased to 30 seconds for better UX
     const timeoutId = setTimeout(() => {
-      console.log('Authentication timeout reached, resetting loading state');
+      console.log('Authentication timeout reached');
       setIsLoading(false);
       setAuthTimeout(null);
       toast({
         title: "Authentication timeout",
-        description: "The authentication process took too long. Please try again.",
+        description: "The request is taking longer than expected. Please try again.",
         variant: "destructive",
       });
-    }, 15000); // 15 second timeout
+    }, 30000); // 30 second timeout
 
     setAuthTimeout(timeoutId);
 
     try {
-      // Clear potentially corrupted auth storage before attempting sign in
-      if (mode === 'login') {
-        console.log('Clearing potentially corrupted auth storage before sign in');
-        clearPotentiallyCorruptedAuthStorage();
-      }
-
       if (mode === 'login') {
         console.log('Attempting sign in for:', email);
         const { error } = await signIn(email, password);
@@ -127,9 +92,21 @@ const AuthPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Authentication error:', error);
+      
+      // Handle specific error cases
+      let errorMessage = error.message || 'An unexpected error occurred during authentication.';
+      
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and click the confirmation link before signing in.';
+      } else if (error.message?.includes('User already registered')) {
+        errorMessage = 'An account with this email already exists. Please sign in instead.';
+      }
+      
       toast({
         title: "Authentication error",
-        description: error.message || 'An unexpected error occurred during authentication.',
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
