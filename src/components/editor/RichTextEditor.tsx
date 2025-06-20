@@ -1,4 +1,3 @@
-
 import React, { useRef, useMemo, useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -8,6 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, Link, Video, Image as ImageIcon } from 'lucide-react';
+
+// Import and register the image resize module
+import ImageResize from 'quill-image-resize-module';
+Quill.register('modules/imageResize', ImageResize);
 
 // Custom toolbar with media buttons
 const CustomToolbar = ({ onImageUpload, onVideoEmbed, onLinkEmbed }: {
@@ -96,6 +99,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         image: () => handleImageUpload(),
       }
     },
+    imageResize: {
+      parchment: Quill.import('parchment'),
+      modules: ['Resize', 'DisplaySize', 'Toolbar']
+    },
     clipboard: {
       matchVisual: false,
     }
@@ -105,7 +112,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
     'list', 'bullet', 'indent',
-    'link', 'image', 'video', 'code-block'
+    'link', 'image', 'video', 'code-block',
+    'width', 'height'
   ];
 
   const handleImageUpload = async () => {

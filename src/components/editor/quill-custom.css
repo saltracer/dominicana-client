@@ -22,6 +22,61 @@
   max-width: 100%;
   height: auto;
   margin: 10px 0;
+  cursor: pointer;
+}
+
+/* Image resize handle styles */
+.ql-image-resize {
+  position: absolute;
+  border: 1px dashed #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.ql-image-resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border: 1px solid #ffffff;
+  cursor: nw-resize;
+}
+
+.ql-image-resize-handle.bottom-right {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+.ql-image-resize-handle.bottom-left {
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+
+.ql-image-resize-handle.top-right {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.ql-image-resize-handle.top-left {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+/* Display size tooltip */
+.ql-image-resize-display {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .ql-editor iframe {
@@ -84,4 +139,13 @@
 
 .dark .ql-editor blockquote {
   color: #9ca3af;
+}
+
+.dark .ql-image-resize {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.dark .ql-image-resize-handle {
+  background: #60a5fa;
 }
