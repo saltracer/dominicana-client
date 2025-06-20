@@ -11,7 +11,7 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({
   content, 
   className = '' 
 }) => {
-  // Configure DOMPurify to allow safe HTML elements and attributes
+  // Configure DOMPurify to allow safe HTML elements and attributes, including width/height for images
   const cleanContent = DOMPurify.sanitize(content, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -23,6 +23,8 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({
       'allowfullscreen', 'controls', 'type', 'class', 'style'
     ],
     ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|blob|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+    // Preserve style attributes for images to maintain resize functionality
+    ALLOWED_STYLE: ['width', 'height', 'max-width', 'display', 'margin'],
   });
 
   return (

@@ -228,8 +228,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         newWidth = Math.max(50, newWidth);
         newHeight = Math.max(50, newHeight);
 
+        // Update both CSS styles and HTML attributes for persistence
         img.style.width = `${newWidth}px`;
         img.style.height = `${newHeight}px`;
+        img.setAttribute('width', Math.round(newWidth).toString());
+        img.setAttribute('height', Math.round(newHeight).toString());
 
         if (resizeBox) {
           resizeBox.style.width = `${newWidth}px`;
@@ -241,6 +244,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
         hideResizeBox();
+        
+        // Trigger content change to update the saved content
+        quill.blur();
+        quill.focus();
       };
 
       document.addEventListener('mousemove', handleMouseMove);
