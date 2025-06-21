@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, BookOpen } from 'lucide-react';
+import { Search, BookOpen, Rss } from 'lucide-react';
 import BlogPostCard from '@/components/blog/BlogPostCard';
 import { blogService, type BlogPost } from '@/services/blogService';
 import { toast } from 'sonner';
@@ -105,11 +105,24 @@ const BlogIndexPage: React.FC = () => {
           <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Insights, reflections, and guidance for preaching in the Dominican tradition.
           </p>
-          <Link to="/preaching">
-            <Button variant="outline" className="mt-4">
-              ← Back to Preaching
-            </Button>
-          </Link>
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <Link to="/preaching">
+              <Button variant="outline">
+                ← Back to Preaching
+              </Button>
+            </Link>
+            <a 
+              href="/functions/v1/rss-feed" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2"
+            >
+              <Button variant="outline">
+                <Rss size={16} />
+                RSS Feed
+              </Button>
+            </a>
+          </div>
         </div>
 
         {/* Search */}

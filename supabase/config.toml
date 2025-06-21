@@ -1,5 +1,5 @@
 
 project_id = "rimpzfnxwqmamplowaoq"
 
-[functions.migrate-books]
-verify_jwt = true
+[functions.rss-feed]
+verify_jwt = false
