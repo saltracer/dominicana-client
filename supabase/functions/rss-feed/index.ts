@@ -44,26 +44,47 @@ serve(async (req) => {
 
     console.log(`Found ${posts?.length || 0} published posts`);
 
-    // Get the actual website domain from the request origin or use a default
+    // Determine the website base URL from the request
     const requestUrl = new URL(req.url);
-    const origin = req.headers.get('origin') || req.headers.get('referer');
+    let websiteBaseUrl: string;
     
-    // Determine the website base URL
-    let websiteBaseUrl = 'https://dominicanportal.com'; // Default fallback
+    // Check if there's a custom domain or if we're on a known domain
+    const host = req.headers.get('host') || requestUrl.host;
     
-    if (origin) {
-      try {
-        const originUrl = new URL(origin);
-        // Only use the origin if it's not the Supabase domain
-        if (!originUrl.hostname.includes('supabase.co')) {
-          websiteBaseUrl = `${originUrl.protocol}//${originUrl.host}`;
+    if (host.includes('supabase.co')) {
+      // If accessed via Supabase domain, we need to determine the actual website domain
+      // Check for X-Forwarded-Host header (used by reverse proxies/CDNs)
+      const forwardedHost = req.headers.get('x-forwarded-host');
+      
+      if (forwardedHost) {
+        websiteBaseUrl = `https://${forwardedHost}`;
+      } else {
+        // Try to get from Origin or Referer headers
+        const origin = req.headers.get('origin');
+        const referer = req.headers.get('referer');
+        
+        if (origin && !origin.includes('supabase.co')) {
+          websiteBaseUrl = origin;
+        } else if (referer && !referer.includes('supabase.co')) {
+          try {
+            const refererUrl = new URL(referer);
+            websiteBaseUrl = `${refererUrl.protocol}//${refererUrl.host}`;
+          } catch (e) {
+            // If we can't determine the domain, return an error rather than guess
+            throw new Error('Cannot determine website domain. Please access the RSS feed through your website domain.');
+          }
+        } else {
+          throw new Error('Cannot determine website domain. Please access the RSS feed through your website domain.');
         }
-      } catch (e) {
-        console.warn('Could not parse origin header:', origin);
       }
+    } else {
+      // Accessed via custom domain
+      websiteBaseUrl = `${requestUrl.protocol}//${host}`;
     }
     
     console.log('Using website base URL:', websiteBaseUrl);
+    console.log('Request host:', host);
+    console.log('Forwarded host:', req.headers.get('x-forwarded-host'));
 
     // Generate RSS XML with proper domain
     const rssXml = generateRSSXML(posts || [], websiteBaseUrl, requestUrl.origin);
@@ -85,11 +106,11 @@ serve(async (req) => {
         <channel>
           <title>Dominican Preaching Blog - Error</title>
           <description>Error generating RSS feed: ${error.message}</description>
-          <link>https://dominicanportal.com</link>
+          <link>about:blank</link>
         </channel>
       </rss>`,
       {
-        status: 500,
+        status: error.message.includes('Cannot determine website domain') ? 400 : 500,
         headers: {
           'Content-Type': 'application/rss+xml; charset=utf-8',
           ...corsHeaders,
@@ -138,6 +159,11 @@ function generateRSSXML(posts: any[], websiteBaseUrl: string, feedOrigin: string
     </item>`;
   }).join('');
 
+  // Determine the RSS feed URL based on the website domain
+  const rssFeedUrl = feedOrigin.includes('supabase.co') ? 
+    `${websiteBaseUrl}/functions/v1/rss-feed` : 
+    `${feedOrigin}/functions/v1/rss-feed`;
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -146,7 +172,7 @@ function generateRSSXML(posts: any[], websiteBaseUrl: string, feedOrigin: string
     <description>${escapeXml(channelDescription)}</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${feedOrigin}/functions/v1/rss-feed" rel="self" type="application/rss+xml" />
+    <atom:link href="${rssFeedUrl}" rel="self" type="application/rss+xml" />
     <generator>Dominican Portal RSS Generator</generator>
     <webMaster>webmaster@dominicanportal.com</webMaster>
     <managingEditor>editor@dominicanportal.com</managingEditor>
