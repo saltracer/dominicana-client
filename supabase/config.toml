@@ -6,3 +6,4 @@ verify_jwt = false
 
 [functions."rss-feed".http_config]
 methods = ["GET", "OPTIONS"]
+

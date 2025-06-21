@@ -17,6 +17,7 @@ import UnauthorizedPage from '@/pages/UnauthorizedPage';
 import NotFound from '@/pages/NotFound';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsOfServicePage from '@/pages/TermsOfServicePage';
+import RssRedirectPage from '@/pages/RssRedirectPage';
 
 // Prayer Pages
 import PrayerLandingPage from '@/pages/PrayerLandingPage';
@@ -54,6 +55,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* RSS Route - outside of Layout to avoid header/footer */}
+          <Route path="/rss" element={<RssRedirectPage />} />
+          
           <Route path="/" element={<Layout />}>
             {/* Main Routes */}
             <Route index element={<Index />} />
