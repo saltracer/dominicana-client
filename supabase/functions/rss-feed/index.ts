@@ -48,46 +48,41 @@ serve(async (req) => {
     const requestUrl = new URL(req.url);
     let websiteBaseUrl: string;
     
-    // Check if there's a custom domain or if we're on a known domain
+    // Get all possible host indicators
     const host = req.headers.get('host') || requestUrl.host;
+    const forwardedHost = req.headers.get('x-forwarded-host');
+    const origin = req.headers.get('origin');
+    const referer = req.headers.get('referer');
     
-    if (host.includes('supabase.co')) {
-      // If accessed via Supabase domain, we need to determine the actual website domain
-      // Check for X-Forwarded-Host header (used by reverse proxies/CDNs)
-      const forwardedHost = req.headers.get('x-forwarded-host');
-      
-      if (forwardedHost) {
-        websiteBaseUrl = `https://${forwardedHost}`;
-      } else {
-        // Try to get from Origin or Referer headers
-        const origin = req.headers.get('origin');
-        const referer = req.headers.get('referer');
-        
-        if (origin && !origin.includes('supabase.co')) {
-          websiteBaseUrl = origin;
-        } else if (referer && !referer.includes('supabase.co')) {
-          try {
-            const refererUrl = new URL(referer);
-            websiteBaseUrl = `${refererUrl.protocol}//${refererUrl.host}`;
-          } catch (e) {
-            // If we can't determine the domain, return an error rather than guess
-            throw new Error('Cannot determine website domain. Please access the RSS feed through your website domain.');
-          }
-        } else {
-          throw new Error('Cannot determine website domain. Please access the RSS feed through your website domain.');
-        }
+    console.log('Host detection:', { host, forwardedHost, origin, referer });
+    
+    // Priority order for determining the website domain:
+    // 1. X-Forwarded-Host (for proxied requests)
+    // 2. Origin header (for direct requests)
+    // 3. Referer header (as fallback)
+    // 4. Host header (direct access)
+    
+    if (forwardedHost && !forwardedHost.includes('supabase.co')) {
+      websiteBaseUrl = `https://${forwardedHost}`;
+    } else if (origin && !origin.includes('supabase.co')) {
+      websiteBaseUrl = origin;
+    } else if (referer && !referer.includes('supabase.co')) {
+      try {
+        const refererUrl = new URL(referer);
+        websiteBaseUrl = `${refererUrl.protocol}//${refererUrl.host}`;
+      } catch (e) {
+        throw new Error('Cannot determine website domain from referer. Please access the RSS feed through your website domain.');
       }
-    } else {
-      // Accessed via custom domain
+    } else if (!host.includes('supabase.co')) {
       websiteBaseUrl = `${requestUrl.protocol}//${host}`;
+    } else {
+      throw new Error('Cannot determine website domain. Please access the RSS feed through your website domain, not directly through the Supabase function URL.');
     }
     
     console.log('Using website base URL:', websiteBaseUrl);
-    console.log('Request host:', host);
-    console.log('Forwarded host:', req.headers.get('x-forwarded-host'));
 
     // Generate RSS XML with proper domain
-    const rssXml = generateRSSXML(posts || [], websiteBaseUrl, requestUrl.origin);
+    const rssXml = generateRSSXML(posts || [], websiteBaseUrl);
 
     console.log('Generated RSS XML successfully');
 
@@ -120,7 +115,7 @@ serve(async (req) => {
   }
 });
 
-function generateRSSXML(posts: any[], websiteBaseUrl: string, feedOrigin: string): string {
+function generateRSSXML(posts: any[], websiteBaseUrl: string): string {
   const channelTitle = 'Dominican Preaching Blog';
   const channelDescription = 'Insights, reflections, and guidance for preaching in the Dominican tradition.';
   const channelLink = `${websiteBaseUrl}/preaching/blog`;
@@ -159,10 +154,8 @@ function generateRSSXML(posts: any[], websiteBaseUrl: string, feedOrigin: string
     </item>`;
   }).join('');
 
-  // Determine the RSS feed URL based on the website domain
-  const rssFeedUrl = feedOrigin.includes('supabase.co') ? 
-    `${websiteBaseUrl}/functions/v1/rss-feed` : 
-    `${feedOrigin}/functions/v1/rss-feed`;
+  // RSS feed URL is always relative to the website domain
+  const rssFeedUrl = `${websiteBaseUrl}/rss`;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

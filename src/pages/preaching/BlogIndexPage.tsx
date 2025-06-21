@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -112,7 +113,7 @@ const BlogIndexPage: React.FC = () => {
               </Button>
             </Link>
             <a 
-              href="/functions/v1/rss-feed" 
+              href="/rss" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2"
