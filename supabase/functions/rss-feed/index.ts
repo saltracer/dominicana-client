@@ -8,6 +8,8 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('RSS Feed function called:', req.method, req.url);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,31 +17,43 @@ serve(async (req) => {
 
   try {
     // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables');
+      throw new Error('Configuration error');
+    }
+    
+    console.log('Initializing Supabase client...');
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fetch published blog posts
+    console.log('Fetching blog posts...');
     const { data: posts, error } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
-      .limit(20); // Limit to 20 most recent posts
+      .limit(20);
 
     if (error) {
       console.error('Error fetching blog posts:', error);
       throw error;
     }
 
+    console.log(`Found ${posts?.length || 0} published posts`);
+
     // Generate RSS XML
-    const baseUrl = new URL(req.url).origin;
+    const baseUrl = supabaseUrl.replace('/rest/v1', ''); // Clean base URL
     const rssXml = generateRSSXML(posts || [], baseUrl);
+
+    console.log('Generated RSS XML successfully');
 
     return new Response(rssXml, {
       headers: {
         'Content-Type': 'application/rss+xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=3600',
         ...corsHeaders,
       },
     });
@@ -49,8 +63,9 @@ serve(async (req) => {
       `<?xml version="1.0" encoding="UTF-8"?>
       <rss version="2.0">
         <channel>
-          <title>Error</title>
-          <description>Error generating RSS feed</description>
+          <title>Dominican Preaching Blog - Error</title>
+          <description>Error generating RSS feed: ${error.message}</description>
+          <link>https://rimpzfnxwqmamplowaoq.supabase.co</link>
         </channel>
       </rss>`,
       {
@@ -74,10 +89,10 @@ function generateRSSXML(posts: any[], baseUrl: string): string {
     const postUrl = `${baseUrl}/preaching/blog/${post.slug}`;
     
     // Clean content for RSS (remove HTML tags for description)
-    const cleanContent = post.content.replace(/<[^>]*>/g, '').substring(0, 500);
+    const cleanContent = post.content ? post.content.replace(/<[^>]*>/g, '').substring(0, 500) : '';
     const description = post.excerpt || cleanContent || 'Read more...';
 
-    // Handle tags
+    // Handle tags safely
     let categories = '';
     if (post.tags) {
       try {
@@ -92,12 +107,12 @@ function generateRSSXML(posts: any[], baseUrl: string): string {
 
     return `
     <item>
-      <title>${escapeXml(post.title)}</title>
+      <title>${escapeXml(post.title || 'Untitled')}</title>
       <link>${postUrl}</link>
       <guid isPermaLink="true">${postUrl}</guid>
       <description><![CDATA[${description}]]></description>
       <pubDate>${pubDate}</pubDate>
-      <author>${escapeXml(post.author_name)}</author>
+      <author>${escapeXml(post.author_name || 'Unknown Author')}</author>
       ${categories}
       ${post.featured_image ? `<enclosure url="${post.featured_image}" type="image/jpeg" />` : ''}
     </item>`;
@@ -111,7 +126,7 @@ function generateRSSXML(posts: any[], baseUrl: string): string {
     <description>${escapeXml(channelDescription)}</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${baseUrl}/functions/v1/rss-feed" rel="self" type="application/rss+xml" />
+    <atom:link href="https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed" rel="self" type="application/rss+xml" />
     <generator>Dominican Portal RSS Generator</generator>
     <webMaster>webmaster@dominicanportal.com</webMaster>
     <managingEditor>editor@dominicanportal.com</managingEditor>
