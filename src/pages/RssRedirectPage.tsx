@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 
 const RssRedirectPage = () => {
   useEffect(() => {
-    // Get the current domain and redirect to the RSS function
-    const currentDomain = window.location.origin;
-    const rssUrl = `${currentDomain}/functions/v1/rss-feed`;
+    // Redirect directly to the Supabase function URL
+    // The project ID is rimpzfnxwqmamplowaoq based on the supabase config
+    const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
     
     // Redirect to the RSS function
     window.location.replace(rssUrl);
