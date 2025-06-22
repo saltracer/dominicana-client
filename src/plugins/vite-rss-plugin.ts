@@ -5,10 +5,14 @@ export function rssPlugin(): Plugin {
   return {
     name: 'rss-plugin',
     configureServer(server) {
+      // Handle RSS in development mode - this needs to be early in the middleware stack
       server.middlewares.use('/rss', async (req, res, next) => {
-        if (req.method !== 'GET') {
+        // Only handle GET requests to /rss exactly
+        if (req.method !== 'GET' || req.url !== '/rss') {
           return next();
         }
+
+        console.log('RSS Plugin: Handling /rss request in development');
 
         try {
           // Fetch RSS content from Supabase function
@@ -39,12 +43,13 @@ export function rssPlugin(): Plugin {
 
           const rssContent = await response.text();
 
-          // Set proper RSS headers
+          // Set proper RSS headers - this is critical for feed readers
           res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
           res.setHeader('Cache-Control', 'public, max-age=3600');
           
           // Send the RSS content directly
           res.end(rssContent);
+          console.log('RSS Plugin: Successfully served RSS feed');
         } catch (error) {
           console.error('Error in RSS plugin:', error);
           res.statusCode = 500;
@@ -54,11 +59,13 @@ export function rssPlugin(): Plugin {
       });
     },
     configurePreviewServer(server) {
-      // Also handle RSS in preview mode (production build preview)
+      // Handle RSS in preview mode (production build preview)
       server.middlewares.use('/rss', async (req, res, next) => {
-        if (req.method !== 'GET') {
+        if (req.method !== 'GET' || req.url !== '/rss') {
           return next();
         }
+
+        console.log('RSS Plugin: Handling /rss request in preview');
 
         try {
           const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
@@ -97,12 +104,46 @@ export function rssPlugin(): Plugin {
       });
     },
     generateBundle() {
-      // For production builds, we need to create a redirect file
-      // This will be handled by the hosting platform (like Netlify/Vercel)
+      // For production builds, create a redirect file for hosting platforms
       this.emitFile({
         type: 'asset',
         fileName: '_redirects',
         source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200'
+      });
+      
+      // Also create a Netlify function for direct RSS serving if the redirect doesn't work
+      this.emitFile({
+        type: 'asset',
+        fileName: 'netlify/functions/rss.js',
+        source: `
+exports.handler = async (event, context) => {
+  try {
+    const response = await fetch('https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed', {
+      headers: {
+        'Referer': event.headers.referer || 'https://your-domain.com/',
+        'User-Agent': event.headers['user-agent'] || 'Netlify-Function/1.0'
+      }
+    });
+    
+    const rssContent = await response.text();
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/rss+xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600'
+      },
+      body: rssContent
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Error generating RSS feed'
+    };
+  }
+};
+        `.trim()
       });
     }
   };

@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from '@/context/AuthContext';
@@ -48,16 +49,12 @@ import BookAdminPage from '@/pages/admin/BookAdminPage';
 import BookEditPage from '@/pages/admin/BookEditPage';
 import UserAdminPage from '@/pages/admin/UserAdminPage';
 
-// Add the RSS redirect page import
-import RssRedirectPage from '@/pages/RssRedirectPage';
-
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* RSS Route - handled outside of Layout to avoid header/footer */}
-          <Route path="/rss" element={<RssRedirectPage />} />
+          {/* Note: /rss route is handled by Vite plugin, not React Router */}
           
           <Route path="/" element={<Layout />}>
             {/* Main Routes */}
