@@ -17,7 +17,6 @@ import UnauthorizedPage from '@/pages/UnauthorizedPage';
 import NotFound from '@/pages/NotFound';
 import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import TermsOfServicePage from '@/pages/TermsOfServicePage';
-import RssFeedPage from '@/pages/RssFeedPage';
 
 // Prayer Pages
 import PrayerLandingPage from '@/pages/PrayerLandingPage';
@@ -55,8 +54,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* RSS Route - outside of Layout to avoid header/footer */}
-          <Route path="/rss" element={<RssFeedPage />} />
+          {/* RSS Route is now handled by Vite plugin, not React Router */}
           
           <Route path="/" element={<Layout />}>
             {/* Main Routes */}
