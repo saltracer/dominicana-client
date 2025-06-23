@@ -19,19 +19,10 @@ export default function RSSRoute() {
 
         const rssContent = await response.text();
 
-        // Create a new document with the RSS content
-        const newDoc = document.implementation.createHTMLDocument();
-        newDoc.documentElement.innerHTML = `<head><meta charset="utf-8"></head><body><pre>${rssContent}</pre></body>`;
-        
         // Replace current document with RSS content
         document.open();
         document.write(rssContent);
         document.close();
-        
-        // Set the content type (this may not work in all browsers, but worth trying)
-        if (document.contentType) {
-          document.contentType = 'application/rss+xml';
-        }
 
       } catch (error) {
         console.error('Error serving RSS:', error);
