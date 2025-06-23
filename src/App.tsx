@@ -49,12 +49,16 @@ import BookAdminPage from '@/pages/admin/BookAdminPage';
 import BookEditPage from '@/pages/admin/BookEditPage';
 import UserAdminPage from '@/pages/admin/UserAdminPage';
 
+// RSS Route
+import RSSRoute from '@/components/rss/RSSRoute';
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Note: /rss route is handled by Vite plugin, not React Router */}
+          {/* RSS Route - served as raw XML */}
+          <Route path="/rss" element={<RSSRoute />} />
           
           <Route path="/" element={<Layout />}>
             {/* Main Routes */}
