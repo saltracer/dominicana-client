@@ -104,46 +104,57 @@ export function rssPlugin(): Plugin {
       });
     },
     generateBundle() {
-      // For production builds, create a redirect file for hosting platforms
+      // Create multiple redirect configurations for different hosting platforms
+      
+      // Netlify _redirects file
       this.emitFile({
         type: 'asset',
         fileName: '_redirects',
-        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200'
+        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200!'
       });
       
-      // Also create a Netlify function for direct RSS serving if the redirect doesn't work
+      // Vercel configuration (vercel.json)
       this.emitFile({
         type: 'asset',
-        fileName: 'netlify/functions/rss.js',
-        source: `
-exports.handler = async (event, context) => {
-  try {
-    const response = await fetch('https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed', {
-      headers: {
-        'Referer': event.headers.referer || 'https://your-domain.com/',
-        'User-Agent': event.headers['user-agent'] || 'Netlify-Function/1.0'
-      }
-    });
-    
-    const rssContent = await response.text();
-    
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/rss+xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600'
-      },
-      body: rssContent
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'Error generating RSS feed'
-    };
-  }
-};
-        `.trim()
+        fileName: 'vercel.json',
+        source: JSON.stringify({
+          rewrites: [
+            {
+              source: '/rss',
+              destination: 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed'
+            }
+          ]
+        }, null, 2)
+      });
+
+      // Generic hosting configuration (_routes.json for Cloudflare Pages)
+      this.emitFile({
+        type: 'asset',
+        fileName: '_routes.json',
+        source: JSON.stringify({
+          version: 1,
+          include: ['/*'],
+          exclude: ['/rss']
+        }, null, 2)
+      });
+
+      // Create a static rss.xml file as fallback that redirects to the function
+      this.emitFile({
+        type: 'asset',
+        fileName: 'rss.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Dominican Preaching Blog</title>
+    <description>This RSS feed has moved to /rss</description>
+    <link>/rss</link>
+    <item>
+      <title>RSS Feed Moved</title>
+      <description>Please update your feed reader to use /rss instead of /rss.xml</description>
+      <link>/rss</link>
+    </item>
+  </channel>
+</rss>`
       });
     }
   };
