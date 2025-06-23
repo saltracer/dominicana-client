@@ -12,17 +12,16 @@ export function rssPlugin(): Plugin {
           console.log('RSS Plugin: Intercepting /rss request in development');
           
           try {
-            // Use the dedicated RSS Supabase function
-            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss';
+            // Fetch RSS content from Supabase function
+            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
             
             // Forward the original request headers to maintain context
             const headers: Record<string, string> = {
               'User-Agent': req.headers['user-agent'] || 'RSS-Plugin/1.0',
             };
 
-            // Add host information to help the function determine the website domain
+            // Add referer to help the function determine the website domain
             if (req.headers.host) {
-              headers['X-Forwarded-Host'] = req.headers.host;
               headers['Referer'] = `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers.host}/`;
             }
 
@@ -66,14 +65,13 @@ export function rssPlugin(): Plugin {
           console.log('RSS Plugin: Intercepting /rss request in preview');
 
           try {
-            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss';
+            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
             
             const headers: Record<string, string> = {
               'User-Agent': req.headers['user-agent'] || 'RSS-Plugin/1.0',
             };
 
             if (req.headers.host) {
-              headers['X-Forwarded-Host'] = req.headers.host;
               headers['Referer'] = `${req.headers['x-forwarded-proto'] || 'https'}://${req.headers.host}/`;
             }
 
@@ -107,13 +105,12 @@ export function rssPlugin(): Plugin {
     },
     generateBundle() {
       // Create multiple redirect configurations for different hosting platforms
-      // These will proxy /rss to the dedicated Supabase RSS function
       
       // Netlify _redirects file
       this.emitFile({
         type: 'asset',
         fileName: '_redirects',
-        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss 200!'
+        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200!'
       });
       
       // Vercel configuration (vercel.json)
@@ -124,7 +121,7 @@ export function rssPlugin(): Plugin {
           rewrites: [
             {
               source: '/rss',
-              destination: 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss'
+              destination: 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed'
             }
           ]
         }, null, 2)
