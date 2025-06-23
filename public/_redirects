@@ -1,0 +1,5 @@
+# RSS Feed Redirect
+/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200
+
+# Fallback for SPA routing - make sure this comes after specific routes
+/* /index.html 200
