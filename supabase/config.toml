@@ -7,3 +7,8 @@ verify_jwt = false
 [functions."rss-feed".http_config]
 methods = ["GET", "OPTIONS"]
 
+[functions.rss]
+verify_jwt = false
+
+[functions."rss".http_config]
+methods = ["GET", "OPTIONS"]

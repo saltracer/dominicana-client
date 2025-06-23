@@ -12,8 +12,8 @@ export function rssPlugin(): Plugin {
           console.log('RSS Plugin: Intercepting /rss request in development');
           
           try {
-            // Fetch RSS content from Supabase function
-            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
+            // Fetch RSS content from the dedicated RSS Supabase function
+            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss';
             
             // Forward the original request headers to maintain context
             const headers: Record<string, string> = {
@@ -65,7 +65,7 @@ export function rssPlugin(): Plugin {
           console.log('RSS Plugin: Intercepting /rss request in preview');
 
           try {
-            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed';
+            const rssUrl = 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss';
             
             const headers: Record<string, string> = {
               'User-Agent': req.headers['user-agent'] || 'RSS-Plugin/1.0',
@@ -110,7 +110,7 @@ export function rssPlugin(): Plugin {
       this.emitFile({
         type: 'asset',
         fileName: '_redirects',
-        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed 200!'
+        source: '/rss https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss 200!'
       });
       
       // Vercel configuration (vercel.json)
@@ -121,7 +121,7 @@ export function rssPlugin(): Plugin {
           rewrites: [
             {
               source: '/rss',
-              destination: 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss-feed'
+              destination: 'https://rimpzfnxwqmamplowaoq.supabase.co/functions/v1/rss'
             }
           ]
         }, null, 2)
