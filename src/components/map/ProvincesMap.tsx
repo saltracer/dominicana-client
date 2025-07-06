@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, ZoomControl } from 'react-leaflet';
 import { DivIcon } from 'leaflet';
@@ -55,30 +56,10 @@ const ProvincesMap: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [geoJsonKey, setGeoJsonKey] = useState(0);
 
   useEffect(() => {
     setIsMapLoaded(true);
-    
-    // Debug logging for province boundaries
-    console.log('ProvincesMap: Total provinces:', allProvinces.length);
-    const provincesWithBoundaries = allProvinces.filter(p => 
-      p.boundaries && (p.boundaries.geometry || p.boundaries.type === 'Feature' || p.boundaries.type === 'Polygon' || p.boundaries.type === 'MultiPolygon')
-    );
-    console.log('ProvincesMap: Provinces with valid boundaries:', provincesWithBoundaries.length);
-    
-    if (provincesWithBoundaries.length < allProvinces.length) {
-      const missingBoundaries = allProvinces.filter(p => 
-        !p.boundaries || (!p.boundaries.geometry && p.boundaries.type !== 'Feature' && p.boundaries.type !== 'Polygon' && p.boundaries.type !== 'MultiPolygon')
-      );
-      console.log('ProvincesMap: Provinces missing boundaries:', missingBoundaries.map(p => p.name));
-    }
   }, []);
-
-  // Force GeoJSON re-render when selected province changes
-  useEffect(() => {
-    setGeoJsonKey(prev => prev + 1);
-  }, [selectedProvince]);
 
   if (!isMapLoaded) {
     return (
@@ -112,14 +93,11 @@ const ProvincesMap: React.FC = () => {
         
         <ZoomControl position="bottomright" />
         
-        {geojsonData.features.length > 0 && (
-          <GeoJSON 
-            key={`geojson-${geoJsonKey}`}
-            data={geojsonData as any} 
-            style={provinceStyle}
-            onEachFeature={onEachFeature}
-          />
-        )}
+        <GeoJSON 
+          data={geojsonData as any} 
+          style={provinceStyle}
+          onEachFeature={onEachFeature}
+        />
         
         {allProvinces.map((province) => (
           <Marker 
@@ -138,11 +116,6 @@ const ProvincesMap: React.FC = () => {
           </Marker>
         ))}
       </MapContainer>
-
-      {/* Debug info */}
-      <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-        Showing {geojsonData.features.length} province boundaries out of {allProvinces.length} total provinces
-      </div>
 
       {selectedProvince && (
         <div className="mt-6 p-6 bg-white dark:bg-card rounded-lg shadow-md">

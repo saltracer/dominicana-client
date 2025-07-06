@@ -1,4 +1,3 @@
-
 import type { Province } from '@/lib/types';
 import { GeoJSON } from 'leaflet';
 
@@ -19,53 +18,32 @@ export interface ProvinceGeoJSON {
  * Converts province data into GeoJSON format for React-Leaflet
  */
 export function provincesToGeoJSON(provinces: Province[]): ProvinceGeoJSON {
-  const features = provinces
-    .filter(province => {
-      // Only include provinces that have valid boundary data
-      return province.boundaries && 
-             (province.boundaries.type === 'Feature' || 
-              province.boundaries.type === 'Polygon' || 
-              province.boundaries.type === 'MultiPolygon' ||
-              province.boundaries.geometry);
-    })
-    .map(province => {
-      // Handle different boundary formats
-      if (province.boundaries.type === 'Feature') {
-        // For boundaries that are already in Feature format
-        return {
-          ...province.boundaries,
-          type: 'Feature' as const,
-          properties: {
-            ...province.boundaries.properties,
-            provinceId: province.id,
-            name: province.name
-          },
-          geometry: province.boundaries.geometry // Ensure the geometry is explicitly assigned
-        };
-      } else if (province.boundaries.geometry) {
-        // For boundaries with a geometry property
-        return {
-          type: 'Feature' as const,
-          properties: {
-            provinceId: province.id,
-            name: province.name
-          },
-          geometry: province.boundaries.geometry
-        };
-      } else {
-        // For direct Polygon or MultiPolygon types
-        return {
-          type: 'Feature' as const,
-          properties: {
-            provinceId: province.id,
-            name: province.name
-          },
-          geometry: province.boundaries // Ensure the geometry is explicitly assigned
-        };
-      }
-    });
-
-  console.log(`ProvincesToGeoJSON: Created ${features.length} features from ${provinces.length} provinces`);
+  const features = provinces.map(province => {
+    // Handle different boundary formats
+    if (province.boundaries.type === 'Feature') {
+      // For boundaries that are already in Feature format
+      return {
+        ...province.boundaries,
+        type: 'Feature' as const,
+        properties: {
+          ...province.boundaries.properties,
+          provinceId: province.id,
+          name: province.name
+        },
+        geometry: province.boundaries.geometry // Ensure the geometry is explicitly assigned
+      };
+    } else {
+      // For direct Polygon or MultiPolygon types
+      return {
+        type: 'Feature' as const,
+        properties: {
+          provinceId: province.id,
+          name: province.name
+        },
+        geometry: province.boundaries // Ensure the geometry is explicitly assigned
+      };
+    }
+  });
 
   return {
     type: 'FeatureCollection',
@@ -84,10 +62,10 @@ export function createProvinceStyler(provinces: Province[], selectedProvince: Pr
     
     return {
       fillColor: province?.color || '#6B8D8E',
-      weight: isSelected ? 3 : 2,
-      opacity: 0.8,
-      color: isSelected ? '#fff' : '#333',
-      fillOpacity: isSelected ? 0.8 : 0.5
+      weight: isSelected ? 3 : 1,
+      opacity: 1,
+      color: isSelected ? '#fff' : province?.color,
+      fillOpacity: isSelected ? 0.9 : 0.6
     };
   };
 }
@@ -118,10 +96,10 @@ export function createProvinceInteractions(provinces: Province[], onSelectProvin
           const isSelected = layer.feature.properties.provinceId === e.target._map._selectedProvinceId;
           if (!isSelected) {
             layer.setStyle({
-              weight: 2,
-              opacity: 0.8,
-              color: '#333',
-              fillOpacity: 0.5
+              weight: 1,
+              opacity: 1,
+              color: province?.color,
+              fillOpacity: 0.6
             });
           }
         },
