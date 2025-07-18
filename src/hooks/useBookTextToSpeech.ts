@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -18,6 +17,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const [readingProgress, setReadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [audioQueue, setAudioQueue] = useState<string[]>([]);
+  const [hasQuotaError, setHasQuotaError] = useState(false);
   
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const isStoppedRef = useRef(false);
@@ -213,7 +213,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     return chunks;
   }, [chunkSize]);
 
-  // Generate audio for a specific chunk
+  // Generate audio for a specific chunk with quota error handling
   const generateChunkAudio = useCallback(async (chunkText: string, chunkIndex: number, voiceId?: string): Promise<string | null> => {
     if (generatingChunksRef.current.has(chunkIndex)) {
       console.log(`⚠️ BookTTS: Chunk ${chunkIndex} already being generated`);
@@ -225,11 +225,25 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     try {
       console.log(`🎯 BookTTS: Generating audio for chunk ${chunkIndex + 1}`);
       const audioUrl = await generateSpeech(chunkText, voiceId);
-      console.log(`🔊 BookTTS: Generated audio URL for chunk ${chunkIndex + 1}:`, audioUrl ? 'Success' : 'Failed');
+      
+      if (!audioUrl) {
+        console.warn(`⚠️ BookTTS: No audio URL returned for chunk ${chunkIndex + 1}, may be quota issue`);
+        setHasQuotaError(true);
+        throw new Error('ElevenLabs quota exceeded or API error');
+      }
+      
+      console.log(`🔊 BookTTS: Generated audio URL for chunk ${chunkIndex + 1}: Success`);
       return audioUrl;
     } catch (error) {
       console.error(`💥 BookTTS: Failed to generate chunk ${chunkIndex + 1}:`, error);
-      return null;
+      
+      // Check if it's a quota error
+      if (error.message.includes('quota') || error.message.includes('credits')) {
+        console.warn('⚠️ BookTTS: Quota exceeded, setting quota error flag');
+        setHasQuotaError(true);
+      }
+      
+      throw error;
     } finally {
       generatingChunksRef.current.delete(chunkIndex);
     }
@@ -251,12 +265,25 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     if (chunks[startIndex]) {
       console.log(`🚀 BookTTS: Generating first chunk ${startIndex + 1} immediately`);
       setIsLoading(true);
-      audioUrls[startIndex] = await generateChunkAudio(chunks[startIndex], startIndex, voiceId);
-      setIsLoading(false);
       
-      if (!audioUrls[startIndex] || isStoppedRef.current) {
-        console.warn('❌ BookTTS: Failed to generate first chunk or stopped');
+      try {
+        audioUrls[startIndex] = await generateChunkAudio(chunks[startIndex], startIndex, voiceId);
+        setIsLoading(false);
+        
+        if (!audioUrls[startIndex] || isStoppedRef.current) {
+          console.warn('❌ BookTTS: Failed to generate first chunk or stopped');
+          setIsReading(false);
+          return;
+        }
+      } catch (error) {
+        console.error('💥 BookTTS: ElevenLabs failed for first chunk:', error);
+        setIsLoading(false);
         setIsReading(false);
+        
+        // If it's a quota error, throw to trigger fallback
+        if (hasQuotaError || error.message.includes('quota') || error.message.includes('credits')) {
+          throw new Error('ElevenLabs quota exceeded - fallback required');
+        }
         return;
       }
     }
@@ -278,6 +305,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           generatePromises.push(
             generateChunkAudio(chunks[j], j, voiceId).then(url => {
               audioUrls[j] = url;
+            }).catch(error => {
+              console.warn(`⚠️ BookTTS: Failed to generate chunk ${j + 1}:`, error);
+              audioUrls[j] = null;
             })
           );
         }
@@ -287,8 +317,15 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       if (!audioUrls[i]) {
         console.log(`⏳ BookTTS: Waiting for chunk ${i + 1} to be generated`);
         setIsLoading(true);
-        audioUrls[i] = await generateChunkAudio(chunks[i], i, voiceId);
-        setIsLoading(false);
+        
+        try {
+          audioUrls[i] = await generateChunkAudio(chunks[i], i, voiceId);
+          setIsLoading(false);
+        } catch (error) {
+          console.error(`💥 BookTTS: Failed to generate chunk ${i + 1}:`, error);
+          setIsLoading(false);
+          break;
+        }
       }
       
       if (!audioUrls[i] || isStoppedRef.current) {
@@ -344,7 +381,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     setReadingProgress(100);
     setCurrentChunkIndex(0);
     currentAudioRef.current = null;
-  }, [generateChunkAudio, pauseBetweenChunks, maxConcurrentChunks]);
+  }, [generateChunkAudio, pauseBetweenChunks, maxConcurrentChunks, hasQuotaError]);
 
   // Start reading the current page
   const startReading = useCallback(async (rendition: any, voiceId?: string) => {
@@ -354,6 +391,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       console.log('⚠️ BookTTS: Already reading or loading');
       return;
     }
+
+    // Reset quota error flag on new start
+    setHasQuotaError(false);
 
     console.log('📖 BookTTS: Extracting text from current page');
     
@@ -381,7 +421,18 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     isStoppedRef.current = false;
     generatingChunksRef.current.clear();
 
-    await playChunksWithImmediateStart(chunks, voiceId);
+    try {
+      await playChunksWithImmediateStart(chunks, voiceId);
+    } catch (error) {
+      console.error('💥 BookTTS: Playback failed:', error);
+      setIsReading(false);
+      setIsLoading(false);
+      
+      // Re-throw quota errors to trigger fallback
+      if (error.message.includes('quota') || error.message.includes('fallback')) {
+        throw error;
+      }
+    }
   }, [extractCurrentPageText, splitTextIntoChunks, playChunksWithImmediateStart, isReading, isLoading]);
 
   // Stop reading
@@ -422,7 +473,18 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     isStoppedRef.current = false;
     generatingChunksRef.current.clear();
 
-    await playChunksWithImmediateStart(textChunks, voiceId, currentChunkIndex);
+    try {
+      await playChunksWithImmediateStart(textChunks, voiceId, currentChunkIndex);
+    } catch (error) {
+      console.error('💥 BookTTS: Resume failed:', error);
+      setIsReading(false);
+      setIsLoading(false);
+      
+      // Re-throw quota errors to trigger fallback
+      if (error.message.includes('quota') || error.message.includes('fallback')) {
+        throw error;
+      }
+    }
   }, [textChunks, currentChunkIndex, playChunksWithImmediateStart, isReading, isLoading]);
 
   return {
@@ -434,6 +496,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     startReading,
     stopReading,
     resumeReading,
-    availableVoices
+    availableVoices,
+    hasQuotaError
   };
 };

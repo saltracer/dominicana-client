@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Volume2, VolumeX, Loader2, Play, Pause, Square } from 'lucide-react';
 import { useBookTextToSpeech } from '@/hooks/useBookTextToSpeech';
+import { useBookWebSpeechTTS } from '@/hooks/useBookWebSpeechTTS';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
@@ -17,46 +18,71 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   className
 }) => {
   const [selectedVoiceId, setSelectedVoiceId] = useState('EXAVITQu4vr4xnSDxMaL'); // Default to Sarah
-  const {
-    isReading,
-    isLoading,
-    readingProgress,
-    currentChunkIndex,
-    totalChunks,
-    startReading,
-    stopReading,
-    resumeReading,
-    availableVoices
-  } = useBookTextToSpeech({
-    chunkSize: 1500, // Slightly smaller chunks for books
-    pauseBetweenChunks: 300 // Shorter pause between chunks
+  const [useFallback, setUseFallback] = useState(false);
+  
+  // ElevenLabs TTS (primary)
+  const elevenLabsTTS = useBookTextToSpeech({
+    chunkSize: 1500,
+    pauseBetweenChunks: 300
   });
+
+  // Web Speech TTS (fallback)
+  const webSpeechTTS = useBookWebSpeechTTS({
+    chunkSize: 1500,
+    pauseBetweenChunks: 300
+  });
+
+  // Use the appropriate TTS based on fallback state
+  const currentTTS = useFallback ? webSpeechTTS : elevenLabsTTS;
 
   const handleToggleReading = async () => {
     console.log('🎯 BookTTSControls: Toggle reading clicked:', {
-      isReading,
+      isReading: currentTTS.isReading,
       hasRendition: !!rendition,
-      totalChunks,
-      currentChunkIndex
+      totalChunks: currentTTS.totalChunks,
+      currentChunkIndex: currentTTS.currentChunkIndex,
+      useFallback
     });
     
-    if (isReading) {
+    if (currentTTS.isReading) {
       console.log('⏹️ BookTTSControls: Stopping reading');
-      stopReading();
-    } else if (totalChunks > 0 && currentChunkIndex > 0) {
-      // Resume from where we left off
+      currentTTS.stopReading();
+    } else if (currentTTS.totalChunks > 0 && currentTTS.currentChunkIndex > 0) {
       console.log('▶️ BookTTSControls: Resuming reading');
-      await resumeReading(selectedVoiceId);
+      await currentTTS.resumeReading(useFallback ? selectedVoiceId : selectedVoiceId);
     } else {
-      // Start from beginning
       console.log('🎬 BookTTSControls: Starting reading from beginning');
-      await startReading(rendition, selectedVoiceId);
+      
+      // Try ElevenLabs first if not already using fallback
+      if (!useFallback) {
+        try {
+          await elevenLabsTTS.startReading(rendition, selectedVoiceId);
+        } catch (error) {
+          console.warn('⚠️ ElevenLabs failed, switching to Web Speech:', error);
+          setUseFallback(true);
+          // Start with Web Speech instead
+          await webSpeechTTS.startReading(rendition, selectedVoiceId);
+        }
+      } else {
+        await webSpeechTTS.startReading(rendition, selectedVoiceId);
+      }
     }
   };
 
   const handleStop = () => {
     console.log('⏹️ BookTTSControls: Stop clicked');
-    stopReading();
+    currentTTS.stopReading();
+  };
+
+  const handleVoiceChange = (newVoiceId: string) => {
+    setSelectedVoiceId(newVoiceId);
+    
+    // If changing to a Web Speech voice, switch to fallback mode
+    if (webSpeechTTS.availableVoices.some(v => v.id === newVoiceId)) {
+      setUseFallback(true);
+    } else if (elevenLabsTTS.availableVoices.some(v => v.id === newVoiceId)) {
+      setUseFallback(false);
+    }
   };
 
   if (!rendition) {
@@ -65,34 +91,56 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   }
 
   console.log('🎛️ BookTTSControls: Rendering controls:', {
-    isReading,
-    isLoading,
-    readingProgress,
-    currentChunkIndex,
-    totalChunks,
-    availableVoices: availableVoices.length
+    isReading: currentTTS.isReading,
+    isLoading: currentTTS.isLoading,
+    readingProgress: currentTTS.readingProgress,
+    currentChunkIndex: currentTTS.currentChunkIndex,
+    totalChunks: currentTTS.totalChunks,
+    availableVoices: currentTTS.availableVoices.length,
+    useFallback
   });
+
+  // Combine voices from both TTS systems
+  const allVoices = [
+    ...elevenLabsTTS.availableVoices.map(v => ({ ...v, source: 'ElevenLabs' })),
+    ...webSpeechTTS.availableVoices.map(v => ({ ...v, source: 'WebSpeech' }))
+  ];
 
   return (
     <div className={cn("flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm", className)}>
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Volume2 className="h-4 w-4" />
-          Text-to-Speech
+          Text-to-Speech {useFallback && <span className="text-xs text-amber-600">(Web Speech)</span>}
         </h3>
         
         <div className="flex items-center gap-2">
           {/* Voice Selection */}
-          <Select value={selectedVoiceId} onValueChange={setSelectedVoiceId}>
+          <Select value={selectedVoiceId} onValueChange={handleVoiceChange}>
             <SelectTrigger className="w-32 h-8 text-xs">
               <SelectValue placeholder="Voice" />
             </SelectTrigger>
             <SelectContent>
-              {availableVoices.map((voice) => (
-                <SelectItem key={voice.id} value={voice.id}>
-                  {voice.name}
-                </SelectItem>
-              ))}
+              {elevenLabsTTS.availableVoices.length > 0 && (
+                <>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">ElevenLabs</div>
+                  {elevenLabsTTS.availableVoices.map((voice) => (
+                    <SelectItem key={voice.id} value={voice.id}>
+                      {voice.name}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
+              {webSpeechTTS.availableVoices.length > 0 && (
+                <>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">Browser Voices</div>
+                  {webSpeechTTS.availableVoices.map((voice) => (
+                    <SelectItem key={voice.id} value={voice.id}>
+                      {voice.name}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
             </SelectContent>
           </Select>
 
@@ -101,13 +149,13 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
             size="sm"
             variant="outline"
             onClick={handleToggleReading}
-            disabled={isLoading}
+            disabled={currentTTS.isLoading}
             className="h-8 w-8 p-0"
-            title={isReading ? "Pause reading" : "Start reading"}
+            title={currentTTS.isReading ? "Pause reading" : "Start reading"}
           >
-            {isLoading ? (
+            {currentTTS.isLoading ? (
               <Loader2 className="h-3 w-3 animate-spin" />
-            ) : isReading ? (
+            ) : currentTTS.isReading ? (
               <Pause className="h-3 w-3" />
             ) : (
               <Play className="h-3 w-3" />
@@ -118,7 +166,7 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
             size="sm"
             variant="outline"
             onClick={handleStop}
-            disabled={!isReading && !isLoading && totalChunks === 0}
+            disabled={!currentTTS.isReading && !currentTTS.isLoading && currentTTS.totalChunks === 0}
             className="h-8 w-8 p-0"
             title="Stop reading"
           >
@@ -128,30 +176,30 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
       </div>
 
       {/* Progress Indicator */}
-      {(isReading || isLoading || totalChunks > 0) && (
+      {(currentTTS.isReading || currentTTS.isLoading || currentTTS.totalChunks > 0) && (
         <div className="space-y-2">
-          <Progress value={readingProgress} className="h-1" />
+          <Progress value={currentTTS.readingProgress} className="h-1" />
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>
-              {totalChunks > 0 ? `Part ${currentChunkIndex + 1} of ${totalChunks}` : 'Preparing...'}
+              {currentTTS.totalChunks > 0 ? `Part ${currentTTS.currentChunkIndex + 1} of ${currentTTS.totalChunks}` : 'Preparing...'}
             </span>
-            <span>{Math.round(readingProgress)}%</span>
+            <span>{Math.round(currentTTS.readingProgress)}%</span>
           </div>
         </div>
       )}
 
       {/* Status Text */}
-      {isLoading && (
+      {currentTTS.isLoading && (
         <p className="text-xs text-gray-600 dark:text-gray-400">
           Preparing speech...
         </p>
       )}
-      {isReading && !isLoading && (
+      {currentTTS.isReading && !currentTTS.isLoading && (
         <p className="text-xs text-green-600 dark:text-green-400">
-          Reading page aloud
+          Reading page aloud {useFallback ? '(using browser voice)' : '(using ElevenLabs)'}
         </p>
       )}
-      {availableVoices.length === 0 && (
+      {allVoices.length === 0 && (
         <p className="text-xs text-amber-600 dark:text-amber-400">
           Loading voices...
         </p>
