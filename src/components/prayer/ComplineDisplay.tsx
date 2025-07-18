@@ -108,7 +108,7 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
 
   // Get plain text for TTS
   const primaryTextContent = getPlainTextContent(primaryContent);
-  const titleText = title.length > 0 ? removeMarkdown(title[0]) : '';
+  const titleText = title.length > 0 ? removeMarkdown(title.join(' ')) : '';
 
   const renderLanguageColumn = (
     content: string[][], 
