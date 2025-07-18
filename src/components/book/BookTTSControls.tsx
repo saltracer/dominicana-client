@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Volume2, VolumeX, Loader2, Play, Pause, Square } from 'lucide-react';
-import { useBookTextToSpeech } from '@/hooks/useBookTextToSpeech';
+import { useBookWebSpeechTTS } from '@/hooks/useBookWebSpeechTTS';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
@@ -16,7 +16,7 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   rendition,
   className
 }) => {
-  const [selectedVoiceId, setSelectedVoiceId] = useState('EXAVITQu4vr4xnSDxMaL'); // Default to Sarah
+  const [selectedVoiceId, setSelectedVoiceId] = useState('');
   const {
     isReading,
     isLoading,
@@ -27,7 +27,7 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
     stopReading,
     resumeReading,
     availableVoices
-  } = useBookTextToSpeech({
+  } = useBookWebSpeechTTS({
     chunkSize: 1500, // Slightly smaller chunks for books
     pauseBetweenChunks: 300 // Shorter pause between chunks
   });
@@ -69,13 +69,15 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
     isLoading,
     readingProgress,
     currentChunkIndex,
-    totalChunks
+    totalChunks,
+    availableVoices: availableVoices.length
   });
 
   return (
     <div className={cn("flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm", className)}>
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <Volume2 className="h-4 w-4" />
           Text-to-Speech
         </h3>
         
@@ -141,12 +143,17 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
       {/* Status Text */}
       {isLoading && (
         <p className="text-xs text-gray-600 dark:text-gray-400">
-          Generating speech...
+          Preparing speech...
         </p>
       )}
       {isReading && !isLoading && (
         <p className="text-xs text-green-600 dark:text-green-400">
           Reading page aloud
+        </p>
+      )}
+      {availableVoices.length === 0 && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          Loading voices...
         </p>
       )}
     </div>
