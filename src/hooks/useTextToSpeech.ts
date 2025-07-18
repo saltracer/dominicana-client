@@ -24,7 +24,14 @@ export const useTextToSpeech = () => {
   const { toast } = useToast();
 
   const generateSpeech = useCallback(async (text: string, voiceId?: string) => {
+    console.log('🗣️ TTS: Generate speech requested:', {
+      textLength: text.length,
+      voiceId,
+      preview: text.substring(0, 50) + '...'
+    });
+    
     if (!text.trim()) {
+      console.error('❌ TTS: No text provided for speech generation');
       toast({
         title: "Error",
         description: "No text provided for speech generation",
@@ -36,7 +43,7 @@ export const useTextToSpeech = () => {
     setIsLoading(true);
     
     try {
-      console.log('Generating TTS for text:', text.substring(0, 100) + '...');
+      console.log('🔄 TTS: Calling Supabase function...');
       
       const { data, error } = await supabase.functions.invoke('elevenlabs-tts', {
         body: {
@@ -46,29 +53,44 @@ export const useTextToSpeech = () => {
       });
 
       if (error) {
-        console.error('Supabase function error:', error);
+        console.error('💥 TTS: Supabase function error:', error);
         throw error;
       }
 
-      console.log('TTS response received:', data ? 'Success' : 'No data');
+      console.log('✅ TTS: Function response received:', {
+        hasData: !!data,
+        hasAudioContent: !!(data && data.audioContent),
+        audioContentLength: data?.audioContent?.length
+      });
 
       // The edge function returns JSON with base64 encoded audio
       if (data && data.audioContent) {
-        console.log('Creating audio blob from base64 data');
-        const audioBlob = new Blob([
-          Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
-        ], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        console.log('Audio URL created successfully');
-        return audioUrl;
+        console.log('🎵 TTS: Creating audio blob from base64 data');
+        try {
+          const audioBlob = new Blob([
+            Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
+          ], { type: 'audio/mpeg' });
+          
+          const audioUrl = URL.createObjectURL(audioBlob);
+          console.log('✅ TTS: Audio URL created successfully:', {
+            blobSize: audioBlob.size,
+            urlLength: audioUrl.length
+          });
+          
+          return audioUrl;
+        } catch (blobError) {
+          console.error('💥 TTS: Error creating audio blob:', blobError);
+          throw new Error('Failed to create audio blob from response');
+        }
       }
 
+      console.error('❌ TTS: No audio content in response');
       throw new Error('No audio content received from TTS service');
     } catch (error) {
-      console.error('TTS generation error:', error);
+      console.error('💥 TTS: Generation error:', error);
       toast({
         title: "Speech Generation Failed",
-        description: "Unable to generate speech. Please try again.",
+        description: `Unable to generate speech: ${error.message}`,
         variant: "destructive",
       });
       return null;
@@ -78,10 +100,14 @@ export const useTextToSpeech = () => {
   }, [toast]);
 
   const playAudio = useCallback(async (text: string, voiceId?: string) => {
-    console.log('Play audio requested for text length:', text.length);
+    console.log('▶️ TTS: Play audio requested:', {
+      textLength: text.length,
+      voiceId
+    });
     
     // Stop current audio if playing
     if (currentAudio) {
+      console.log('⏹️ TTS: Stopping current audio');
       currentAudio.pause();
       currentAudio.currentTime = 0;
       URL.revokeObjectURL(currentAudio.src);
@@ -89,30 +115,35 @@ export const useTextToSpeech = () => {
 
     const audioUrl = await generateSpeech(text, voiceId);
     if (!audioUrl) {
-      console.log('No audio URL generated');
+      console.log('❌ TTS: No audio URL generated');
       return;
     }
 
-    console.log('Creating audio element with URL:', audioUrl.substring(0, 50) + '...');
+    console.log('🎶 TTS: Creating audio element');
     const audio = new Audio(audioUrl);
     setCurrentAudio(audio);
 
     audio.onplay = () => {
-      console.log('Audio playback started');
+      console.log('▶️ TTS: Audio playback started');
       setIsPlaying(true);
     };
     audio.onpause = () => {
-      console.log('Audio playback paused');
+      console.log('⏸️ TTS: Audio playback paused');
       setIsPlaying(false);
     };
     audio.onended = () => {
-      console.log('Audio playback ended');
+      console.log('✅ TTS: Audio playback ended');
       setIsPlaying(false);
       URL.revokeObjectURL(audioUrl);
       setCurrentAudio(null);
     };
     audio.onerror = (e) => {
-      console.error('Audio playback error:', e);
+      console.error('💥 TTS: Audio playback error:', e);
+      console.error('Audio error details:', {
+        error: audio.error,
+        networkState: audio.networkState,
+        readyState: audio.readyState
+      });
       toast({
         title: "Playback Failed",
         description: "Unable to play audio. Please try again.",
@@ -122,13 +153,13 @@ export const useTextToSpeech = () => {
     };
 
     try {
-      console.log('Attempting to play audio');
+      console.log('🚀 TTS: Attempting to play audio');
       await audio.play();
     } catch (error) {
-      console.error('Audio playback error:', error);
+      console.error('💥 TTS: Audio playback error:', error);
       toast({
         title: "Playback Failed",
-        description: "Unable to play audio. Please try again.",
+        description: `Unable to play audio: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -136,7 +167,7 @@ export const useTextToSpeech = () => {
 
   const stopAudio = useCallback(() => {
     if (currentAudio) {
-      console.log('Stopping audio playback');
+      console.log('⏹️ TTS: Stopping audio playback');
       currentAudio.pause();
       currentAudio.currentTime = 0;
       setIsPlaying(false);

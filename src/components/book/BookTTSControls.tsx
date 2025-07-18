@@ -33,24 +33,44 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   });
 
   const handleToggleReading = async () => {
+    console.log('🎯 BookTTSControls: Toggle reading clicked:', {
+      isReading,
+      hasRendition: !!rendition,
+      totalChunks,
+      currentChunkIndex
+    });
+    
     if (isReading) {
+      console.log('⏹️ BookTTSControls: Stopping reading');
       stopReading();
     } else if (totalChunks > 0 && currentChunkIndex > 0) {
       // Resume from where we left off
+      console.log('▶️ BookTTSControls: Resuming reading');
       await resumeReading(selectedVoiceId);
     } else {
       // Start from beginning
+      console.log('🎬 BookTTSControls: Starting reading from beginning');
       await startReading(rendition, selectedVoiceId);
     }
   };
 
   const handleStop = () => {
+    console.log('⏹️ BookTTSControls: Stop clicked');
     stopReading();
   };
 
   if (!rendition) {
+    console.log('⚠️ BookTTSControls: No rendition provided - not rendering controls');
     return null;
   }
+
+  console.log('🎛️ BookTTSControls: Rendering controls:', {
+    isReading,
+    isLoading,
+    readingProgress,
+    currentChunkIndex,
+    totalChunks
+  });
 
   return (
     <div className={cn("flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm", className)}>
