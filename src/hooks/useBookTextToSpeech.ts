@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -18,6 +19,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const isStoppedRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Enhanced text extraction method for EPUB iframes
   const extractCurrentPageText = useCallback((rendition: any): string => {
@@ -29,7 +31,6 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      // Try multiple methods to extract text from the EPUB
       let extractedText = '';
 
       // Method 1: Get text from the current view's iframe
@@ -63,33 +64,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         }
       }
 
-      // Method 2: Try to get text from rendition's current location
-      if (!extractedText.trim() && rendition.book) {
-        console.log('📖 BookTTS: Trying Method 2 - current location text');
-        try {
-          const currentLocation = rendition.currentLocation();
-          if (currentLocation && currentLocation.start) {
-            const spine = rendition.book.spine;
-            const section = spine.get(currentLocation.start.href);
-            if (section && section.output) {
-              // Parse the HTML content
-              const parser = new DOMParser();
-              const doc = parser.parseFromString(section.output, 'text/html');
-              const text = doc.body?.textContent || doc.body?.innerText || '';
-              if (text.trim()) {
-                extractedText = text;
-                console.log('✅ BookTTS: Method 2 successful, extracted text length:', text.length);
-              }
-            }
-          }
-        } catch (error) {
-          console.warn('⚠️ BookTTS: Error in Method 2:', error);
-        }
-      }
-
-      // Method 3: Direct DOM query in the main document
+      // Method 2: Direct DOM query in the main document
       if (!extractedText.trim()) {
-        console.log('📖 BookTTS: Trying Method 3 - direct DOM query');
+        console.log('📖 BookTTS: Trying Method 2 - direct DOM query');
         try {
           const iframes = document.querySelectorAll('iframe[id^="epubjs-view"]');
           console.log('🔍 BookTTS: Found EPUB iframes:', iframes.length);
@@ -103,7 +80,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                   const text = body.textContent || body.innerText || '';
                   if (text.trim()) {
                     extractedText = text;
-                    console.log('✅ BookTTS: Method 3 successful, extracted text length:', text.length);
+                    console.log('✅ BookTTS: Method 2 successful, extracted text length:', text.length);
                     break;
                   }
                 }
@@ -113,7 +90,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
             }
           }
         } catch (error) {
-          console.warn('⚠️ BookTTS: Error in Method 3:', error);
+          console.warn('⚠️ BookTTS: Error in Method 2:', error);
         }
       }
 
@@ -234,6 +211,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           
           audio.onplay = () => {
             console.log(`🎶 BookTTS: Started playing chunk ${i + 1}`);
+            setIsLoading(false);
           };
           
           audio.onended = () => {
@@ -244,7 +222,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
             // Pause between chunks if not the last one
             if (i < chunks.length - 1 && pauseBetweenChunks > 0) {
               console.log(`⏸️ BookTTS: Pausing ${pauseBetweenChunks}ms between chunks`);
-              setTimeout(resolve, pauseBetweenChunks);
+              timeoutRef.current = setTimeout(resolve, pauseBetweenChunks);
             } else {
               resolve();
             }
@@ -340,6 +318,11 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       currentAudioRef.current.pause();
       currentAudioRef.current.currentTime = 0;
       currentAudioRef.current = null;
+    }
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
     
     setCurrentChunkIndex(0);

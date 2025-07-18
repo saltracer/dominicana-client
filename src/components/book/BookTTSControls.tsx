@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Volume2, VolumeX, Loader2, Play, Pause, Square } from 'lucide-react';
-import { useBookWebSpeechTTS } from '@/hooks/useBookWebSpeechTTS';
+import { useBookTextToSpeech } from '@/hooks/useBookTextToSpeech';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
@@ -16,7 +16,7 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   rendition,
   className
 }) => {
-  const [selectedVoiceId, setSelectedVoiceId] = useState('');
+  const [selectedVoiceId, setSelectedVoiceId] = useState('EXAVITQu4vr4xnSDxMaL'); // Default to Sarah
   const {
     isReading,
     isLoading,
@@ -27,7 +27,7 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
     stopReading,
     resumeReading,
     availableVoices
-  } = useBookWebSpeechTTS({
+  } = useBookTextToSpeech({
     chunkSize: 1500, // Slightly smaller chunks for books
     pauseBetweenChunks: 300 // Shorter pause between chunks
   });
