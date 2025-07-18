@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -20,9 +19,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const isStoppedRef = useRef(false);
 
-  // Extract text from the current page in the EPUB rendition
+  // Enhanced text extraction method for EPUB iframes
   const extractCurrentPageText = useCallback((rendition: any): string => {
-    console.log('🔍 BookTTS: Starting text extraction from rendition');
+    console.log('🔍 BookTTS: Starting enhanced text extraction from rendition');
     
     try {
       if (!rendition) {
@@ -30,76 +29,113 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      console.log('📖 BookTTS: Rendition object:', {
-        hasBook: !!rendition.book,
-        hasManager: !!rendition.manager,
-        hasCurrentLocation: !!rendition.currentLocation
-      });
+      // Try multiple methods to extract text from the EPUB
+      let extractedText = '';
 
-      // Get the current location's content
-      const currentLocation = rendition.currentLocation();
-      console.log('📍 BookTTS: Current location:', currentLocation);
-      
-      if (!currentLocation?.start?.cfi) {
-        console.warn('⚠️ BookTTS: No current location found in rendition');
-        return '';
-      }
-
-      // Try to get the text content from the current section
+      // Method 1: Get text from the current view's iframe
       const manager = rendition.manager;
-      if (!manager) {
-        console.error('❌ BookTTS: No manager found in rendition');
-        return '';
+      if (manager && manager.views) {
+        console.log('📖 BookTTS: Trying Method 1 - iframe extraction');
+        const views = manager.views();
+        console.log('👁️ BookTTS: Found views:', views.length);
+        
+        for (const view of views) {
+          if (view.displayed && view.contents) {
+            console.log('🎯 BookTTS: Processing displayed view');
+            try {
+              const iframe = view.iframe;
+              if (iframe && iframe.contentDocument) {
+                const doc = iframe.contentDocument;
+                const body = doc.body || doc.documentElement;
+                if (body) {
+                  const text = body.textContent || body.innerText || '';
+                  if (text.trim()) {
+                    extractedText = text;
+                    console.log('✅ BookTTS: Method 1 successful, extracted text length:', text.length);
+                    break;
+                  }
+                }
+              }
+            } catch (error) {
+              console.warn('⚠️ BookTTS: Error in Method 1 for view:', error);
+            }
+          }
+        }
       }
 
-      const view = manager.views().find((v: any) => v.displayed);
-      console.log('👁️ BookTTS: Found view:', {
-        hasView: !!view,
-        isDisplayed: view?.displayed,
-        hasContents: !!view?.contents
-      });
-      
-      if (view && view.contents) {
-        const document = view.contents.document;
-        console.log('📄 BookTTS: Document info:', {
-          hasDocument: !!document,
-          hasBody: !!document?.body,
-          bodyType: typeof document?.body
+      // Method 2: Try to get text from rendition's current location
+      if (!extractedText.trim() && rendition.book) {
+        console.log('📖 BookTTS: Trying Method 2 - current location text');
+        try {
+          const currentLocation = rendition.currentLocation();
+          if (currentLocation && currentLocation.start) {
+            const spine = rendition.book.spine;
+            const section = spine.get(currentLocation.start.href);
+            if (section && section.output) {
+              // Parse the HTML content
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(section.output, 'text/html');
+              const text = doc.body?.textContent || doc.body?.innerText || '';
+              if (text.trim()) {
+                extractedText = text;
+                console.log('✅ BookTTS: Method 2 successful, extracted text length:', text.length);
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ BookTTS: Error in Method 2:', error);
+        }
+      }
+
+      // Method 3: Direct DOM query in the main document
+      if (!extractedText.trim()) {
+        console.log('📖 BookTTS: Trying Method 3 - direct DOM query');
+        try {
+          const iframes = document.querySelectorAll('iframe[id^="epubjs-view"]');
+          console.log('🔍 BookTTS: Found EPUB iframes:', iframes.length);
+          
+          for (const iframe of iframes) {
+            try {
+              const iframeDoc = (iframe as HTMLIFrameElement).contentDocument;
+              if (iframeDoc) {
+                const body = iframeDoc.body || iframeDoc.documentElement;
+                if (body) {
+                  const text = body.textContent || body.innerText || '';
+                  if (text.trim()) {
+                    extractedText = text;
+                    console.log('✅ BookTTS: Method 3 successful, extracted text length:', text.length);
+                    break;
+                  }
+                }
+              }
+            } catch (error) {
+              console.warn('⚠️ BookTTS: Cross-origin or other error accessing iframe:', error);
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ BookTTS: Error in Method 3:', error);
+        }
+      }
+
+      // Clean up the extracted text
+      if (extractedText.trim()) {
+        const cleanedText = extractedText
+          .replace(/\s+/g, ' ')
+          .replace(/\n+/g, ' ')
+          .trim();
+        
+        console.log('✅ BookTTS: Successfully extracted and cleaned text:', {
+          originalLength: extractedText.length,
+          cleanedLength: cleanedText.length,
+          preview: cleanedText.substring(0, 100) + '...'
         });
         
-        if (document && document.body) {
-          // Extract text content, cleaning up formatting
-          const textContent = document.body.textContent || document.body.innerText || '';
-          const cleanedText = textContent
-            .replace(/\s+/g, ' ')
-            .replace(/\n+/g, ' ')
-            .trim();
-          
-          console.log('✅ BookTTS: Successfully extracted text:', {
-            originalLength: textContent.length,
-            cleanedLength: cleanedText.length,
-            preview: cleanedText.substring(0, 100) + '...'
-          });
-          
-          return cleanedText;
-        }
+        return cleanedText;
       }
-      
-      console.warn('⚠️ BookTTS: Could not extract text from current page - trying alternative method');
-      
-      // Alternative method: try to get text from the current section directly
-      if (rendition.book && currentLocation.start.href) {
-        console.log('🔄 BookTTS: Trying alternative extraction method');
-        const section = rendition.book.spine.get(currentLocation.start.href);
-        if (section) {
-          console.log('📑 BookTTS: Found section for alternative extraction');
-          // This is a fallback - we'll return a placeholder for now
-          return 'Alternative text extraction method - section found but content parsing needed.';
-        }
-      }
-      
-      console.error('❌ BookTTS: All text extraction methods failed');
+
+      console.warn('⚠️ BookTTS: No text could be extracted using any method');
       return '';
+      
     } catch (error) {
       console.error('💥 BookTTS: Error extracting text from page:', error);
       return '';
