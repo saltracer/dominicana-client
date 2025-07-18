@@ -1,9 +1,10 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
 export interface BookTTSOptions {
-  chunkSize?: number; // Characters per TTS chunk
-  pauseBetweenChunks?: number; // Milliseconds to pause between chunks
+  chunkSize?: number;
+  pauseBetweenChunks?: number;
 }
 
 export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
@@ -22,7 +23,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
   // Enhanced text extraction method for EPUB iframes
   const extractCurrentPageText = useCallback((rendition: any): string => {
-    console.log('🔍 BookTTS: Starting enhanced text extraction from rendition');
+    console.log('🔍 BookTTS: Starting text extraction from rendition');
     
     try {
       if (!rendition) {
@@ -32,102 +33,104 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Try to get text from current location using rendition's built-in methods
+      // Method 1: Try to access the manager views directly (not as a function)
       try {
-        const currentLocation = rendition.currentLocation();
-        console.log('📍 BookTTS: Current location:', currentLocation);
+        const manager = rendition.manager;
+        console.log('📖 BookTTS: Manager found:', !!manager);
         
-        if (currentLocation && currentLocation.start) {
-          const section = rendition.book.spine.get(currentLocation.start.href);
-          if (section) {
-            console.log('📄 BookTTS: Found section for current location');
-            // This is a more reliable way to get the current page content
-          }
-        }
-      } catch (error) {
-        console.warn('⚠️ BookTTS: Error getting current location:', error);
-      }
-
-      // Method 2: Get text from the current view's iframe (enhanced approach)
-      const manager = rendition.manager;
-      if (manager && manager.views) {
-        console.log('📖 BookTTS: Trying Method 2 - enhanced iframe extraction');
-        const views = manager.views();
-        console.log('👁️ BookTTS: Found views:', views.length);
-        
-        for (const view of views) {
-          if (view.displayed && view.contents) {
-            console.log('🎯 BookTTS: Processing displayed view');
-            try {
-              // Try multiple approaches to get the content
-              let viewText = '';
-              
-              // Approach A: Direct content access
-              if (view.contents.document) {
+        if (manager && manager.views) {
+          console.log('👁️ BookTTS: Views found:', manager.views);
+          
+          // Access views as property, not function
+          const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
+          console.log('📚 BookTTS: Processing views:', views.length);
+          
+          for (const view of views) {
+            console.log('🔍 BookTTS: Processing view:', {
+              displayed: view?.displayed,
+              hasContents: !!view?.contents,
+              hasDocument: !!view?.contents?.document
+            });
+            
+            if (view && view.displayed && view.contents && view.contents.document) {
+              try {
                 const doc = view.contents.document;
                 const body = doc.body || doc.documentElement;
+                
                 if (body) {
-                  // Remove script and style elements before extracting text
-                  const clone = body.cloneNode(true) as HTMLElement;
-                  const scripts = clone.querySelectorAll('script, style');
-                  scripts.forEach(el => el.remove());
+                  console.log('📄 BookTTS: Found body element in view');
                   
-                  viewText = clone.textContent || clone.innerText || '';
-                  console.log('✅ BookTTS: Approach A successful, text length:', viewText.length);
-                }
-              }
-              
-              // Approach B: Try iframe document access
-              if (!viewText && view.iframe && view.iframe.contentDocument) {
-                const doc = view.iframe.contentDocument;
-                const body = doc.body || doc.documentElement;
-                if (body) {
+                  // Clone and clean the content
                   const clone = body.cloneNode(true) as HTMLElement;
-                  const scripts = clone.querySelectorAll('script, style');
-                  scripts.forEach(el => el.remove());
                   
-                  viewText = clone.textContent || clone.innerText || '';
-                  console.log('✅ BookTTS: Approach B successful, text length:', viewText.length);
+                  // Remove unwanted elements
+                  const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                  unwantedElements.forEach(el => el.remove());
+                  
+                  const viewText = clone.textContent || clone.innerText || '';
+                  console.log('✅ BookTTS: Extracted text from view:', {
+                    length: viewText.length,
+                    preview: viewText.substring(0, 100) + '...'
+                  });
+                  
+                  if (viewText.trim()) {
+                    extractedText = viewText;
+                    break;
+                  }
                 }
+              } catch (error) {
+                console.warn('⚠️ BookTTS: Error processing view:', error);
               }
-              
-              if (viewText.trim()) {
-                extractedText = viewText;
-                break;
-              }
-            } catch (error) {
-              console.warn('⚠️ BookTTS: Error in Method 2 for view:', error);
             }
           }
         }
+      } catch (error) {
+        console.warn('⚠️ BookTTS: Error accessing manager views:', error);
       }
 
-      // Method 3: Fallback - Direct DOM query in the main document
+      // Method 2: Fallback - Direct DOM query for EPUB iframes
       if (!extractedText.trim()) {
-        console.log('📖 BookTTS: Trying Method 3 - direct DOM query fallback');
+        console.log('📖 BookTTS: Trying fallback method - direct iframe access');
+        
         try {
-          const iframes = document.querySelectorAll('iframe[id^="epubjs-view"]');
-          console.log('🔍 BookTTS: Found EPUB iframes:', iframes.length);
+          // Look for react-reader iframes
+          const iframes = document.querySelectorAll('iframe');
+          console.log('🔍 BookTTS: Found iframes:', iframes.length);
           
           for (const iframe of iframes) {
             try {
               const iframeDoc = (iframe as HTMLIFrameElement).contentDocument;
               if (iframeDoc) {
+                console.log('📄 BookTTS: Accessing iframe document');
+                
                 const body = iframeDoc.body || iframeDoc.documentElement;
                 if (body) {
-                  // Check if iframe is visible (basic visibility check)
+                  // Check if iframe is visible
                   const iframeElement = iframe as HTMLIFrameElement;
-                  const isVisible = iframeElement.offsetWidth > 0 && iframeElement.offsetHeight > 0;
+                  const rect = iframeElement.getBoundingClientRect();
+                  const isVisible = rect.width > 0 && rect.height > 0;
+                  
+                  console.log('👁️ BookTTS: Iframe visibility:', {
+                    isVisible,
+                    width: rect.width,
+                    height: rect.height
+                  });
                   
                   if (isVisible) {
                     const clone = body.cloneNode(true) as HTMLElement;
-                    const scripts = clone.querySelectorAll('script, style');
-                    scripts.forEach(el => el.remove());
+                    
+                    // Remove unwanted elements
+                    const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                    unwantedElements.forEach(el => el.remove());
                     
                     const text = clone.textContent || clone.innerText || '';
+                    console.log('📝 BookTTS: Iframe text extracted:', {
+                      length: text.length,
+                      preview: text.substring(0, 100) + '...'
+                    });
+                    
                     if (text.trim()) {
                       extractedText = text;
-                      console.log('✅ BookTTS: Method 3 successful, extracted text length:', text.length);
                       break;
                     }
                   }
@@ -138,7 +141,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
             }
           }
         } catch (error) {
-          console.warn('⚠️ BookTTS: Error in Method 3:', error);
+          console.warn('⚠️ BookTTS: Error in fallback method:', error);
         }
       }
 
@@ -147,13 +150,13 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         const cleanedText = extractedText
           .replace(/\s+/g, ' ')
           .replace(/\n+/g, ' ')
-          .replace(/[^\w\s.,!?;:'"()-]/g, '') // Remove unusual characters that might cause TTS issues
+          .replace(/[^\w\s.,!?;:'"()-]/g, '')
           .trim();
         
         console.log('✅ BookTTS: Successfully extracted and cleaned text:', {
           originalLength: extractedText.length,
           cleanedLength: cleanedText.length,
-          preview: cleanedText.substring(0, 100) + '...'
+          preview: cleanedText.substring(0, 200) + '...'
         });
         
         return cleanedText;
@@ -172,8 +175,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const splitTextIntoChunks = useCallback((text: string): string[] => {
     console.log('✂️ BookTTS: Splitting text into chunks:', {
       textLength: text.length,
-      chunkSize,
-      preview: text.substring(0, 50) + '...'
+      chunkSize
     });
     
     if (!text.trim()) {
@@ -192,7 +194,6 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       const trimmedSentence = sentence.trim();
       if (!trimmedSentence) continue;
       
-      // If adding this sentence would exceed chunk size, save current chunk and start new one
       if (currentChunk.length + trimmedSentence.length > chunkSize && currentChunk.length > 0) {
         chunks.push(currentChunk.trim() + '.');
         currentChunk = trimmedSentence;
@@ -201,17 +202,11 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       }
     }
     
-    // Add the last chunk if it has content
     if (currentChunk.trim()) {
       chunks.push(currentChunk.trim() + '.');
     }
     
-    console.log('✅ BookTTS: Created chunks:', {
-      totalChunks: chunks.length,
-      averageLength: chunks.reduce((sum, chunk) => sum + chunk.length, 0) / chunks.length,
-      firstChunkPreview: chunks[0]?.substring(0, 50) + '...'
-    });
-    
+    console.log('✅ BookTTS: Created chunks:', chunks.length);
     return chunks;
   }, [chunkSize]);
 
@@ -223,8 +218,6 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       voiceId
     });
     
-    setIsLoading(true);
-    
     for (let i = startIndex; i < chunks.length; i++) {
       if (isStoppedRef.current) {
         console.log('⏹️ BookTTS: Playback stopped by user');
@@ -235,19 +228,13 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       setReadingProgress(((i + 1) / chunks.length) * 100);
       
       try {
-        console.log(`🎯 BookTTS: Playing chunk ${i + 1}/${chunks.length}:`, {
-          chunkLength: chunks[i].length,
-          preview: chunks[i].substring(0, 50) + '...'
-        });
+        console.log(`🎯 BookTTS: Playing chunk ${i + 1}/${chunks.length}`);
         
         setIsLoading(true);
         const audioUrl = await generateSpeech(chunks[i], voiceId);
         setIsLoading(false);
         
-        console.log(`🔊 BookTTS: Generated audio URL for chunk ${i + 1}:`, {
-          hasUrl: !!audioUrl,
-          urlLength: audioUrl ? audioUrl.length : 0
-        });
+        console.log(`🔊 BookTTS: Generated audio URL for chunk ${i + 1}:, audioUrl ? 'Success' : 'Failed'`);
         
         if (!audioUrl || isStoppedRef.current) {
           console.warn(`⚠️ BookTTS: No audio URL or stopped for chunk ${i + 1}`);
@@ -259,28 +246,22 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           const audio = new Audio(audioUrl);
           currentAudioRef.current = audio;
           
-          console.log(`▶️ BookTTS: Created audio element for chunk ${i + 1}`);
+          console.log(`▶️ BookTTS: Playing chunk ${i + 1}`);
           
           const cleanup = () => {
-            URL.revokeObjectURL(audioUrl);
+            try {
+              URL.revokeObjectURL(audioUrl);
+            } catch (e) {
+              console.warn('Warning revoking URL:', e);
+            }
             currentAudioRef.current = null;
-          };
-          
-          audio.onloadeddata = () => {
-            console.log(`📊 BookTTS: Audio loaded for chunk ${i + 1}, duration:`, audio.duration);
-          };
-          
-          audio.onplay = () => {
-            console.log(`🎶 BookTTS: Started playing chunk ${i + 1}`);
           };
           
           audio.onended = () => {
             console.log(`✅ BookTTS: Finished playing chunk ${i + 1}`);
             cleanup();
             
-            // Pause between chunks if not the last one
             if (i < chunks.length - 1 && pauseBetweenChunks > 0) {
-              console.log(`⏸️ BookTTS: Pausing ${pauseBetweenChunks}ms between chunks`);
               timeoutRef.current = setTimeout(resolve, pauseBetweenChunks);
             } else {
               resolve();
@@ -289,19 +270,11 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           
           audio.onerror = (e) => {
             console.error(`💥 BookTTS: Error playing chunk ${i + 1}:`, e);
-            console.error('Audio error details:', {
-              error: audio.error,
-              networkState: audio.networkState,
-              readyState: audio.readyState,
-              src: audioUrl.substring(0, 100) + '...'
-            });
             cleanup();
             reject(e);
           };
           
-          // Set volume and play
           audio.volume = 1.0;
-          console.log(`🚀 BookTTS: Attempting to play chunk ${i + 1}`);
           audio.play().catch((playError) => {
             console.error(`💥 BookTTS: Play promise rejected for chunk ${i + 1}:`, playError);
             cleanup();
@@ -311,12 +284,10 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         
       } catch (error) {
         console.error(`💥 BookTTS: Failed to play chunk ${i + 1}:`, error);
-        // Continue to next chunk on error instead of stopping completely
         continue;
       }
     }
     
-    // Reading completed or stopped
     console.log('🏁 BookTTS: Sequential playback completed');
     setIsReading(false);
     setIsLoading(false);
@@ -327,19 +298,14 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
   // Start reading the current page
   const startReading = useCallback(async (rendition: any, voiceId?: string) => {
-    console.log('🎬 BookTTS: Start reading requested:', {
-      hasRendition: !!rendition,
-      voiceId,
-      isReading,
-      isLoading
-    });
+    console.log('🎬 BookTTS: Start reading requested');
     
     if (isReading || isLoading) {
-      console.log('⚠️ BookTTS: Already reading or loading - ignoring request');
+      console.log('⚠️ BookTTS: Already reading or loading');
       return;
     }
 
-    console.log('📖 BookTTS: Starting to read current page');
+    console.log('📖 BookTTS: Extracting text from current page');
     
     const pageText = extractCurrentPageText(rendition);
     if (!pageText.trim()) {
@@ -347,10 +313,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       return;
     }
 
-    console.log('✅ BookTTS: Extracted text successfully:', {
-      length: pageText.length,
-      preview: pageText.substring(0, 100) + '...'
-    });
+    console.log('✅ BookTTS: Text extracted successfully, creating chunks');
     
     const chunks = splitTextIntoChunks(pageText);
     if (chunks.length === 0) {
@@ -358,7 +321,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       return;
     }
 
-    console.log('✅ BookTTS: Created text chunks successfully:', chunks.length);
+    console.log('✅ BookTTS: Starting playback');
     
     setTextChunks(chunks);
     setIsReading(true);
@@ -377,7 +340,6 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     setIsLoading(false);
     
     if (currentAudioRef.current) {
-      console.log('🔇 BookTTS: Pausing current audio');
       currentAudioRef.current.pause();
       currentAudioRef.current.currentTime = 0;
       currentAudioRef.current = null;
@@ -395,19 +357,13 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
   // Resume reading from where we left off
   const resumeReading = useCallback(async (voiceId?: string) => {
-    console.log('▶️ BookTTS: Resume reading requested:', {
-      hasChunks: textChunks.length > 0,
-      currentIndex: currentChunkIndex,
-      isReading,
-      isLoading
-    });
+    console.log('▶️ BookTTS: Resume reading requested');
     
     if (!textChunks.length || isReading || isLoading) {
-      console.log('⚠️ BookTTS: Cannot resume - no chunks or already playing');
+      console.log('⚠️ BookTTS: Cannot resume');
       return;
     }
 
-    console.log('🔄 BookTTS: Resuming reading from chunk', currentChunkIndex);
     setIsReading(true);
     isStoppedRef.current = false;
 
