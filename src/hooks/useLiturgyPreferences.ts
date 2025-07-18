@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +14,11 @@ const defaultPreferences: UserLiturgyPreferences = {
   chantNotation: 'gregorian',
   chantNotationEnabled: true,
   fontSize: 'medium',
-  showRubrics: true
+  showRubrics: true,
+  // New TTS defaults
+  ttsEnabled: true,
+  ttsVoiceId: 'EXAVITQu4vr4xnSDxMaL', // Sarah
+  ttsSpeed: 1.0
 };
 
 // Helper functions for type validation
@@ -82,7 +85,11 @@ export const useLiturgyPreferences = () => {
           chantNotation: isValidChantNotation(data.chant_notation || 'gregorian') ? data.chant_notation as ChantNotation : 'gregorian',
           chantNotationEnabled: data.chant_notation_enabled ?? true,
           fontSize: isValidFontSize(data.font_size || 'medium') ? data.font_size as 'small' | 'medium' | 'large' : 'medium',
-          showRubrics: data.show_rubrics ?? true
+          showRubrics: data.show_rubrics ?? true,
+          // Handle TTS preferences with fallbacks
+          ttsEnabled: data.tts_enabled ?? true,
+          ttsVoiceId: data.tts_voice_id || 'EXAVITQu4vr4xnSDxMaL',
+          ttsSpeed: data.tts_speed || 1.0
         };
         setPreferences(userPrefs);
       } else {
@@ -121,6 +128,10 @@ export const useLiturgyPreferences = () => {
           chant_notation_enabled: newPreferences.chantNotationEnabled,
           font_size: newPreferences.fontSize,
           show_rubrics: newPreferences.showRubrics,
+          // Save TTS preferences
+          tts_enabled: newPreferences.ttsEnabled,
+          tts_voice_id: newPreferences.ttsVoiceId,
+          tts_speed: newPreferences.ttsSpeed,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'

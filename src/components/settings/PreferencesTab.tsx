@@ -1,209 +1,114 @@
-
-import React, { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
-import { useTheme } from '@/context/ThemeContext';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Monitor, Moon, Sun } from 'lucide-react';
-import { UserLiturgyPreferences } from '@/lib/liturgical/types/liturgy-types';
+import { Slider } from '@/components/ui/slider';
+import { useLiturgyPreferences } from '@/hooks/useLiturgyPreferences';
+import { availableVoices } from '@/hooks/useTextToSpeech';
+import { UserLiturgyPreferences, LanguageCode, BibleTranslation, AudioType, ChantNotation } from '@/lib/liturgical/types/liturgy-types';
 
 const PreferencesTab: React.FC = () => {
-  const { user } = useAuth();
-  const { preferences, loading, savePreferences } = useLiturgyPreferences();
-  const { theme, setTheme } = useTheme();
-  const [saving, setSaving] = useState(false);
+  const { preferences, savePreferences, loading } = useLiturgyPreferences();
   const [localPreferences, setLocalPreferences] = useState<UserLiturgyPreferences>(preferences);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalPreferences(preferences);
+    setHasChanges(false);
   }, [preferences]);
 
+  const updatePreference = <K extends keyof UserLiturgyPreferences>(
+    key: K,
+    value: UserLiturgyPreferences[K]
+  ) => {
+    setLocalPreferences(prev => ({ ...prev, [key]: value }));
+    setHasChanges(true);
+  };
+
   const handleSave = async () => {
-    setSaving(true);
-    await savePreferences(localPreferences);
-    setSaving(false);
+    const success = await savePreferences(localPreferences);
+    if (success) {
+      setHasChanges(false);
+    }
   };
-
-  const updatePreference = (key: keyof UserLiturgyPreferences, value: any) => {
-    setLocalPreferences(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  if (!user) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">Please sign in to access your preferences.</p>
-      </div>
-    );
-  }
 
   if (loading) {
-    return (
-      <div className="text-center py-8">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-        <p className="text-gray-600">Loading your preferences...</p>
-      </div>
-    );
+    return <div className="text-center py-4">Loading preferences...</div>;
   }
 
   return (
     <div className="space-y-6">
+      {/* Language Preferences */}
       <Card>
         <CardHeader>
-          <CardTitle className="font-garamond text-xl">Appearance</CardTitle>
-          <CardDescription>
-            Configure the visual appearance of Dominicana.
-          </CardDescription>
+          <CardTitle>Language Preferences</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <Label className="text-base font-medium">Theme</Label>
-            <div className="grid grid-cols-3 gap-3">
-              <Button
-                variant={theme === 'light' ? 'default' : 'outline'}
-                className="flex flex-col gap-2 h-auto py-3"
-                onClick={() => setTheme('light')}
-              >
-                <Sun className="h-5 w-5" />
-                <span className="text-sm">Light</span>
-              </Button>
-              <Button
-                variant={theme === 'dark' ? 'default' : 'outline'}
-                className="flex flex-col gap-2 h-auto py-3"
-                onClick={() => setTheme('dark')}
-              >
-                <Moon className="h-5 w-5" />
-                <span className="text-sm">Dark</span>
-              </Button>
-              <Button
-                variant={theme === 'system' ? 'default' : 'outline'}
-                className="flex flex-col gap-2 h-auto py-3"
-                onClick={() => setTheme('system')}
-              >
-                <Monitor className="h-5 w-5" />
-                <span className="text-sm">System</span>
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Choose your preferred theme. System theme will follow your device's settings.
-            </p>
-          </div>
-
+        <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="font-size">Font Size</Label>
+            <Label>Primary Language</Label>
             <Select
-              value={localPreferences.fontSize}
-              onValueChange={(value) => updatePreference('fontSize', value)}
+              value={localPreferences.primaryLanguage}
+              onValueChange={(value: LanguageCode) => updatePreference('primaryLanguage', value)}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="small">Small</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="large">Large</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="la">Latin</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="it">Italian</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-garamond text-xl">Language & Display Preferences</CardTitle>
-          <CardDescription>
-            Configure how prayers are displayed in the Liturgy of the Hours.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <Label className="text-base font-medium">Display Mode</Label>
-            <RadioGroup
-              value={localPreferences.displayMode}
-              onValueChange={(value) => updatePreference('displayMode', value)}
-              className="space-y-3"
+          <div className="space-y-2">
+            <Label>Secondary Language (Optional)</Label>
+            <Select
+              value={localPreferences.secondaryLanguage || 'none'}
+              onValueChange={(value) => updatePreference('secondaryLanguage', value === 'none' ? undefined : value as LanguageCode)}
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="primary-only" id="primary-only" />
-                <Label htmlFor="primary-only" className="cursor-pointer">
-                  <div>
-                    <div className="font-medium">Primary Language Only</div>
-                    <div className="text-sm text-gray-600">Show only in your primary language</div>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="bilingual" id="bilingual" />
-                <Label htmlFor="bilingual" className="cursor-pointer">
-                  <div>
-                    <div className="font-medium">Bilingual</div>
-                    <div className="text-sm text-gray-600">Display both primary and secondary languages</div>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="secondary-only" id="secondary-only" />
-                <Label htmlFor="secondary-only" className="cursor-pointer">
-                  <div>
-                    <div className="font-medium">Secondary Language Only</div>
-                    <div className="text-sm text-gray-600">Show only in your secondary language</div>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="primary-language">Primary Language</Label>
-              <Select
-                value={localPreferences.primaryLanguage}
-                onValueChange={(value) => updatePreference('primaryLanguage', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="la">Latin</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="secondary-language">Secondary Language</Label>
-              <Select
-                value={localPreferences.secondaryLanguage || 'none'}
-                onValueChange={(value) => updatePreference('secondaryLanguage', value === 'none' ? undefined : value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="la">Latin</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="la">Latin</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="it">Italian</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bible-translation">Bible Translation</Label>
+            <Label>Display Mode</Label>
+            <Select
+              value={localPreferences.displayMode}
+              onValueChange={(value: 'primary-only' | 'bilingual' | 'secondary-only') => updatePreference('displayMode', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="primary-only">Primary Language Only</SelectItem>
+                <SelectItem value="bilingual">Bilingual (Side by Side)</SelectItem>
+                <SelectItem value="secondary-only">Secondary Language Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bible Translation</Label>
             <Select
               value={localPreferences.bibleTranslation}
-              onValueChange={(value) => updatePreference('bibleTranslation', value)}
+              onValueChange={(value: BibleTranslation) => updatePreference('bibleTranslation', value)}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -220,31 +125,31 @@ const PreferencesTab: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Display Options */}
       <Card>
         <CardHeader>
-          <CardTitle className="font-garamond text-xl">Audio & Display Options</CardTitle>
-          <CardDescription>
-            Configure audio and visual preferences for prayers.
-          </CardDescription>
+          <CardTitle>Display Options</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="audio-enabled" className="text-base">Enable Audio</Label>
-              <div className="text-sm text-gray-600">Allow audio playback for prayers and chants</div>
-            </div>
-            <Switch
-              id="audio-enabled"
-              checked={localPreferences.audioEnabled}
-              onCheckedChange={(checked) => updatePreference('audioEnabled', checked)}
-            />
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Font Size</Label>
+            <Select
+              value={localPreferences.fontSize}
+              onValueChange={(value: 'small' | 'medium' | 'large') => updatePreference('fontSize', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="small">Small</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="large">Large</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="show-rubrics" className="text-base">Show Rubrics</Label>
-              <div className="text-sm text-gray-600">Display liturgical instructions and notes</div>
-            </div>
+            <Label htmlFor="show-rubrics">Show Rubrics</Label>
             <Switch
               id="show-rubrics"
               checked={localPreferences.showRubrics}
@@ -253,23 +158,20 @@ const PreferencesTab: React.FC = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="chant-notation-enabled" className="text-base">Enable Chant Notation</Label>
-              <div className="text-sm text-gray-600">Show chant notation and musical formatting</div>
-            </div>
+            <Label htmlFor="chant-notation">Show Chant Notation</Label>
             <Switch
-              id="chant-notation-enabled"
+              id="chant-notation"
               checked={localPreferences.chantNotationEnabled}
               onCheckedChange={(checked) => updatePreference('chantNotationEnabled', checked)}
             />
           </div>
 
-          {localPreferences.audioEnabled && (
+          {localPreferences.chantNotationEnabled && (
             <div className="space-y-2">
-              <Label htmlFor="chant-notation">Chant Notation</Label>
+              <Label>Chant Notation Style</Label>
               <Select
                 value={localPreferences.chantNotation}
-                onValueChange={(value) => updatePreference('chantNotation', value)}
+                onValueChange={(value: ChantNotation) => updatePreference('chantNotation', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -282,23 +184,112 @@ const PreferencesTab: React.FC = () => {
               </Select>
             </div>
           )}
-
-          <Button 
-            onClick={handleSave} 
-            disabled={saving}
-            className="w-full sm:w-auto"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              'Save Settings'
-            )}
-          </Button>
         </CardContent>
       </Card>
+      
+      {/* Audio & TTS Preferences */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Audio & Text-to-Speech</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="audio-enabled">Enable Audio</Label>
+            <Switch
+              id="audio-enabled"
+              checked={localPreferences.audioEnabled}
+              onCheckedChange={(checked) => updatePreference('audioEnabled', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="tts-enabled">Enable Text-to-Speech</Label>
+            <Switch
+              id="tts-enabled"
+              checked={localPreferences.ttsEnabled ?? true}
+              onCheckedChange={(checked) => updatePreference('ttsEnabled', checked)}
+            />
+          </div>
+
+          {localPreferences.ttsEnabled && (
+            <>
+              <div className="space-y-2">
+                <Label>Voice Selection</Label>
+                <Select
+                  value={localPreferences.ttsVoiceId || 'EXAVITQu4vr4xnSDxMaL'}
+                  onValueChange={(value) => updatePreference('ttsVoiceId', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableVoices.map((voice) => (
+                      <SelectItem key={voice.id} value={voice.id}>
+                        <div>
+                          <div className="font-medium">{voice.name}</div>
+                          <div className="text-xs text-gray-500">{voice.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Speech Speed</Label>
+                <div className="px-2">
+                  <Slider
+                    value={[localPreferences.ttsSpeed || 1.0]}
+                    onValueChange={([value]) => updatePreference('ttsSpeed', value)}
+                    min={0.5}
+                    max={2.0}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0.5x</span>
+                    <span>{localPreferences.ttsSpeed || 1.0}x</span>
+                    <span>2.0x</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {localPreferences.audioEnabled && (
+            <div className="space-y-2">
+              <Label>Audio Types</Label>
+              <div className="space-y-2">
+                {(['spoken', 'chant', 'organ'] as AudioType[]).map((type) => (
+                  <div key={type} className="flex items-center space-x-2">
+                    <Switch
+                      id={`audio-${type}`}
+                      checked={localPreferences.audioTypes.includes(type)}
+                      onCheckedChange={(checked) => {
+                        const newTypes = checked
+                          ? [...localPreferences.audioTypes, type]
+                          : localPreferences.audioTypes.filter(t => t !== type);
+                        updatePreference('audioTypes', newTypes);
+                      }}
+                    />
+                    <Label htmlFor={`audio-${type}`} className="capitalize">
+                      {type}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {hasChanges && (
+        <div className="sticky bottom-0 bg-background border-t p-4">
+          <Button onClick={handleSave} className="w-full">
+            Save Preferences
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

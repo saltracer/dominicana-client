@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { LiturgyService } from '@/lib/liturgical/services/liturgy-service';
 import { LiturgyComponent, MultiLanguageContent, LanguageCode } from '@/lib/liturgical/types/liturgy-types';
@@ -10,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Volume2, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChantNotationRenderer from './ChantNotationRenderer';
+import TTSControls from './TTSControls';
 
 interface LiturgyPartProps {
   component: LiturgyComponent;
@@ -95,6 +95,20 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
   const handleChantToggle = () => {
     setShowChant(!showChant);
   };
+
+  // Helper function to extract plain text for TTS
+  const getPlainTextContent = (content: string[][]): string => {
+    return content
+      .flat()
+      .map(line => removeMarkdown(line.replace(/\*(\s|$)/g, '$1').replace(/\†(\s|$)/g, '$1')))
+      .filter(line => line.trim() && !line.startsWith('['))
+      .join(' ')
+      .trim();
+  };
+
+  // Get plain text for TTS
+  const primaryTextContent = getPlainTextContent(primaryContent);
+  const titleText = title.length > 0 ? removeMarkdown(title[0]) : '';
 
   const renderLanguageColumn = (
     content: string[][], 
@@ -318,6 +332,12 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
           {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
               <Volume2 className="h-3 w-3" />
             </Button>}
+          {preferences.ttsEnabled && primaryTextContent && (
+            <TTSControls 
+              text={primaryTextContent}
+              voiceId={preferences.ttsVoiceId}
+            />
+          )}
           {!showBilingual && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
               <Music className="h-3 w-3" />
             </Button>}
@@ -325,9 +345,16 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
       
       {renderBilingualContent(primaryContent, secondaryContent)}
       
-      {!showBilingual && showChant && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <div className="mt-4">
-          <ChantNotationRenderer key={(primaryChantContent || secondaryChantContent).gregobase_id} gabc={(primaryChantContent || secondaryChantContent).data} description={(primaryChantContent || secondaryChantContent).description} className="mb-4" />
-        </div>}
+      {showChant && chantContent && preferences.chantNotationEnabled && (
+        <div className="mt-6">
+          <ChantNotationRenderer 
+            key={chantContent.gregobase_id} 
+            gabc={chantContent.data} 
+            description={chantContent.description} 
+            className="my-4" 
+          />
+        </div>
+      )}
 
       {component.scriptureRef && <div className="mt-2 text-xs text-gray-500">
           {component.scriptureRef.book} {component.scriptureRef.chapter}:{component.scriptureRef.verse} 

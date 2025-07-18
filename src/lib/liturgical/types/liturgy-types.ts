@@ -100,4 +100,8 @@ export interface UserLiturgyPreferences {
   chantNotationEnabled: boolean;
   fontSize: 'small' | 'medium' | 'large';
   showRubrics: boolean;
+  // New TTS preferences
+  ttsEnabled?: boolean;
+  ttsVoiceId?: string;
+  ttsSpeed?: number;
 }
