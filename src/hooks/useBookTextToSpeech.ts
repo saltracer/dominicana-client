@@ -5,10 +5,11 @@ import { useTextToSpeech } from './useTextToSpeech';
 export interface BookTTSOptions {
   chunkSize?: number;
   pauseBetweenChunks?: number;
+  maxConcurrentChunks?: number;
 }
 
 export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
-  const { chunkSize = 2000, pauseBetweenChunks = 500 } = options;
+  const { chunkSize = 2000, pauseBetweenChunks = 500, maxConcurrentChunks = 3 } = options;
   const { generateSpeech, isLoading: baseTTSLoading, availableVoices } = useTextToSpeech();
   
   const [isReading, setIsReading] = useState(false);
@@ -16,10 +17,12 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const [textChunks, setTextChunks] = useState<string[]>([]);
   const [readingProgress, setReadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioQueue, setAudioQueue] = useState<string[]>([]);
   
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const isStoppedRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const generatingChunksRef = useRef<Set<number>>(new Set());
 
   // Enhanced text extraction method for EPUB iframes
   const extractCurrentPageText = useCallback((rendition: any): string => {
@@ -33,7 +36,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Try to access the manager views directly (not as a function)
+      // Method 1: Try to access the manager views directly (as property)
       try {
         const manager = rendition.manager;
         console.log('📖 BookTTS: Manager found:', !!manager);
@@ -67,7 +70,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                   const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
                   unwantedElements.forEach(el => el.remove());
                   
-                  const viewText = clone.textContent || clone.innerText || '';
+                  const viewText = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
                   console.log('✅ BookTTS: Extracted text from view:', {
                     length: viewText.length,
                     preview: viewText.substring(0, 100) + '...'
@@ -123,7 +126,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                     const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
                     unwantedElements.forEach(el => el.remove());
                     
-                    const text = clone.textContent || clone.innerText || '';
+                    const text = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
                     console.log('📝 BookTTS: Iframe text extracted:', {
                       length: text.length,
                       preview: text.substring(0, 100) + '...'
@@ -210,14 +213,55 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     return chunks;
   }, [chunkSize]);
 
-  // Play audio chunks sequentially
-  const playChunksSequentially = useCallback(async (chunks: string[], voiceId?: string, startIndex = 0) => {
-    console.log('🎵 BookTTS: Starting sequential playback:', {
+  // Generate audio for a specific chunk
+  const generateChunkAudio = useCallback(async (chunkText: string, chunkIndex: number, voiceId?: string): Promise<string | null> => {
+    if (generatingChunksRef.current.has(chunkIndex)) {
+      console.log(`⚠️ BookTTS: Chunk ${chunkIndex} already being generated`);
+      return null;
+    }
+
+    generatingChunksRef.current.add(chunkIndex);
+    
+    try {
+      console.log(`🎯 BookTTS: Generating audio for chunk ${chunkIndex + 1}`);
+      const audioUrl = await generateSpeech(chunkText, voiceId);
+      console.log(`🔊 BookTTS: Generated audio URL for chunk ${chunkIndex + 1}:`, audioUrl ? 'Success' : 'Failed');
+      return audioUrl;
+    } catch (error) {
+      console.error(`💥 BookTTS: Failed to generate chunk ${chunkIndex + 1}:`, error);
+      return null;
+    } finally {
+      generatingChunksRef.current.delete(chunkIndex);
+    }
+  }, [generateSpeech]);
+
+  // Play audio chunks with immediate playback and limited concurrent generation
+  const playChunksWithImmediateStart = useCallback(async (chunks: string[], voiceId?: string, startIndex = 0) => {
+    console.log('🎵 BookTTS: Starting immediate playback:', {
       totalChunks: chunks.length,
       startIndex,
-      voiceId
+      voiceId,
+      maxConcurrentChunks
     });
     
+    const audioUrls: (string | null)[] = new Array(chunks.length).fill(null);
+    let currentPlayingIndex = startIndex;
+    
+    // Generate the first chunk immediately
+    if (chunks[startIndex]) {
+      console.log(`🚀 BookTTS: Generating first chunk ${startIndex + 1} immediately`);
+      setIsLoading(true);
+      audioUrls[startIndex] = await generateChunkAudio(chunks[startIndex], startIndex, voiceId);
+      setIsLoading(false);
+      
+      if (!audioUrls[startIndex] || isStoppedRef.current) {
+        console.warn('❌ BookTTS: Failed to generate first chunk or stopped');
+        setIsReading(false);
+        return;
+      }
+    }
+
+    // Start playing immediately while generating more chunks
     for (let i = startIndex; i < chunks.length; i++) {
       if (isStoppedRef.current) {
         console.log('⏹️ BookTTS: Playback stopped by user');
@@ -227,74 +271,80 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       setCurrentChunkIndex(i);
       setReadingProgress(((i + 1) / chunks.length) * 100);
       
-      try {
-        console.log(`🎯 BookTTS: Playing chunk ${i + 1}/${chunks.length}`);
-        
-        setIsLoading(true);
-        const audioUrl = await generateSpeech(chunks[i], voiceId);
-        setIsLoading(false);
-        
-        console.log(`🔊 BookTTS: Generated audio URL for chunk ${i + 1}:, audioUrl ? 'Success' : 'Failed'`);
-        
-        if (!audioUrl || isStoppedRef.current) {
-          console.warn(`⚠️ BookTTS: No audio URL or stopped for chunk ${i + 1}`);
-          break;
+      // Generate next chunks in background (up to maxConcurrentChunks ahead)
+      const generatePromises: Promise<void>[] = [];
+      for (let j = i + 1; j <= Math.min(i + maxConcurrentChunks, chunks.length - 1); j++) {
+        if (!audioUrls[j] && !generatingChunksRef.current.has(j)) {
+          generatePromises.push(
+            generateChunkAudio(chunks[j], j, voiceId).then(url => {
+              audioUrls[j] = url;
+            })
+          );
         }
-
-        // Play the audio chunk
-        await new Promise<void>((resolve, reject) => {
-          const audio = new Audio(audioUrl);
-          currentAudioRef.current = audio;
-          
-          console.log(`▶️ BookTTS: Playing chunk ${i + 1}`);
-          
-          const cleanup = () => {
-            try {
-              URL.revokeObjectURL(audioUrl);
-            } catch (e) {
-              console.warn('Warning revoking URL:', e);
-            }
-            currentAudioRef.current = null;
-          };
-          
-          audio.onended = () => {
-            console.log(`✅ BookTTS: Finished playing chunk ${i + 1}`);
-            cleanup();
-            
-            if (i < chunks.length - 1 && pauseBetweenChunks > 0) {
-              timeoutRef.current = setTimeout(resolve, pauseBetweenChunks);
-            } else {
-              resolve();
-            }
-          };
-          
-          audio.onerror = (e) => {
-            console.error(`💥 BookTTS: Error playing chunk ${i + 1}:`, e);
-            cleanup();
-            reject(e);
-          };
-          
-          audio.volume = 1.0;
-          audio.play().catch((playError) => {
-            console.error(`💥 BookTTS: Play promise rejected for chunk ${i + 1}:`, playError);
-            cleanup();
-            reject(playError);
-          });
-        });
-        
-      } catch (error) {
-        console.error(`💥 BookTTS: Failed to play chunk ${i + 1}:`, error);
-        continue;
       }
+      
+      // Wait for current chunk if not ready yet
+      if (!audioUrls[i]) {
+        console.log(`⏳ BookTTS: Waiting for chunk ${i + 1} to be generated`);
+        setIsLoading(true);
+        audioUrls[i] = await generateChunkAudio(chunks[i], i, voiceId);
+        setIsLoading(false);
+      }
+      
+      if (!audioUrls[i] || isStoppedRef.current) {
+        console.warn(`⚠️ BookTTS: No audio URL or stopped for chunk ${i + 1}`);
+        break;
+      }
+
+      // Play the audio chunk
+      await new Promise<void>((resolve, reject) => {
+        const audio = new Audio(audioUrls[i]!);
+        currentAudioRef.current = audio;
+        
+        console.log(`▶️ BookTTS: Playing chunk ${i + 1}`);
+        
+        const cleanup = () => {
+          try {
+            URL.revokeObjectURL(audioUrls[i]!);
+          } catch (e) {
+            console.warn('Warning revoking URL:', e);
+          }
+          currentAudioRef.current = null;
+        };
+        
+        audio.onended = () => {
+          console.log(`✅ BookTTS: Finished playing chunk ${i + 1}`);
+          cleanup();
+          
+          if (i < chunks.length - 1 && pauseBetweenChunks > 0) {
+            timeoutRef.current = setTimeout(resolve, pauseBetweenChunks);
+          } else {
+            resolve();
+          }
+        };
+        
+        audio.onerror = (e) => {
+          console.error(`💥 BookTTS: Error playing chunk ${i + 1}:`, e);
+          cleanup();
+          reject(e);
+        };
+        
+        audio.volume = 1.0;
+        audio.play().catch((playError) => {
+          console.error(`💥 BookTTS: Play promise rejected for chunk ${i + 1}:`, playError);
+          cleanup();
+          reject(playError);
+        });
+      });
     }
     
-    console.log('🏁 BookTTS: Sequential playback completed');
+    console.log('🏁 BookTTS: Playback completed');
     setIsReading(false);
     setIsLoading(false);
     setReadingProgress(100);
     setCurrentChunkIndex(0);
     currentAudioRef.current = null;
-  }, [generateSpeech, pauseBetweenChunks]);
+  }, [generateChunkAudio, pauseBetweenChunks, maxConcurrentChunks]);
 
   // Start reading the current page
   const startReading = useCallback(async (rendition: any, voiceId?: string) => {
@@ -321,16 +371,18 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       return;
     }
 
-    console.log('✅ BookTTS: Starting playback');
+    console.log('✅ BookTTS: Starting immediate playback');
     
     setTextChunks(chunks);
     setIsReading(true);
     setCurrentChunkIndex(0);
     setReadingProgress(0);
+    setAudioQueue([]);
     isStoppedRef.current = false;
+    generatingChunksRef.current.clear();
 
-    await playChunksSequentially(chunks, voiceId);
-  }, [extractCurrentPageText, splitTextIntoChunks, playChunksSequentially, isReading, isLoading]);
+    await playChunksWithImmediateStart(chunks, voiceId);
+  }, [extractCurrentPageText, splitTextIntoChunks, playChunksWithImmediateStart, isReading, isLoading]);
 
   // Stop reading
   const stopReading = useCallback(() => {
@@ -353,6 +405,8 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
     setCurrentChunkIndex(0);
     setReadingProgress(0);
     setTextChunks([]);
+    setAudioQueue([]);
+    generatingChunksRef.current.clear();
   }, []);
 
   // Resume reading from where we left off
@@ -366,9 +420,10 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
     setIsReading(true);
     isStoppedRef.current = false;
+    generatingChunksRef.current.clear();
 
-    await playChunksSequentially(textChunks, voiceId, currentChunkIndex);
-  }, [textChunks, currentChunkIndex, playChunksSequentially, isReading, isLoading]);
+    await playChunksWithImmediateStart(textChunks, voiceId, currentChunkIndex);
+  }, [textChunks, currentChunkIndex, playChunksWithImmediateStart, isReading, isLoading]);
 
   return {
     isReading,
