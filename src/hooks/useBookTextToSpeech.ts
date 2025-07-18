@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -69,7 +68,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                 const body = doc.body || doc.documentElement;
                 if (body) {
                   // Remove script and style elements before extracting text
-                  const clone = body.cloneNode(true) as Element;
+                  const clone = body.cloneNode(true) as HTMLElement;
                   const scripts = clone.querySelectorAll('script, style');
                   scripts.forEach(el => el.remove());
                   
@@ -83,7 +82,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                 const doc = view.iframe.contentDocument;
                 const body = doc.body || doc.documentElement;
                 if (body) {
-                  const clone = body.cloneNode(true) as Element;
+                  const clone = body.cloneNode(true) as HTMLElement;
                   const scripts = clone.querySelectorAll('script, style');
                   scripts.forEach(el => el.remove());
                   
@@ -121,7 +120,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                   const isVisible = iframeElement.offsetWidth > 0 && iframeElement.offsetHeight > 0;
                   
                   if (isVisible) {
-                    const clone = body.cloneNode(true) as Element;
+                    const clone = body.cloneNode(true) as HTMLElement;
                     const scripts = clone.querySelectorAll('script, style');
                     scripts.forEach(el => el.remove());
                     
