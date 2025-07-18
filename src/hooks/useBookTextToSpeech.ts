@@ -33,10 +33,26 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Get text from the current view's iframe
+      // Method 1: Try to get text from current location using rendition's built-in methods
+      try {
+        const currentLocation = rendition.currentLocation();
+        console.log('📍 BookTTS: Current location:', currentLocation);
+        
+        if (currentLocation && currentLocation.start) {
+          const section = rendition.book.spine.get(currentLocation.start.href);
+          if (section) {
+            console.log('📄 BookTTS: Found section for current location');
+            // This is a more reliable way to get the current page content
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ BookTTS: Error getting current location:', error);
+      }
+
+      // Method 2: Get text from the current view's iframe (enhanced approach)
       const manager = rendition.manager;
       if (manager && manager.views) {
-        console.log('📖 BookTTS: Trying Method 1 - iframe extraction');
+        console.log('📖 BookTTS: Trying Method 2 - enhanced iframe extraction');
         const views = manager.views();
         console.log('👁️ BookTTS: Found views:', views.length);
         
@@ -44,29 +60,52 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           if (view.displayed && view.contents) {
             console.log('🎯 BookTTS: Processing displayed view');
             try {
-              const iframe = view.iframe;
-              if (iframe && iframe.contentDocument) {
-                const doc = iframe.contentDocument;
+              // Try multiple approaches to get the content
+              let viewText = '';
+              
+              // Approach A: Direct content access
+              if (view.contents.document) {
+                const doc = view.contents.document;
                 const body = doc.body || doc.documentElement;
                 if (body) {
-                  const text = body.textContent || body.innerText || '';
-                  if (text.trim()) {
-                    extractedText = text;
-                    console.log('✅ BookTTS: Method 1 successful, extracted text length:', text.length);
-                    break;
-                  }
+                  // Remove script and style elements before extracting text
+                  const clone = body.cloneNode(true) as Element;
+                  const scripts = clone.querySelectorAll('script, style');
+                  scripts.forEach(el => el.remove());
+                  
+                  viewText = clone.textContent || clone.innerText || '';
+                  console.log('✅ BookTTS: Approach A successful, text length:', viewText.length);
                 }
               }
+              
+              // Approach B: Try iframe document access
+              if (!viewText && view.iframe && view.iframe.contentDocument) {
+                const doc = view.iframe.contentDocument;
+                const body = doc.body || doc.documentElement;
+                if (body) {
+                  const clone = body.cloneNode(true) as Element;
+                  const scripts = clone.querySelectorAll('script, style');
+                  scripts.forEach(el => el.remove());
+                  
+                  viewText = clone.textContent || clone.innerText || '';
+                  console.log('✅ BookTTS: Approach B successful, text length:', viewText.length);
+                }
+              }
+              
+              if (viewText.trim()) {
+                extractedText = viewText;
+                break;
+              }
             } catch (error) {
-              console.warn('⚠️ BookTTS: Error in Method 1 for view:', error);
+              console.warn('⚠️ BookTTS: Error in Method 2 for view:', error);
             }
           }
         }
       }
 
-      // Method 2: Direct DOM query in the main document
+      // Method 3: Fallback - Direct DOM query in the main document
       if (!extractedText.trim()) {
-        console.log('📖 BookTTS: Trying Method 2 - direct DOM query');
+        console.log('📖 BookTTS: Trying Method 3 - direct DOM query fallback');
         try {
           const iframes = document.querySelectorAll('iframe[id^="epubjs-view"]');
           console.log('🔍 BookTTS: Found EPUB iframes:', iframes.length);
@@ -77,11 +116,21 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
               if (iframeDoc) {
                 const body = iframeDoc.body || iframeDoc.documentElement;
                 if (body) {
-                  const text = body.textContent || body.innerText || '';
-                  if (text.trim()) {
-                    extractedText = text;
-                    console.log('✅ BookTTS: Method 2 successful, extracted text length:', text.length);
-                    break;
+                  // Check if iframe is visible (basic visibility check)
+                  const iframeElement = iframe as HTMLIFrameElement;
+                  const isVisible = iframeElement.offsetWidth > 0 && iframeElement.offsetHeight > 0;
+                  
+                  if (isVisible) {
+                    const clone = body.cloneNode(true) as Element;
+                    const scripts = clone.querySelectorAll('script, style');
+                    scripts.forEach(el => el.remove());
+                    
+                    const text = clone.textContent || clone.innerText || '';
+                    if (text.trim()) {
+                      extractedText = text;
+                      console.log('✅ BookTTS: Method 3 successful, extracted text length:', text.length);
+                      break;
+                    }
                   }
                 }
               }
@@ -90,7 +139,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
             }
           }
         } catch (error) {
-          console.warn('⚠️ BookTTS: Error in Method 2:', error);
+          console.warn('⚠️ BookTTS: Error in Method 3:', error);
         }
       }
 
@@ -99,6 +148,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         const cleanedText = extractedText
           .replace(/\s+/g, ' ')
           .replace(/\n+/g, ' ')
+          .replace(/[^\w\s.,!?;:'"()-]/g, '') // Remove unusual characters that might cause TTS issues
           .trim();
         
         console.log('✅ BookTTS: Successfully extracted and cleaned text:', {
@@ -183,7 +233,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
       }
       
       setCurrentChunkIndex(i);
-      setReadingProgress((i / chunks.length) * 100);
+      setReadingProgress(((i + 1) / chunks.length) * 100);
       
       try {
         console.log(`🎯 BookTTS: Playing chunk ${i + 1}/${chunks.length}:`, {
@@ -191,10 +241,13 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           preview: chunks[i].substring(0, 50) + '...'
         });
         
+        setIsLoading(true);
         const audioUrl = await generateSpeech(chunks[i], voiceId);
+        setIsLoading(false);
+        
         console.log(`🔊 BookTTS: Generated audio URL for chunk ${i + 1}:`, {
           hasUrl: !!audioUrl,
-          urlPreview: audioUrl ? audioUrl.substring(0, 50) + '...' : 'null'
+          urlLength: audioUrl ? audioUrl.length : 0
         });
         
         if (!audioUrl || isStoppedRef.current) {
@@ -209,15 +262,22 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
           
           console.log(`▶️ BookTTS: Created audio element for chunk ${i + 1}`);
           
+          const cleanup = () => {
+            URL.revokeObjectURL(audioUrl);
+            currentAudioRef.current = null;
+          };
+          
+          audio.onloadeddata = () => {
+            console.log(`📊 BookTTS: Audio loaded for chunk ${i + 1}, duration:`, audio.duration);
+          };
+          
           audio.onplay = () => {
             console.log(`🎶 BookTTS: Started playing chunk ${i + 1}`);
-            setIsLoading(false);
           };
           
           audio.onended = () => {
             console.log(`✅ BookTTS: Finished playing chunk ${i + 1}`);
-            URL.revokeObjectURL(audioUrl);
-            currentAudioRef.current = null;
+            cleanup();
             
             // Pause between chunks if not the last one
             if (i < chunks.length - 1 && pauseBetweenChunks > 0) {
@@ -233,23 +293,27 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
             console.error('Audio error details:', {
               error: audio.error,
               networkState: audio.networkState,
-              readyState: audio.readyState
+              readyState: audio.readyState,
+              src: audioUrl.substring(0, 100) + '...'
             });
-            URL.revokeObjectURL(audioUrl);
-            currentAudioRef.current = null;
+            cleanup();
             reject(e);
           };
           
+          // Set volume and play
+          audio.volume = 1.0;
           console.log(`🚀 BookTTS: Attempting to play chunk ${i + 1}`);
           audio.play().catch((playError) => {
             console.error(`💥 BookTTS: Play promise rejected for chunk ${i + 1}:`, playError);
+            cleanup();
             reject(playError);
           });
         });
         
       } catch (error) {
         console.error(`💥 BookTTS: Failed to play chunk ${i + 1}:`, error);
-        // Continue to next chunk on error
+        // Continue to next chunk on error instead of stopping completely
+        continue;
       }
     }
     
