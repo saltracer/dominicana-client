@@ -40,19 +40,23 @@ export const useTextToSpeech = () => {
         body: {
           text: text.trim(),
           voice_id: voiceId || 'EXAVITQu4vr4xnSDxMaL' // Default to Sarah
-        },
-        responseType: 'arraybuffer'
+        }
       });
 
       if (error) {
         throw error;
       }
 
-      // Convert array buffer to blob and create audio URL
-      const audioBlob = new Blob([data], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      return audioUrl;
+      // The edge function returns base64 encoded audio
+      if (data && data.audioContent) {
+        const audioBlob = new Blob([
+          Uint8Array.from(atob(data.audioContent), c => c.charCodeAt(0))
+        ], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        return audioUrl;
+      }
+
+      throw new Error('No audio content received');
     } catch (error) {
       console.error('TTS generation error:', error);
       toast({

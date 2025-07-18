@@ -324,63 +324,69 @@ const LiturgyPart: React.FC<LiturgyPartProps> = ({
     );
   };
   
-  return <div className={cn("mb-6", className)}>
-      {title.length > 0 && <div className="flex items-center gap-2 mb-2">
+  return (
+    <div className={cn("mb-6", className)}>
+      {title.length > 0 && (
+        <div className="flex items-center gap-2 mb-2">
           <h4 className="text-xl font-semibold">
             {component.type === "hymn" ? "Hymn" : title[0]}
           </h4>
-          {hasAudio && preferences.audioEnabled && <Button size="sm" variant="outline" className="p-1 h-7 w-7">
+          {hasAudio && preferences.audioEnabled && (
+            <Button size="sm" variant="outline" className="p-1 h-7 w-7">
               <Volume2 className="h-3 w-3" />
-            </Button>}
+            </Button>
+          )}
           {preferences.ttsEnabled && primaryTextContent && (
             <TTSControls 
               text={primaryTextContent}
               voiceId={preferences.ttsVoiceId}
             />
           )}
-          {!showBilingual && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && <Button size="sm" variant={showChant ? "default" : "outline"} className="p-1 h-7 w-7" onClick={handleChantToggle}>
+          {!showBilingual && (primaryChantContent || secondaryChantContent) && preferences.chantNotationEnabled && (
+            <Button 
+              size="sm" 
+              variant={showChant ? "default" : "outline"} 
+              className="p-1 h-7 w-7" 
+              onClick={handleChantToggle}
+            >
               <Music className="h-3 w-3" />
-            </Button>}
-        </div>}
+            </Button>
+          )}
+        </div>
+      )}
       
       {renderBilingualContent(primaryContent, secondaryContent)}
       
-      {showChant && chantContent && preferences.chantNotationEnabled && (
+      {showChant && !showBilingual && primaryChantContent && preferences.chantNotationEnabled && (
         <div className="mt-6">
           <ChantNotationRenderer 
-            key={chantContent.gregobase_id} 
-            gabc={chantContent.data} 
-            description={chantContent.description} 
+            key={primaryChantContent.gregobase_id} 
+            gabc={primaryChantContent.data} 
+            description={primaryChantContent.description} 
             className="my-4" 
           />
         </div>
       )}
 
-      {component.scriptureRef && <div className="mt-2 text-xs text-gray-500">
+      {component.scriptureRef && (
+        <div className="mt-2 text-xs text-gray-500">
           {component.scriptureRef.book} {component.scriptureRef.chapter}:{component.scriptureRef.verse} 
           ({component.scriptureRef.translation})
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
 
 const ComplineDisplay: React.FC = () => {
-  const {
-    selectedDate
-  } = useLiturgicalDay();
-  const {
-    preferences,
-    loading: preferencesLoading
-  } = useLiturgyPreferences();
-  const {
-    compline,
-    info,
-    renderedComponents
-  } = useMemo(() => {
+  const { selectedDate } = useLiturgicalDay();
+  const { preferences, loading: preferencesLoading } = useLiturgyPreferences();
+  
+  const { compline, info, renderedComponents } = useMemo(() => {
     const compline = LiturgyService.getComplineForDate(selectedDate);
     const info = LiturgyService.getComplineInfo(selectedDate, preferences);
     const marianAntiphonId = LiturgyService.getMarianAntiphonPeriod(selectedDate);
-    //console.log("marianAntiphonId", marianAntiphonId);
-    // Get the appropriate Marian antiphon component
+    
     const marianAntiphon = LiturgyService.getComponent(marianAntiphonId);
     const renderedComponents = compline ? {
       introduction: compline.components.introduction ? LiturgyService.getComponent(compline.components.introduction) : null,
@@ -392,52 +398,95 @@ const ComplineDisplay: React.FC = () => {
       canticle: compline.components.canticle ? LiturgyService.getComponent(compline.components.canticle) : null,
       prayer: compline.components.prayer ? LiturgyService.getComponent(compline.components.prayer) : null,
       conclusion: compline.components.conclusion ? LiturgyService.getComponent(compline.components.conclusion) : null,
-      marian: marianAntiphon // Use the dynamically determined Marian antiphon
+      marian: marianAntiphon
     } : null;
-    return {
-      compline,
-      info,
-      renderedComponents
-    };
+    
+    return { compline, info, renderedComponents };
   }, [selectedDate, preferences]);
+  
   if (preferencesLoading || !compline || !renderedComponents) {
     return <div className="text-center py-10">Loading Compline...</div>;
   }
-  return <div className={cn(`space-y-6 ${info.seasonClass}`)}>
+  
+  return (
+    <div className={cn(`space-y-6 ${info.seasonClass}`)}>
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-dominican-burgundy mb-2">
           {info.title}
         </h3>
         <p className="liturgy-text text-gray-600 mb-2">{info.dateFormatted}</p>
-        {info.isOctave && <div className="bg-dominican-gold/20 border-l-4 border-dominican-gold p-3 mb-4">
+        {info.isOctave && (
+          <div className="bg-dominican-gold/20 border-l-4 border-dominican-gold p-3 mb-4">
             <p className="liturgy-text">During the Octave of Easter, we use the same Night Prayer each day.</p>
-          </div>}
+          </div>
+        )}
       </div>
       
-      {renderedComponents.introduction && <LiturgyPart component={renderedComponents.introduction} preferences={preferences} className="light:bg-dominican-light-gray/20 rounded-md" />}
+      {renderedComponents.introduction && (
+        <LiturgyPart 
+          component={renderedComponents.introduction} 
+          preferences={preferences} 
+          className="light:bg-dominican-light-gray/20 rounded-md" 
+        />
+      )}
       
-      {renderedComponents.examen && <LiturgyPart component={renderedComponents.examen} preferences={preferences} />}
+      {renderedComponents.examen && (
+        <LiturgyPart component={renderedComponents.examen} preferences={preferences} />
+      )}
       
-      {renderedComponents.hymn && <LiturgyPart component={renderedComponents.hymn} preferences={preferences} />}
+      {renderedComponents.hymn && (
+        <LiturgyPart component={renderedComponents.hymn} preferences={preferences} />
+      )}
       
-      {renderedComponents.psalmody.length > 0 && <div className="space-y-4">
+      {renderedComponents.psalmody.length > 0 && (
+        <div className="space-y-4">
           <h4 className="text-xl font-semibold mb-2">Psalmody</h4>
-          {renderedComponents.psalmody.map((psalm, i) => <LiturgyPart key={i} component={psalm!} preferences={preferences} className="light:bg-dominican-light-gray/20 rounded-md" />)}
-        </div>}
+          {renderedComponents.psalmody.map((psalm, i) => (
+            <LiturgyPart 
+              key={i} 
+              component={psalm!} 
+              preferences={preferences} 
+              className="light:bg-dominican-light-gray/20 rounded-md" 
+            />
+          ))}
+        </div>
+      )}
       
-      {renderedComponents.reading && <LiturgyPart component={renderedComponents.reading} preferences={preferences} />}
+      {renderedComponents.reading && (
+        <LiturgyPart component={renderedComponents.reading} preferences={preferences} />
+      )}
       
-      {renderedComponents.responsory && <LiturgyPart component={renderedComponents.responsory} preferences={preferences} className="font-medium" />}
+      {renderedComponents.responsory && (
+        <LiturgyPart 
+          component={renderedComponents.responsory} 
+          preferences={preferences} 
+          className="font-medium" 
+        />
+      )}
       
-      {renderedComponents.canticle && <LiturgyPart component={renderedComponents.canticle} preferences={preferences} className="light:bg-dominican-light-gray/20 rounded-md" />}
+      {renderedComponents.canticle && (
+        <LiturgyPart 
+          component={renderedComponents.canticle} 
+          preferences={preferences} 
+          className="light:bg-dominican-light-gray/20 rounded-md" 
+        />
+      )}
       
-      {renderedComponents.prayer && <LiturgyPart component={renderedComponents.prayer} preferences={preferences} />}
+      {renderedComponents.prayer && (
+        <LiturgyPart component={renderedComponents.prayer} preferences={preferences} />
+      )}
       
-      {renderedComponents.conclusion && <LiturgyPart component={renderedComponents.conclusion} preferences={preferences} />}
+      {renderedComponents.conclusion && (
+        <LiturgyPart component={renderedComponents.conclusion} preferences={preferences} />
+      )}
       
-      {renderedComponents.marian && <div className="mt-8 pt-4 border-t border-dominican-light-gray">
+      {renderedComponents.marian && (
+        <div className="mt-8 pt-4 border-t border-dominican-light-gray">
           <LiturgyPart component={renderedComponents.marian} preferences={preferences} />
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
+
 export default ComplineDisplay;
