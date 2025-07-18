@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Home } from 'lucide-react';
+import { ChevronLeft, Home, Volume2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import BookTTSControls from './BookTTSControls';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface BookReaderProps {
   url: string;
@@ -12,7 +14,6 @@ interface BookReaderProps {
 }
 
 const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
-  // Create refs and state
   const renditionRef = useRef<any>(null);
   const tocRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,14 +26,11 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
   const { resolvedTheme } = useTheme();
   const isAdmin = userRole === 'admin';
 
-  // Add debugging for URL and component lifecycle
+  // New state for TTS panel
+  const [showTTSControls, setShowTTSControls] = useState(false);
+  const canUseTTS = userRole === 'subscribed' || userRole === 'admin';
+
   useEffect(() => {
-    //console.log('BookReader - Component mounted');
-    //console.log('BookReader - Received book URL:', url);
-    //console.log('BookReader - Book title:', title);
-    //console.log('BookReader - User role:', userRole);
-    
-    // Update dimensions on mount
     if (containerRef.current) {
       setDimensions({
         width: containerRef.current.clientWidth,
@@ -44,7 +42,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       });
     }
     
-    // Test if the URL is accessible
     fetch(url)
       .then(response => {
         console.log('BookReader - URL fetch status:', response.status);
@@ -52,16 +49,10 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
           console.error('BookReader - URL fetch failed with status:', response.status);
           setError(`Failed to access book URL (Status ${response.status})`);
         } else {
-          // Check content type
           const contentType = response.headers.get('content-type');
           console.log('BookReader - Content type:', contentType);
           
-          // For debugging, check a small part of the response
           return response.blob().then(blob => {
-            //console.log('BookReader - Response blob size:', blob.size);
-            //console.log('BookReader - Response blob type:', blob.type);
-            
-            // Log the first few bytes of the file to check if it's a valid EPUB
             const reader = new FileReader();
             reader.onload = () => {
               const arrayBuffer = reader.result as ArrayBuffer;
@@ -69,8 +60,7 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               const firstBytes = Array.from(bytes.slice(0, 50)).map(b => b.toString(16).padStart(2, '0')).join(' ');
               console.log('BookReader - First bytes of file:', firstBytes);
               
-              // Check if it has the EPUB signature
-              const isPossiblyEpub = firstBytes.includes('50 4b'); // PK signature for ZIP (EPUB is a ZIP file)
+              const isPossiblyEpub = firstBytes.includes('50 4b');
               console.log('BookReader - Has ZIP/EPUB signature:', isPossiblyEpub);
             };
             reader.readAsArrayBuffer(blob.slice(0, 50));
@@ -82,14 +72,11 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
         setError('Failed to access book URL: ' + err.message);
       });
       
-    // Attempt to get the saved location from localStorage
     const savedLocation = localStorage.getItem(`book-progress-${title}`);
     if (savedLocation) {
       console.log('BookReader - Found saved location:', savedLocation);
-      // Don't set it immediately, wait for reader to initialize
     }
     
-    // Add resize handler
     const handleResize = () => {
       if (containerRef.current) {
         setDimensions({
@@ -105,36 +92,22 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
 
     window.addEventListener('resize', handleResize);
     
-    // Cleanup function
     return () => {
       console.log('BookReader - Component unmounting');
       window.removeEventListener('resize', handleResize);
     };
   }, [url, title, userRole]);
 
-  // Location changed handler
   const locationChanged = (epubcifi: string) => {
     console.log('BookReader - Location changed:', epubcifi);
     
-    // Check if epubcifi is valid before setting it
-    //if (epubcifi && typeof epubcifi === 'string' && epubcifi.includes('epubcfi')) {
-    //  console.log('BookReader - Setting new location and saving to localStorage');
-      setLocation(epubcifi);
-      localStorage.setItem(`book-progress-${title}`, epubcifi);
-    //} else {
-    //  console.warn('BookReader - Invalid location received:', epubcifi);
-    //}
+    setLocation(epubcifi);
+    localStorage.setItem(`book-progress-${title}`, epubcifi);
   };
 
-  // Load null locations after initialization to avoid the error
   const handleRenditionReady = (rendition: any) => {
     console.log('BookReader - Rendition ready event fired');
     
-    // Log rendition details
-    console.log('BookReader - Rendition object keys:', Object.keys(rendition));
-    console.log('BookReader - Rendition book object keys:', Object.keys(rendition.book || {}));
-    
-    // Register event listeners for debugging
     rendition.on('relocated', (location: any) => {
       console.log('BookReader - Relocated event:', location);
       if (location.start) {
@@ -155,17 +128,14 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       console.error('BookReader - Display error:', error);
     });
 
-    // Fix navigation within TOC by intercepting clicks
     rendition.hooks.content.register((contents: any) => {
       contents.window.addEventListener('click', (e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (target.tagName.toLowerCase() === 'a' && target.getAttribute('href')) {
           const href = target.getAttribute('href') || '';
-          // Handle internal navigation differently
           if (href.startsWith('#') || !href.includes('://')) {
             e.preventDefault();
             try {
-              // Try to use rendition's display method for internal navigation
               rendition.display(href);
             } catch (err) {
               console.error('BookReader - Error navigating to internal link:', href, err);
@@ -175,18 +145,15 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
       });
     });
     
-    // Try to get the saved progress from localStorage after rendition is ready
     const savedLocation = localStorage.getItem(`book-progress-${title}`);
     if (savedLocation) {
       console.log('BookReader - Applying saved location:', savedLocation);
-      // Wait a bit before applying to ensure book is fully loaded
       setTimeout(() => {
         try {
           console.log('BookReader - Attempting to display saved location:', savedLocation);
           rendition.display(savedLocation);
         } catch (err) {
           console.error('BookReader - Error applying saved location:', err);
-          // If there's an error with the saved location, go to the beginning
           rendition.display();
         }
       }, 100);
@@ -195,12 +162,10 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     setIsLoading(false);
   };
 
-  // Apply theme to rendition when theme changes
   useEffect(() => {
     if (renditionRef.current) {
       console.log('BookReader - Applying theme:', resolvedTheme);
       
-      // Apply theme styles based on current theme
       if (resolvedTheme === 'dark') {
         renditionRef.current.themes.default({
           'body': {
@@ -243,7 +208,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
     }
   }, [resolvedTheme]);
 
-  // Handle errors
   const handleError = (error: any) => {
     console.error('BookReader - Error loading book:', error);
     setError('Failed to load the book. Please try again later.');
@@ -277,8 +241,30 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               {title}
             </h1>
           </div>
+          
+          {canUseTTS && renditionRef.current && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTTSControls(!showTTSControls)}
+              className="flex items-center gap-2"
+            >
+              <Volume2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Listen</span>
+            </Button>
+          )}
         </div>
       </div>
+
+      {canUseTTS && (
+        <Collapsible open={showTTSControls} onOpenChange={setShowTTSControls}>
+          <CollapsibleContent>
+            <div className="container mx-auto px-4 py-2">
+              <BookTTSControls rendition={renditionRef.current} />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {error ? (
         <div className="container mx-auto px-4 py-8 text-center">
@@ -289,7 +275,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
         </div>
       ) : (
         <div className="container mx-auto px-4 py-2" ref={containerRef}>
-          {/* Reader container with explicit height and position */}
           <div 
             style={{ 
               position: 'relative',
@@ -309,7 +294,6 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
                 renditionRef.current = rendition;
                 handleRenditionReady(rendition);
                 
-                // Initial theme application
                 if (resolvedTheme === 'dark') {
                   rendition.themes.default({
                     'body': {
@@ -372,58 +356,9 @@ const BookReader: React.FC<BookReaderProps> = ({ url, title }) => {
               handleKeyPress={() => {}}
               showToc={true}
               swipeable={true}
-              // readerStyles={{
-              //   container: {
-              //     overflow: 'hidden',
-              //     position: 'relative',
-              //     height: '100%',
-              //   },
-              //   readerArea: {
-              //     position: 'relative',
-              //     zIndex: 1,
-              //     height: '100%',
-              //     width: '100%',
-              //     backgroundColor: '#fff',
-              //     color: '#000',
-              //   },
-              //   tocArea: {
-              //     position: 'absolute',
-              //     left: 0,
-              //     top: 0,
-              //     bottom: 0,
-              //     zIndex: 0,
-              //     width: '16rem',
-              //     backgroundColor: '#f5f5f5',
-              //     overflowY: 'auto',
-              //     transition: 'transform .25s ease-out',
-              //     transform: 'translateX(-100%)',
-              //     boxShadow: '0 0 10px rgba(0,0,0,.1)',
-              //   },
-              //   tocAreaButton: {
-              //     position: 'absolute',
-              //     top: '0.5rem',
-              //     right: '-2rem',
-              //     border: 'none',
-              //     background: '#660020',
-              //     color: '#fff',
-              //     width: '2rem',
-              //     height: '2rem',
-              //     borderRadius: '0 4px 4px 0',
-              //   },
-              //   tocButton: {
-              //     backgroundColor: '#660020',
-              //     margin: '0.5rem',
-              //     padding: '0.5rem',
-              //     color: 'white',
-              //     border: 'none',
-              //     borderRadius: '0.25rem',
-              //     cursor: 'pointer',
-              //   },
-              // }}
             />
           </div>
           
-          {/* Only render the debug controls if user is admin */}
           {isAdmin && (
             <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-md">
               <p className="text-sm text-gray-700 dark:text-gray-300">Debug Controls:</p>
