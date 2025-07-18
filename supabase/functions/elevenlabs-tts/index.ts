@@ -6,6 +6,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to convert ArrayBuffer to base64 without stack overflow
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 8192; // Process in chunks to avoid stack overflow
+  
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, Array.from(chunk));
+  }
+  
+  return btoa(binary);
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -51,10 +65,12 @@ serve(async (req) => {
       throw new Error(`ElevenLabs API error: ${response.status}`);
     }
 
-    // Get the audio as array buffer and convert to base64
+    // Get the audio as array buffer and convert to base64 safely
     const audioBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(audioBuffer);
-    const base64Audio = btoa(String.fromCharCode.apply(null, Array.from(uint8Array)));
+    console.log('Audio buffer size:', audioBuffer.byteLength);
+    
+    const base64Audio = arrayBufferToBase64(audioBuffer);
+    console.log('Base64 conversion successful, length:', base64Audio.length);
     
     return new Response(JSON.stringify({ audioContent: base64Audio }), {
       headers: {
