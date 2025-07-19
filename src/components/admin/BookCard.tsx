@@ -45,7 +45,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onEdit, onDelete }) => {
             <BookCoverGenerator 
               book={book}
               onCoverGenerated={handleCoverGenerated}
-              size="md"
+              size="default"
             />
           </div>
         </div>

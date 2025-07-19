@@ -9,7 +9,7 @@ import { Loader2, ImageIcon } from 'lucide-react';
 interface BookCoverGeneratorProps {
   book: Book;
   onCoverGenerated: (imageUrl: string) => void;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'default';
 }
 
 const BookCoverGenerator: React.FC<BookCoverGeneratorProps> = ({ 
@@ -68,7 +68,7 @@ const BookCoverGenerator: React.FC<BookCoverGeneratorProps> = ({
       ) : (
         <ImageIcon className="h-4 w-4" />
       )}
-      {size === 'md' && (
+      {size === 'default' && (
         <span className="ml-2">
           {isGenerating ? 'Generating...' : 'Generate Cover'}
         </span>
