@@ -20,7 +20,7 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
   const isStoppedRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Enhanced text extraction method for EPUB iframes
+  // Enhanced text extraction method for EPUB iframes - fixed to match working ElevenLabs version
   const extractCurrentPageText = useCallback((rendition: any): string => {
     console.log('🔍 BookWebSpeechTTS: Starting text extraction from rendition');
     
@@ -32,55 +32,106 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Get text from the current view's iframe
-      const manager = rendition.manager;
-      if (manager && manager.views) {
-        console.log('📖 BookWebSpeechTTS: Trying Method 1 - iframe extraction');
-        const views = manager.views();
-        console.log('👁️ BookWebSpeechTTS: Found views:', views.length);
+      // Method 1: Try to access the manager views directly (as property)
+      try {
+        const manager = rendition.manager;
+        console.log('📖 BookWebSpeechTTS: Manager found:', !!manager);
         
-        for (const view of views) {
-          if (view.displayed && view.contents) {
-            console.log('🎯 BookWebSpeechTTS: Processing displayed view');
-            try {
-              const iframe = view.iframe;
-              if (iframe && iframe.contentDocument) {
-                const doc = iframe.contentDocument;
+        if (manager && manager.views) {
+          console.log('👁️ BookWebSpeechTTS: Views found:', manager.views);
+          
+          // Access views as property, not function
+          const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
+          console.log('📚 BookWebSpeechTTS: Processing views:', views.length);
+          
+          for (const view of views) {
+            console.log('🔍 BookWebSpeechTTS: Processing view:', {
+              displayed: view?.displayed,
+              hasContents: !!view?.contents,
+              hasDocument: !!view?.contents?.document
+            });
+            
+            if (view && view.displayed && view.contents && view.contents.document) {
+              try {
+                const doc = view.contents.document;
                 const body = doc.body || doc.documentElement;
+                
                 if (body) {
-                  const text = body.textContent || body.innerText || '';
-                  if (text.trim()) {
-                    extractedText = text;
-                    console.log('✅ BookWebSpeechTTS: Method 1 successful, extracted text length:', text.length);
+                  console.log('📄 BookWebSpeechTTS: Found body element in view');
+                  
+                  // Clone and clean the content
+                  const clone = body.cloneNode(true) as HTMLElement;
+                  
+                  // Remove unwanted elements
+                  const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                  unwantedElements.forEach(el => el.remove());
+                  
+                  const viewText = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
+                  console.log('✅ BookWebSpeechTTS: Extracted text from view:', {
+                    length: viewText.length,
+                    preview: viewText.substring(0, 100) + '...'
+                  });
+                  
+                  if (viewText.trim()) {
+                    extractedText = viewText;
                     break;
                   }
                 }
+              } catch (error) {
+                console.warn('⚠️ BookWebSpeechTTS: Error processing view:', error);
               }
-            } catch (error) {
-              console.warn('⚠️ BookWebSpeechTTS: Error in Method 1 for view:', error);
             }
           }
         }
+      } catch (error) {
+        console.warn('⚠️ BookWebSpeechTTS: Error accessing manager views:', error);
       }
 
-      // Method 2: Direct DOM query in the main document
+      // Method 2: Fallback - Direct DOM query for EPUB iframes
       if (!extractedText.trim()) {
-        console.log('📖 BookWebSpeechTTS: Trying Method 2 - direct DOM query');
+        console.log('📖 BookWebSpeechTTS: Trying fallback method - direct iframe access');
+        
         try {
-          const iframes = document.querySelectorAll('iframe[id^="epubjs-view"]');
-          console.log('🔍 BookWebSpeechTTS: Found EPUB iframes:', iframes.length);
+          // Look for react-reader iframes
+          const iframes = document.querySelectorAll('iframe');
+          console.log('🔍 BookWebSpeechTTS: Found iframes:', iframes.length);
           
           for (const iframe of iframes) {
             try {
               const iframeDoc = (iframe as HTMLIFrameElement).contentDocument;
               if (iframeDoc) {
+                console.log('📄 BookWebSpeechTTS: Accessing iframe document');
+                
                 const body = iframeDoc.body || iframeDoc.documentElement;
                 if (body) {
-                  const text = body.textContent || body.innerText || '';
-                  if (text.trim()) {
-                    extractedText = text;
-                    console.log('✅ BookWebSpeechTTS: Method 2 successful, extracted text length:', text.length);
-                    break;
+                  // Check if iframe is visible
+                  const iframeElement = iframe as HTMLIFrameElement;
+                  const rect = iframeElement.getBoundingClientRect();
+                  const isVisible = rect.width > 0 && rect.height > 0;
+                  
+                  console.log('👁️ BookWebSpeechTTS: Iframe visibility:', {
+                    isVisible,
+                    width: rect.width,
+                    height: rect.height
+                  });
+                  
+                  if (isVisible) {
+                    const clone = body.cloneNode(true) as HTMLElement;
+                    
+                    // Remove unwanted elements
+                    const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                    unwantedElements.forEach(el => el.remove());
+                    
+                    const text = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
+                    console.log('📝 BookWebSpeechTTS: Iframe text extracted:', {
+                      length: text.length,
+                      preview: text.substring(0, 100) + '...'
+                    });
+                    
+                    if (text.trim()) {
+                      extractedText = text;
+                      break;
+                    }
                   }
                 }
               }
@@ -89,7 +140,7 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
             }
           }
         } catch (error) {
-          console.warn('⚠️ BookWebSpeechTTS: Error in Method 2:', error);
+          console.warn('⚠️ BookWebSpeechTTS: Error in fallback method:', error);
         }
       }
 
@@ -98,12 +149,13 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
         const cleanedText = extractedText
           .replace(/\s+/g, ' ')
           .replace(/\n+/g, ' ')
+          .replace(/[^\w\s.,!?;:'"()-]/g, '')
           .trim();
         
         console.log('✅ BookWebSpeechTTS: Successfully extracted and cleaned text:', {
           originalLength: extractedText.length,
           cleanedLength: cleanedText.length,
-          preview: cleanedText.substring(0, 100) + '...'
+          preview: cleanedText.substring(0, 200) + '...'
         });
         
         return cleanedText;
