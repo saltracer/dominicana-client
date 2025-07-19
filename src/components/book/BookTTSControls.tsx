@@ -49,22 +49,50 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
       currentTTS.stopReading();
     } else if (currentTTS.totalChunks > 0 && currentTTS.currentChunkIndex > 0) {
       console.log('▶️ BookTTSControls: Resuming reading');
-      await currentTTS.resumeReading(useFallback ? selectedVoiceId : selectedVoiceId);
+      try {
+        await currentTTS.resumeReading(selectedVoiceId);
+      } catch (error) {
+        console.warn('⚠️ Resume failed, trying fallback:', error);
+        if (!useFallback && error.message.includes('quota')) {
+          console.log('🔄 Switching to Web Speech for resume');
+          setUseFallback(true);
+          await webSpeechTTS.resumeReading(selectedVoiceId);
+        }
+      }
     } else {
       console.log('🎬 BookTTSControls: Starting reading from beginning');
       
-      // Try ElevenLabs first if not already using fallback
-      if (!useFallback) {
+      // Determine which TTS to use based on selected voice
+      const isWebSpeechVoice = webSpeechTTS.availableVoices.some(v => v.id === selectedVoiceId);
+      const isElevenLabsVoice = elevenLabsTTS.availableVoices.some(v => v.id === selectedVoiceId);
+      
+      if (isWebSpeechVoice || useFallback) {
+        console.log('🎤 Using Web Speech TTS');
+        setUseFallback(true);
+        await webSpeechTTS.startReading(rendition, selectedVoiceId);
+      } else if (isElevenLabsVoice) {
+        console.log('🔊 Trying ElevenLabs TTS first');
+        try {
+          await elevenLabsTTS.startReading(rendition, selectedVoiceId);
+        } catch (error) {
+          console.warn('⚠️ ElevenLabs failed, switching to Web Speech:', error);
+          if (error.message.includes('quota') || error.message.includes('credits') || error.message.includes('ElevenLabs')) {
+            console.log('🔄 Auto-switching to Web Speech due to ElevenLabs error');
+            setUseFallback(true);
+            await webSpeechTTS.startReading(rendition, selectedVoiceId);
+          } else {
+            throw error; // Re-throw if it's not a quota/API error
+          }
+        }
+      } else {
+        // Default to ElevenLabs, with fallback
         try {
           await elevenLabsTTS.startReading(rendition, selectedVoiceId);
         } catch (error) {
           console.warn('⚠️ ElevenLabs failed, switching to Web Speech:', error);
           setUseFallback(true);
-          // Start with Web Speech instead
           await webSpeechTTS.startReading(rendition, selectedVoiceId);
         }
-      } else {
-        await webSpeechTTS.startReading(rendition, selectedVoiceId);
       }
     }
   };
@@ -75,12 +103,18 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
   };
 
   const handleVoiceChange = (newVoiceId: string) => {
+    console.log('🎤 BookTTSControls: Voice changed to:', newVoiceId);
     setSelectedVoiceId(newVoiceId);
     
-    // If changing to a Web Speech voice, switch to fallback mode
-    if (webSpeechTTS.availableVoices.some(v => v.id === newVoiceId)) {
+    // Determine if this is a Web Speech voice
+    const isWebSpeechVoice = webSpeechTTS.availableVoices.some(v => v.id === newVoiceId);
+    const isElevenLabsVoice = elevenLabsTTS.availableVoices.some(v => v.id === newVoiceId);
+    
+    if (isWebSpeechVoice) {
+      console.log('🎤 Switching to Web Speech mode');
       setUseFallback(true);
-    } else if (elevenLabsTTS.availableVoices.some(v => v.id === newVoiceId)) {
+    } else if (isElevenLabsVoice) {
+      console.log('🔊 Switching to ElevenLabs mode');
       setUseFallback(false);
     }
   };
@@ -199,6 +233,14 @@ const BookTTSControls: React.FC<BookTTSControlsProps> = ({
           Reading page aloud {useFallback ? '(using browser voice)' : '(using ElevenLabs)'}
         </p>
       )}
+      
+      {/* Show quota error notice if ElevenLabs fails */}
+      {elevenLabsTTS.hasQuotaError && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          ElevenLabs quota exceeded - using browser voice
+        </p>
+      )}
+      
       {allVoices.length === 0 && (
         <p className="text-xs text-amber-600 dark:text-amber-400">
           Loading voices...

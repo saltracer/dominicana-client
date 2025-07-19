@@ -1,7 +1,7 @@
 
 /**
  * Utility functions for extracting text from ePub.js renditions
- * Uses native ePub.js APIs instead of DOM scraping
+ * Uses native ePub.js APIs to get only visible page content
  */
 
 export interface TextExtractionResult {
@@ -12,7 +12,7 @@ export interface TextExtractionResult {
 }
 
 export const extractCurrentPageText = async (rendition: any): Promise<TextExtractionResult> => {
-  console.log('📖 EPubExtractor: Starting text extraction from current page');
+  console.log('📖 EPubExtractor: Starting text extraction from current visible page');
   
   try {
     if (!rendition || !rendition.book) {
@@ -38,7 +38,7 @@ export const extractCurrentPageText = async (rendition: any): Promise<TextExtrac
       percentage: currentLocation.start.percentage
     });
 
-    // Find the current section in the book's spine
+    // Get the current section
     const spine = rendition.book.spine;
     const currentSection = spine.get(currentHref);
     
@@ -64,96 +64,144 @@ export const extractCurrentPageText = async (rendition: any): Promise<TextExtrac
 
     console.log('✅ EPubExtractor: Section document loaded');
 
-    // Extract text from the section
-    let sectionText = '';
+    // Try to get the range for the current CFI to find the exact visible content
+    let visibleText = '';
     
-    // Try to get text from body first
-    const body = sectionDocument.body || sectionDocument.documentElement;
-    if (body) {
-      sectionText = body.textContent || body.innerText || '';
-    }
-
-    if (!sectionText.trim()) {
-      console.warn('⚠️ EPubExtractor: No text found in section body, trying alternative extraction');
-      
-      // Alternative: get all text elements
-      const textElements = sectionDocument.querySelectorAll('p, div, span, h1, h2, h3, h4, h5, h6');
-      const textParts: string[] = [];
-      
-      textElements.forEach(element => {
-        const text = element.textContent || element.innerText;
-        if (text && text.trim().length > 10) {
-          textParts.push(text.trim());
+    try {
+      // Use ePub.js CFI tools to get the range for current position
+      const cfi = rendition.book.canonical || window.ePub?.CFI;
+      if (cfi && startCfi) {
+        console.log('🎯 EPubExtractor: Attempting CFI-based extraction');
+        
+        // Get the range from CFI
+        const range = cfi.getRange(startCfi, sectionDocument);
+        if (range) {
+          console.log('✅ EPubExtractor: Got CFI range, extracting surrounding content');
+          
+          // Get the container element that contains the range
+          let container = range.startContainer;
+          while (container && container.nodeType !== Node.ELEMENT_NODE) {
+            container = container.parentNode;
+          }
+          
+          if (container) {
+            // Get text from the container and several following elements
+            const textElements = [];
+            let currentElement = container;
+            let textLength = 0;
+            
+            // Collect text from current and following elements until we have enough
+            while (currentElement && textLength < 2000) {
+              if (currentElement.textContent) {
+                const text = currentElement.textContent.trim();
+                if (text.length > 20) { // Skip very short elements
+                  textElements.push(text);
+                  textLength += text.length;
+                }
+              }
+              
+              // Move to next sibling or parent's next sibling
+              currentElement = currentElement.nextSibling || 
+                               currentElement.parentNode?.nextSibling;
+            }
+            
+            visibleText = textElements.join(' ');
+            console.log('✅ EPubExtractor: CFI-based extraction successful:', {
+              elementsFound: textElements.length,
+              totalLength: visibleText.length
+            });
+          }
         }
-      });
-      
-      sectionText = textParts.join(' ');
+      }
+    } catch (cfiError) {
+      console.warn('⚠️ EPubExtractor: CFI extraction failed:', cfiError);
     }
 
-    if (!sectionText.trim()) {
-      console.error('❌ EPubExtractor: No text could be extracted from section');
-      return { text: '' };
-    }
-
-    // Now we need to find the approximate position within the section
-    // based on the CFI and current location percentage
-    let extractedText = sectionText;
-    let startPosition = 0;
-
-    if (currentLocation.start.percentage && currentLocation.start.percentage > 0) {
-      // Use percentage to approximate position within the section
-      const sectionPercentage = currentLocation.start.percentage;
-      startPosition = Math.floor(sectionText.length * sectionPercentage);
+    // Fallback: Try to extract content from the visible viewport
+    if (!visibleText || visibleText.length < 100) {
+      console.log('🔄 EPubExtractor: Falling back to viewport-based extraction');
       
-      console.log('📊 EPubExtractor: Using percentage for positioning:', {
-        sectionPercentage,
-        sectionLength: sectionText.length,
-        startPosition
-      });
-    }
-
-    // Extract a reasonable "page" of text (approximately 1000-2000 characters)
-    const maxPageSize = 2000;
-    const endPosition = Math.min(startPosition + maxPageSize, sectionText.length);
-    
-    // Try to break at sentence boundaries
-    let pageText = sectionText.substring(startPosition, endPosition);
-    
-    // If we're not at the end of the section, try to end at a sentence boundary
-    if (endPosition < sectionText.length) {
-      const lastSentenceEnd = Math.max(
-        pageText.lastIndexOf('.'),
-        pageText.lastIndexOf('!'),
-        pageText.lastIndexOf('?')
-      );
-      
-      if (lastSentenceEnd > pageText.length * 0.5) {
-        pageText = pageText.substring(0, lastSentenceEnd + 1);
+      try {
+        // Get the iframe content
+        const iframe = rendition.manager?.views?._views?.[0]?.iframe || 
+                      document.querySelector('iframe[src*="blob:"]');
+        
+        if (iframe && iframe.contentDocument) {
+          const iframeDoc = iframe.contentDocument;
+          
+          // Find all paragraph elements in the iframe
+          const paragraphs = Array.from(iframeDoc.querySelectorAll('p, div[class*="para"], div[class*="text"]'));
+          console.log('📝 EPubExtractor: Found paragraphs in iframe:', paragraphs.length);
+          
+          // Get text from first few visible paragraphs
+          const visibleParagraphs = paragraphs
+            .slice(0, 5) // Take first 5 paragraphs
+            .map(p => p.textContent?.trim())
+            .filter(text => text && text.length > 20);
+          
+          if (visibleParagraphs.length > 0) {
+            visibleText = visibleParagraphs.join(' ');
+            console.log('✅ EPubExtractor: Viewport extraction successful:', {
+              paragraphsUsed: visibleParagraphs.length,
+              totalLength: visibleText.length
+            });
+          }
+        }
+      } catch (viewportError) {
+        console.warn('⚠️ EPubExtractor: Viewport extraction failed:', viewportError);
       }
     }
 
-    // Clean up the text
-    extractedText = pageText
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    if (extractedText.length < 50) {
-      console.warn('⚠️ EPubExtractor: Extracted text too short, using larger chunk');
-      // Fallback: take a larger chunk from the beginning of the section
-      extractedText = sectionText.substring(0, Math.min(2000, sectionText.length))
-        .replace(/\s+/g, ' ')
-        .trim();
+    // Final fallback: Get content from section but try to skip header material
+    if (!visibleText || visibleText.length < 100) {
+      console.log('🔄 EPubExtractor: Final fallback to section content');
+      
+      const body = sectionDocument.body || sectionDocument.documentElement;
+      if (body) {
+        const fullText = body.textContent || '';
+        
+        // Try to skip Project Gutenberg header and find actual content
+        const contentStart = Math.max(
+          fullText.indexOf('ARTICLE'),
+          fullText.indexOf('QUESTION'),
+          fullText.indexOf('Chapter'),
+          fullText.indexOf('Part'),
+          fullText.indexOf('***'), // Often marks start of content
+          0
+        );
+        
+        // If we found a content marker, start from there
+        const startPos = contentStart > 0 ? contentStart : 0;
+        visibleText = fullText.substring(startPos, Math.min(startPos + 2000, fullText.length));
+        
+        console.log('✅ EPubExtractor: Section fallback extraction:', {
+          fullTextLength: fullText.length,
+          startPosition: startPos,
+          extractedLength: visibleText.length,
+          foundContentMarker: contentStart > 0
+        });
+      }
     }
 
-    console.log('✅ EPubExtractor: Successfully extracted text:', {
-      originalSectionLength: sectionText.length,
-      extractedLength: extractedText.length,
-      startPosition,
-      preview: extractedText.substring(0, 100) + '...'
+    // Clean up the extracted text
+    visibleText = visibleText
+      .replace(/\s+/g, ' ')
+      .replace(/Project Gutenberg[^.]*\./g, '') // Remove Gutenberg references
+      .replace(/This ebook is for[^.]*\./g, '') // Remove ebook notices
+      .trim();
+
+    if (!visibleText || visibleText.length < 50) {
+      console.error('❌ EPubExtractor: Could not extract meaningful visible text');
+      return { text: '' };
+    }
+
+    console.log('✅ EPubExtractor: Successfully extracted visible page text:', {
+      extractedLength: visibleText.length,
+      preview: visibleText.substring(0, 100) + '...'
     });
 
     return {
-      text: extractedText,
+      text: visibleText,
       sectionTitle: currentSection.id || `Chapter ${currentSection.index + 1}`,
       cfi: startCfi,
       chapterIndex: currentSection.index
