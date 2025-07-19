@@ -24,9 +24,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const generatingChunksRef = useRef<Set<number>>(new Set());
 
-  // Enhanced text extraction using proper ePub.js APIs
+  // Extract visible text from current page using proper viewport detection
   const extractCurrentPageText = useCallback(async (rendition: any): Promise<string> => {
-    console.log('🔍 BookTTS: Starting ePub.js text extraction');
+    console.log('🔍 BookTTS: Starting visible text extraction from current page');
     
     try {
       if (!rendition) {
@@ -34,143 +34,141 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      // Method 1: Try to get text from current view's iframe content
-      try {
-        const manager = rendition.manager;
-        if (manager && manager.views) {
-          console.log('📖 BookTTS: Accessing current views');
-          
-          const currentView = manager.views._views?.[0] || manager.views[0];
-          if (currentView && currentView.contents) {
-            console.log('📄 BookTTS: Found current view with contents');
-            
-            const doc = currentView.contents.document;
-            if (doc && doc.body) {
-              const textContent = doc.body.textContent || doc.body.innerText || '';
-              
-              if (textContent && textContent.trim().length > 50) {
-                const cleanedText = textContent
-                  .replace(/\s+/g, ' ')
-                  .trim();
-                
-                console.log('✅ BookTTS: Extracted text from current view:', {
-                  length: cleanedText.length,
-                  preview: cleanedText.substring(0, 200) + '...'
-                });
-                
-                return cleanedText;
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('⚠️ BookTTS: Error with current view method:', error);
+      // Get the current location to understand what's visible
+      const currentLocation = rendition.currentLocation();
+      console.log('📍 BookTTS: Current location:', currentLocation);
+
+      // Get the current view that's actually being displayed
+      const manager = rendition.manager;
+      if (!manager || !manager.views) {
+        console.error('❌ BookTTS: No view manager found');
+        return '';
       }
 
-      // Method 2: Try using current location and book spine
-      try {
-        const currentLocation = rendition.currentLocation();
-        if (currentLocation && currentLocation.start && currentLocation.start.href) {
-          console.log('📍 BookTTS: Current location found:', currentLocation.start.href);
-          
-          const book = rendition.book;
-          if (book && book.spine) {
-            const spineItem = book.spine.get(currentLocation.start.href);
-            if (spineItem) {
-              console.log('📚 BookTTS: Found spine item');
-              
-              // Load the section and get its content
-              const section = book.section(spineItem.href);
-              if (section) {
-                try {
-                  // Load the section if not already loaded
-                  await section.load(book.load.bind(book));
-                  
-                  // Get the document from the section
-                  if (section.document) {
-                    const textContent = section.document.body ? 
-                      (section.document.body.textContent || section.document.body.innerText) :
-                      (section.document.textContent || section.document.innerText);
-                    
-                    if (textContent && textContent.trim().length > 50) {
-                      const cleanedText = textContent
-                        .replace(/\s+/g, ' ')
-                        .trim();
-                      
-                      // Take a reasonable chunk size (not the entire chapter)
-                      const pageText = cleanedText.substring(0, 8000);
-                      
-                      console.log('✅ BookTTS: Extracted text from section:', {
-                        totalLength: cleanedText.length,
-                        pageLength: pageText.length,
-                        preview: pageText.substring(0, 200) + '...'
-                      });
-                      
-                      return pageText;
-                    }
-                  }
-                } catch (sectionError) {
-                  console.warn('⚠️ BookTTS: Error loading section:', sectionError);
-                }
-              }
-            }
-          }
+      console.log('📖 BookTTS: Accessing current view manager');
+      
+      // Get the currently displayed view
+      let currentView = null;
+      
+      // Try different ways to get the current view
+      if (manager.views._views) {
+        const viewsArray = Object.values(manager.views._views);
+        currentView = viewsArray.find((view: any) => view && view.displayed);
+        if (!currentView && viewsArray.length > 0) {
+          currentView = viewsArray[0]; // Fallback to first view
         }
-      } catch (locationError) {
-        console.warn('⚠️ BookTTS: Error with location method:', locationError);
+      } else if (Array.isArray(manager.views)) {
+        currentView = manager.views.find((view: any) => view && view.displayed);
+        if (!currentView && manager.views.length > 0) {
+          currentView = manager.views[0]; // Fallback to first view
+        }
       }
 
-      // Method 3: Fallback - try to get text from any available view
-      try {
-        console.log('🔄 BookTTS: Trying fallback - get text from any view');
+      if (!currentView || !currentView.contents) {
+        console.warn('⚠️ BookTTS: No current view with contents found');
+        return '';
+      }
+
+      console.log('📄 BookTTS: Found current view with contents');
+
+      // Get the iframe document from the current view
+      const doc = currentView.contents.document;
+      if (!doc) {
+        console.warn('⚠️ BookTTS: No document in current view');
+        return '';
+      }
+
+      // Try to get only the visible text by looking at the viewport
+      let visibleText = '';
+
+      // Method 1: Try to get text from elements that are actually in the viewport
+      if (currentView.contents.window) {
+        const win = currentView.contents.window;
+        const viewportHeight = win.innerHeight;
+        const scrollTop = win.pageYOffset || doc.documentElement.scrollTop;
         
-        const manager = rendition.manager;
-        if (manager && manager.views) {
-          // Try different ways to access views
-          let views = [];
-          if (manager.views._views) {
-            views = Object.values(manager.views._views);
-          } else if (Array.isArray(manager.views)) {
-            views = manager.views;
-          } else if (typeof manager.views === 'object') {
-            views = Object.values(manager.views);
-          }
-          
-          console.log('📖 BookTTS: Found views for fallback:', views.length);
-          
-          for (const view of views) {
-            if (view && view.contents && view.contents.document) {
-              const doc = view.contents.document;
-              const textContent = doc.body ? 
-                (doc.body.textContent || doc.body.innerText) :
-                (doc.textContent || doc.innerText);
-              
-              if (textContent && textContent.trim().length > 50) {
-                const cleanedText = textContent
-                  .replace(/\s+/g, ' ')
-                  .trim();
-                
-                const pageText = cleanedText.substring(0, 8000);
-                
-                console.log('✅ BookTTS: Fallback text extraction successful:', {
-                  length: pageText.length,
-                  preview: pageText.substring(0, 200) + '...'
-                });
-                
-                return pageText;
-              }
+        console.log('📐 BookTTS: Viewport info:', {
+          height: viewportHeight,
+          scrollTop: scrollTop
+        });
+
+        // Get all text elements and filter by visibility in viewport
+        const textElements = doc.querySelectorAll('p, div, span, h1, h2, h3, h4, h5, h6');
+        const visibleElements: HTMLElement[] = [];
+
+        for (const element of textElements) {
+          const rect = element.getBoundingClientRect();
+          // Check if element is in viewport
+          if (rect.top < viewportHeight && rect.bottom > 0 && rect.height > 0) {
+            const text = element.textContent || element.innerText;
+            if (text && text.trim().length > 10) { // Only meaningful text
+              visibleElements.push(element as HTMLElement);
             }
           }
         }
-      } catch (fallbackError) {
-        console.warn('⚠️ BookTTS: Fallback method failed:', fallbackError);
+
+        if (visibleElements.length > 0) {
+          visibleText = visibleElements
+            .map(el => (el.textContent || el.innerText || '').trim())
+            .filter(text => text.length > 0)
+            .join(' ');
+          
+          console.log('✅ BookTTS: Extracted visible text from viewport elements:', {
+            elementsCount: visibleElements.length,
+            textLength: visibleText.length,
+            preview: visibleText.substring(0, 200) + '...'
+          });
+        }
       }
 
-      console.warn('⚠️ BookTTS: All text extraction methods failed');
-      return '';
+      // Method 2: Fallback - get a reasonable chunk from current position
+      if (!visibleText || visibleText.length < 100) {
+        console.log('🔄 BookTTS: Using fallback method - getting text chunk from current position');
+        
+        const bodyText = doc.body ? (doc.body.textContent || doc.body.innerText || '') : '';
+        
+        if (bodyText && bodyText.length > 0) {
+          // Take a reasonable chunk (not the whole document)
+          const maxChunkSize = 8000; // Reasonable size for one "page"
+          
+          // If we have current location info, try to start from a relevant position
+          let startIndex = 0;
+          if (currentLocation && currentLocation.start && currentLocation.start.percentage) {
+            const percentage = currentLocation.start.percentage;
+            startIndex = Math.floor(bodyText.length * percentage);
+            console.log('📊 BookTTS: Using location percentage to start at:', percentage, 'index:', startIndex);
+          }
+          
+          visibleText = bodyText.substring(startIndex, startIndex + maxChunkSize);
+          
+          console.log('✅ BookTTS: Extracted text chunk from position:', {
+            startIndex,
+            chunkLength: visibleText.length,
+            totalLength: bodyText.length,
+            preview: visibleText.substring(0, 200) + '...'
+          });
+        }
+      }
+
+      if (!visibleText || visibleText.trim().length < 50) {
+        console.warn('⚠️ BookTTS: No sufficient visible text found');
+        return '';
+      }
+
+      // Clean up the text
+      const cleanedText = visibleText
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      console.log('✅ BookTTS: Final extracted text:', {
+        length: cleanedText.length,
+        preview: cleanedText.substring(0, 200) + '...'
+      });
+      
+      return cleanedText;
       
     } catch (error) {
-      console.error('💥 BookTTS: Error extracting text from current page:', error);
+      console.error('💥 BookTTS: Error extracting visible text:', error);
       return '';
     }
   }, []);
@@ -393,15 +391,15 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
     setHasQuotaError(false);
 
-    console.log('📖 BookTTS: Extracting text from current page using ePub.js APIs');
+    console.log('📖 BookTTS: Extracting visible text from current page');
     
     const pageText = await extractCurrentPageText(rendition);
     if (!pageText.trim()) {
-      console.warn('❌ BookTTS: No text found on current page');
+      console.warn('❌ BookTTS: No visible text found on current page');
       return;
     }
 
-    console.log('✅ BookTTS: Text extracted successfully, creating chunks');
+    console.log('✅ BookTTS: Visible text extracted successfully, creating chunks');
     
     const chunks = splitTextIntoChunks(pageText);
     if (chunks.length === 0) {
