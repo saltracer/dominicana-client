@@ -68,13 +68,12 @@ export const extractCurrentPageText = async (rendition: any): Promise<TextExtrac
     let visibleText = '';
     
     try {
-      // Use ePub.js CFI tools to get the range for current position
-      const cfi = rendition.book.canonical || window.ePub?.CFI;
-      if (cfi && startCfi) {
+      // Use ePub.js CFI tools from the book instance
+      if (rendition.book.canonical && startCfi) {
         console.log('🎯 EPubExtractor: Attempting CFI-based extraction');
         
-        // Get the range from CFI
-        const range = cfi.getRange(startCfi, sectionDocument);
+        // Get the range from CFI using the book's CFI utilities
+        const range = rendition.book.canonical.getRange(startCfi, sectionDocument);
         if (range) {
           console.log('✅ EPubExtractor: Got CFI range, extracting surrounding content');
           
@@ -87,22 +86,25 @@ export const extractCurrentPageText = async (rendition: any): Promise<TextExtrac
           if (container) {
             // Get text from the container and several following elements
             const textElements = [];
-            let currentElement = container;
+            let currentElement: Node | null = container;
             let textLength = 0;
             
             // Collect text from current and following elements until we have enough
             while (currentElement && textLength < 2000) {
-              if (currentElement.textContent) {
-                const text = currentElement.textContent.trim();
-                if (text.length > 20) { // Skip very short elements
-                  textElements.push(text);
-                  textLength += text.length;
+              if (currentElement.nodeType === Node.ELEMENT_NODE) {
+                const element = currentElement as Element;
+                if (element.textContent) {
+                  const text = element.textContent.trim();
+                  if (text.length > 20) { // Skip very short elements
+                    textElements.push(text);
+                    textLength += text.length;
+                  }
                 }
               }
               
               // Move to next sibling or parent's next sibling
               currentElement = currentElement.nextSibling || 
-                               currentElement.parentNode?.nextSibling;
+                               (currentElement.parentNode?.nextSibling || null);
             }
             
             visibleText = textElements.join(' ');
