@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -35,88 +34,67 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      // Method 1: Get text from current view using contents
+      // Method 1: Try to get text from current view's iframe content
       try {
         const manager = rendition.manager;
         if (manager && manager.views) {
-          console.log('📖 BookTTS: Accessing manager views');
+          console.log('📖 BookTTS: Accessing current views');
           
-          const views = manager.views;
-          let viewsArray = [];
-          
-          // Handle different view manager types
-          if (Array.isArray(views)) {
-            viewsArray = views;
-          } else if (views && typeof views === 'object') {
-            viewsArray = Object.values(views);
-          }
-          
-          console.log('🔍 BookTTS: Found views:', viewsArray.length);
-          
-          for (const view of viewsArray) {
-            if (view && view.contents) {
-              console.log('📄 BookTTS: Processing view with contents');
+          const currentView = manager.views._views?.[0] || manager.views[0];
+          if (currentView && currentView.contents) {
+            console.log('📄 BookTTS: Found current view with contents');
+            
+            const doc = currentView.contents.document;
+            if (doc && doc.body) {
+              const textContent = doc.body.textContent || doc.body.innerText || '';
               
-              try {
-                // Try to get the document from the view contents
-                const doc = view.contents.document || view.contents.documentElement;
-                if (doc) {
-                  const textContent = doc.textContent || doc.innerText || '';
-                  
-                  if (textContent && textContent.trim().length > 50) {
-                    const cleanedText = textContent
-                      .replace(/\s+/g, ' ')
-                      .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-                      .trim();
-                    
-                    console.log('✅ BookTTS: Extracted text from view:', {
-                      length: cleanedText.length,
-                      preview: cleanedText.substring(0, 200) + '...'
-                    });
-                    
-                    return cleanedText;
-                  }
-                }
-              } catch (viewError) {
-                console.warn('⚠️ BookTTS: Error processing view:', viewError);
+              if (textContent && textContent.trim().length > 50) {
+                const cleanedText = textContent
+                  .replace(/\s+/g, ' ')
+                  .trim();
+                
+                console.log('✅ BookTTS: Extracted text from current view:', {
+                  length: cleanedText.length,
+                  preview: cleanedText.substring(0, 200) + '...'
+                });
+                
+                return cleanedText;
               }
             }
           }
         }
       } catch (error) {
-        console.warn('⚠️ BookTTS: Error with view method:', error);
+        console.warn('⚠️ BookTTS: Error with current view method:', error);
       }
 
-      // Method 2: Try using the current location and spine
+      // Method 2: Try using current location and book spine
       try {
         const currentLocation = rendition.currentLocation();
-        if (currentLocation && currentLocation.start) {
+        if (currentLocation && currentLocation.start && currentLocation.start.href) {
           console.log('📍 BookTTS: Current location found:', currentLocation.start.href);
           
           const book = rendition.book;
           if (book && book.spine) {
-            // Get the spine item for current location
             const spineItem = book.spine.get(currentLocation.start.href);
             if (spineItem) {
               console.log('📚 BookTTS: Found spine item');
               
-              // Try to get the section content directly
-              try {
-                const section = book.section(spineItem.href);
-                if (section) {
-                  await section.load();
-                  const sectionText = await section.output();
+              // Load the section and get its content
+              const section = book.section(spineItem.href);
+              if (section) {
+                try {
+                  // Load the section if not already loaded
+                  await section.load(book.load.bind(book));
                   
-                  if (sectionText) {
-                    // Parse the HTML content
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = sectionText;
-                    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                  // Get the document from the section
+                  if (section.document) {
+                    const textContent = section.document.body ? 
+                      (section.document.body.textContent || section.document.body.innerText) :
+                      (section.document.textContent || section.document.innerText);
                     
                     if (textContent && textContent.trim().length > 50) {
                       const cleanedText = textContent
                         .replace(/\s+/g, ' ')
-                        .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
                         .trim();
                       
                       // Take a reasonable chunk size (not the entire chapter)
@@ -131,9 +109,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                       return pageText;
                     }
                   }
+                } catch (sectionError) {
+                  console.warn('⚠️ BookTTS: Error loading section:', sectionError);
                 }
-              } catch (sectionError) {
-                console.warn('⚠️ BookTTS: Error loading section:', sectionError);
               }
             }
           }
@@ -142,42 +120,44 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         console.warn('⚠️ BookTTS: Error with location method:', locationError);
       }
 
-      // Method 3: Fallback - try to get any text from the rendition
+      // Method 3: Fallback - try to get text from any available view
       try {
-        console.log('🔄 BookTTS: Trying fallback text extraction');
+        console.log('🔄 BookTTS: Trying fallback - get text from any view');
         
-        if (rendition.book && rendition.book.spine) {
-          const spine = rendition.book.spine;
-          const currentItem = spine.items[0]; // Get first available item as fallback
+        const manager = rendition.manager;
+        if (manager && manager.views) {
+          // Try different ways to access views
+          let views = [];
+          if (manager.views._views) {
+            views = Object.values(manager.views._views);
+          } else if (Array.isArray(manager.views)) {
+            views = manager.views;
+          } else if (typeof manager.views === 'object') {
+            views = Object.values(manager.views);
+          }
           
-          if (currentItem) {
-            console.log('📖 BookTTS: Using fallback spine item:', currentItem.href);
-            
-            const section = rendition.book.section(currentItem.href);
-            if (section) {
-              await section.load();
-              const sectionText = await section.output();
+          console.log('📖 BookTTS: Found views for fallback:', views.length);
+          
+          for (const view of views) {
+            if (view && view.contents && view.contents.document) {
+              const doc = view.contents.document;
+              const textContent = doc.body ? 
+                (doc.body.textContent || doc.body.innerText) :
+                (doc.textContent || doc.innerText);
               
-              if (sectionText) {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = sectionText;
-                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+              if (textContent && textContent.trim().length > 50) {
+                const cleanedText = textContent
+                  .replace(/\s+/g, ' ')
+                  .trim();
                 
-                if (textContent && textContent.trim().length > 50) {
-                  const cleanedText = textContent
-                    .replace(/\s+/g, ' ')
-                    .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-                    .trim();
-                  
-                  const pageText = cleanedText.substring(0, 8000);
-                  
-                  console.log('✅ BookTTS: Fallback text extraction successful:', {
-                    length: pageText.length,
-                    preview: pageText.substring(0, 200) + '...'
-                  });
-                  
-                  return pageText;
-                }
+                const pageText = cleanedText.substring(0, 8000);
+                
+                console.log('✅ BookTTS: Fallback text extraction successful:', {
+                  length: pageText.length,
+                  preview: pageText.substring(0, 200) + '...'
+                });
+                
+                return pageText;
               }
             }
           }
