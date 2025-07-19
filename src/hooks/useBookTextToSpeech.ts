@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -25,9 +24,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const generatingChunksRef = useRef<Set<number>>(new Set());
 
-  // Enhanced text extraction method focusing on current reading content
+  // Enhanced text extraction method focusing on currently visible content only
   const extractCurrentPageText = useCallback((rendition: any): string => {
-    console.log('🔍 BookTTS: Starting text extraction from current reading position');
+    console.log('🔍 BookTTS: Starting text extraction from currently visible page');
     
     try {
       if (!rendition) {
@@ -37,7 +36,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Try to get text from the current location/section
+      // Method 1: Extract from currently displayed view only
       try {
         const manager = rendition.manager;
         console.log('📖 BookTTS: Manager found:', !!manager);
@@ -45,11 +44,11 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         if (manager && manager.views) {
           console.log('👁️ BookTTS: Views found:', manager.views);
           
-          // Get the currently displayed views
+          // Access views as property, not function
           const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
           console.log('📚 BookTTS: Processing views:', views.length);
           
-          // Focus on displayed views only
+          // Focus ONLY on currently displayed/visible views
           for (const view of views) {
             console.log('🔍 BookTTS: Processing view:', {
               displayed: view?.displayed,
@@ -57,54 +56,37 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
               hasDocument: !!view?.contents?.document
             });
             
+            // Only process views that are currently displayed
             if (view && view.displayed && view.contents && view.contents.document) {
               try {
                 const doc = view.contents.document;
                 const body = doc.body || doc.documentElement;
                 
                 if (body) {
-                  console.log('📄 BookTTS: Found body element in view');
+                  console.log('📄 BookTTS: Found body element in displayed view');
                   
-                  // Clone and clean the content
-                  const clone = body.cloneNode(true) as HTMLElement;
+                  // Get visible content from the current view
+                  const viewportContent = body.textContent || body.innerText || '';
                   
-                  // Remove unwanted elements more aggressively
-                  const unwantedSelectors = [
-                    'script', 'style', 'nav', 'header', 'footer', 
-                    '.toc', '#toc', '.navigation', '.header', '.footer',
-                    '.title-page', '.copyright', '.dedication',
-                    'h1:first-child', // Often the book title
-                    '.metadata', '.publisher', '.author-info'
-                  ];
+                  // Clean up the text but keep it focused on current view
+                  const cleanedText = viewportContent
+                    .replace(/\s+/g, ' ')
+                    .replace(/\n+/g, ' ')
+                    .trim();
                   
-                  unwantedSelectors.forEach(selector => {
-                    const elements = clone.querySelectorAll(selector);
-                    elements.forEach(el => el.remove());
+                  console.log('✅ BookTTS: Extracted visible content:', {
+                    length: cleanedText.length,
+                    preview: cleanedText.substring(0, 200) + '...'
                   });
                   
-                  // Try to find main content area
-                  let contentElement = clone.querySelector('main, article, .content, .chapter, .section') || clone;
-                  
-                  // Get text and filter out very short lines (likely metadata)
-                  const allText = (contentElement as HTMLElement).textContent || (contentElement as HTMLElement).innerText || '';
-                  const lines = allText.split('\n').filter(line => {
-                    const trimmed = line.trim();
-                    return trimmed.length > 20 && !trimmed.match(/^(Chapter|Page|\d+|Title|Author|Publisher)/i);
-                  });
-                  
-                  const viewText = lines.join(' ');
-                  console.log('✅ BookTTS: Extracted content text from view:', {
-                    length: viewText.length,
-                    preview: viewText.substring(0, 100) + '...'
-                  });
-                  
-                  if (viewText.trim() && viewText.length > 100) {
-                    extractedText = viewText;
-                    break;
+                  // Only use content that's reasonably sized for a page
+                  if (cleanedText.length > 100 && cleanedText.length < 50000) {
+                    extractedText = cleanedText;
+                    break; // Take the first displayed view
                   }
                 }
               } catch (error) {
-                console.warn('⚠️ BookTTS: Error processing view:', error);
+                console.warn('⚠️ BookTTS: Error processing displayed view:', error);
               }
             }
           }
@@ -113,9 +95,9 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         console.warn('⚠️ BookTTS: Error accessing manager views:', error);
       }
 
-      // Method 2: Fallback - Direct DOM query for current reading content
+      // Method 2: Fallback - Get visible content from iframe viewport
       if (!extractedText.trim()) {
-        console.log('📖 BookTTS: Trying fallback method - direct iframe content access');
+        console.log('📖 BookTTS: Trying fallback method - iframe viewport content');
         
         try {
           const iframes = document.querySelectorAll('iframe');
@@ -140,45 +122,38 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
                   });
                   
                   if (isVisible) {
-                    const clone = body.cloneNode(true) as HTMLElement;
+                    // Try to get content that's actually visible in the viewport
+                    const visibleElements = body.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6');
+                    let visibleText = '';
                     
-                    // Remove unwanted elements
-                    const unwantedSelectors = [
-                      'script', 'style', 'nav', 'header', 'footer', 
-                      '.toc', '#toc', '.navigation', '.header', '.footer',
-                      '.title-page', '.copyright', '.dedication',
-                      '.metadata', '.publisher', '.author-info'
-                    ];
+                    for (const element of visibleElements) {
+                      const elementRect = element.getBoundingClientRect();
+                      const iframe = element.ownerDocument?.defaultView?.frameElement as HTMLIFrameElement;
+                      const iframeRect = iframe?.getBoundingClientRect();
+                      
+                      // Check if element is within iframe viewport
+                      if (iframeRect && elementRect.top >= 0 && elementRect.top < iframeRect.height) {
+                        const elementText = (element as HTMLElement).textContent || '';
+                        if (elementText.trim() && elementText.length > 20) {
+                          visibleText += elementText.trim() + ' ';
+                        }
+                      }
+                    }
                     
-                    unwantedSelectors.forEach(selector => {
-                      const elements = clone.querySelectorAll(selector);
-                      elements.forEach(el => el.remove());
-                    });
+                    // If viewport detection didn't work, get a reasonable amount of content from the start
+                    if (!visibleText.trim()) {
+                      const allText = body.textContent || body.innerText || '';
+                      // Take first portion that's reasonable for a page (not the entire book)
+                      visibleText = allText.substring(0, 5000);
+                    }
                     
-                    // Try to find main content
-                    let contentElement = clone.querySelector('main, article, .content, .chapter, .section') || clone;
-                    const allText = (contentElement as HTMLElement).textContent || (contentElement as HTMLElement).innerText || '';
-                    
-                    // Filter content to focus on main text
-                    const lines = allText.split('\n').filter(line => {
-                      const trimmed = line.trim();
-                      // Skip very short lines, titles, headers, and metadata
-                      return trimmed.length > 30 && 
-                             !trimmed.match(/^(Project Gutenberg|eBook|Title:|Author:|Release Date:|Language:|Chapter \d+|CHAPTER|Contents)/i) &&
-                             !trimmed.match(/^\d+$/) && // Page numbers
-                             !trimmed.match(/^[A-Z\s]+$/) && // All caps titles
-                             trimmed.split(' ').length > 5; // At least 5 words
-                    });
-                    
-                    const text = lines.join(' ');
-                    console.log('📝 BookTTS: Filtered iframe text extracted:', {
-                      totalLength: allText.length,
-                      filteredLength: text.length,
-                      linesKept: lines.length,
+                    const text = visibleText.trim();
+                    console.log('📝 BookTTS: Extracted viewport text:', {
+                      length: text.length,
                       preview: text.substring(0, 200) + '...'
                     });
                     
-                    if (text.trim() && text.length > 200) {
+                    if (text.length > 100) {
                       extractedText = text;
                       break;
                     }
@@ -194,21 +169,20 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         }
       }
 
-      // Clean up the extracted text
+      // Final cleanup
       if (extractedText.trim()) {
-        const cleanedText = extractedText
+        const finalText = extractedText
           .replace(/\s+/g, ' ')
-          .replace(/\n+/g, ' ')
-          .replace(/[^\w\s.,!?;:'"()-]/g, '')
+          .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
           .trim();
         
-        console.log('✅ BookTTS: Successfully extracted and cleaned current reading text:', {
+        console.log('✅ BookTTS: Successfully extracted current page text:', {
           originalLength: extractedText.length,
-          cleanedLength: cleanedText.length,
-          preview: cleanedText.substring(0, 200) + '...'
+          cleanedLength: finalText.length,
+          preview: finalText.substring(0, 200) + '...'
         });
         
-        return cleanedText;
+        return finalText;
       }
 
       console.warn('⚠️ BookTTS: No meaningful content could be extracted from current page');
