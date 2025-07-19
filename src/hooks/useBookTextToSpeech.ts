@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { useTextToSpeech } from './useTextToSpeech';
 
@@ -26,7 +27,7 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
 
   // Enhanced text extraction using proper ePub.js APIs
   const extractCurrentPageText = useCallback(async (rendition: any): Promise<string> => {
-    console.log('🔍 BookTTS: Starting proper ePub.js text extraction');
+    console.log('🔍 BookTTS: Starting ePub.js text extraction');
     
     try {
       if (!rendition) {
@@ -34,103 +35,158 @@ export const useBookTextToSpeech = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      // Method 1: Use current location and section content
+      // Method 1: Get text from current view using contents
+      try {
+        const manager = rendition.manager;
+        if (manager && manager.views) {
+          console.log('📖 BookTTS: Accessing manager views');
+          
+          const views = manager.views;
+          let viewsArray = [];
+          
+          // Handle different view manager types
+          if (Array.isArray(views)) {
+            viewsArray = views;
+          } else if (views && typeof views === 'object') {
+            viewsArray = Object.values(views);
+          }
+          
+          console.log('🔍 BookTTS: Found views:', viewsArray.length);
+          
+          for (const view of viewsArray) {
+            if (view && view.contents) {
+              console.log('📄 BookTTS: Processing view with contents');
+              
+              try {
+                // Try to get the document from the view contents
+                const doc = view.contents.document || view.contents.documentElement;
+                if (doc) {
+                  const textContent = doc.textContent || doc.innerText || '';
+                  
+                  if (textContent && textContent.trim().length > 50) {
+                    const cleanedText = textContent
+                      .replace(/\s+/g, ' ')
+                      .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+                      .trim();
+                    
+                    console.log('✅ BookTTS: Extracted text from view:', {
+                      length: cleanedText.length,
+                      preview: cleanedText.substring(0, 200) + '...'
+                    });
+                    
+                    return cleanedText;
+                  }
+                }
+              } catch (viewError) {
+                console.warn('⚠️ BookTTS: Error processing view:', viewError);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ BookTTS: Error with view method:', error);
+      }
+
+      // Method 2: Try using the current location and spine
       try {
         const currentLocation = rendition.currentLocation();
-        
         if (currentLocation && currentLocation.start) {
-          console.log('📍 BookTTS: Current location:', {
-            cfi: currentLocation.start.cfi,
-            href: currentLocation.start.href,
-            index: currentLocation.start.index
-          });
-
-          // Get the current section from the book
+          console.log('📍 BookTTS: Current location found:', currentLocation.start.href);
+          
           const book = rendition.book;
           if (book && book.spine) {
+            // Get the spine item for current location
             const spineItem = book.spine.get(currentLocation.start.href);
-            
             if (spineItem) {
-              console.log('📖 BookTTS: Found current spine item:', spineItem.href);
+              console.log('📚 BookTTS: Found spine item');
               
-              // Load the section content
-              const section = await book.load(spineItem.href);
-              if (section && section.document) {
-                console.log('📄 BookTTS: Loaded section document');
-                
-                // Extract text from the section
-                const body = section.document.body || section.document.documentElement;
-                if (body) {
-                  const sectionText = body.textContent || body.innerText || '';
+              // Try to get the section content directly
+              try {
+                const section = book.section(spineItem.href);
+                if (section) {
+                  await section.load();
+                  const sectionText = await section.output();
                   
-                  // Try to find the current position within the section
-                  // For now, we'll take a reasonable chunk from the beginning of the section
-                  // In a more advanced implementation, we could use the CFI to find exact position
-                  const cleanedText = sectionText
+                  if (sectionText) {
+                    // Parse the HTML content
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = sectionText;
+                    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                    
+                    if (textContent && textContent.trim().length > 50) {
+                      const cleanedText = textContent
+                        .replace(/\s+/g, ' ')
+                        .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+                        .trim();
+                      
+                      // Take a reasonable chunk size (not the entire chapter)
+                      const pageText = cleanedText.substring(0, 8000);
+                      
+                      console.log('✅ BookTTS: Extracted text from section:', {
+                        totalLength: cleanedText.length,
+                        pageLength: pageText.length,
+                        preview: pageText.substring(0, 200) + '...'
+                      });
+                      
+                      return pageText;
+                    }
+                  }
+                }
+              } catch (sectionError) {
+                console.warn('⚠️ BookTTS: Error loading section:', sectionError);
+              }
+            }
+          }
+        }
+      } catch (locationError) {
+        console.warn('⚠️ BookTTS: Error with location method:', locationError);
+      }
+
+      // Method 3: Fallback - try to get any text from the rendition
+      try {
+        console.log('🔄 BookTTS: Trying fallback text extraction');
+        
+        if (rendition.book && rendition.book.spine) {
+          const spine = rendition.book.spine;
+          const currentItem = spine.items[0]; // Get first available item as fallback
+          
+          if (currentItem) {
+            console.log('📖 BookTTS: Using fallback spine item:', currentItem.href);
+            
+            const section = rendition.book.section(currentItem.href);
+            if (section) {
+              await section.load();
+              const sectionText = await section.output();
+              
+              if (sectionText) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = sectionText;
+                const textContent = tempDiv.textContent || tempDiv.innerText || '';
+                
+                if (textContent && textContent.trim().length > 50) {
+                  const cleanedText = textContent
                     .replace(/\s+/g, ' ')
                     .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
                     .trim();
                   
-                  // Take a page-sized chunk (not the entire section)
                   const pageText = cleanedText.substring(0, 8000);
                   
-                  console.log('✅ BookTTS: Extracted section text:', {
-                    sectionLength: cleanedText.length,
-                    pageLength: pageText.length,
+                  console.log('✅ BookTTS: Fallback text extraction successful:', {
+                    length: pageText.length,
                     preview: pageText.substring(0, 200) + '...'
                   });
                   
-                  if (pageText.length > 100) {
-                    return pageText;
-                  }
+                  return pageText;
                 }
               }
             }
           }
         }
-      } catch (error) {
-        console.warn('⚠️ BookTTS: Error with ePub.js API method:', error);
+      } catch (fallbackError) {
+        console.warn('⚠️ BookTTS: Fallback method failed:', fallbackError);
       }
 
-      // Method 2: Fallback - try to get content from current view
-      try {
-        const manager = rendition.manager;
-        
-        if (manager && manager.views) {
-          console.log('📚 BookTTS: Trying fallback method with manager views');
-          
-          // Get views from manager
-          const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
-          
-          for (const view of views) {
-            if (view && view.displayed && view.contents && view.contents.document) {
-              const doc = view.contents.document;
-              const body = doc.body || doc.documentElement;
-              
-              if (body) {
-                const viewText = body.textContent || body.innerText || '';
-                const cleanedText = viewText
-                  .replace(/\s+/g, ' ')
-                  .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-                  .trim();
-                
-                console.log('✅ BookTTS: Fallback method extracted text:', {
-                  length: cleanedText.length,
-                  preview: cleanedText.substring(0, 200) + '...'
-                });
-                
-                if (cleanedText.length > 100 && cleanedText.length < 50000) {
-                  return cleanedText;
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('⚠️ BookTTS: Error with fallback method:', error);
-      }
-
-      console.warn('⚠️ BookTTS: No text could be extracted from current page');
+      console.warn('⚠️ BookTTS: All text extraction methods failed');
       return '';
       
     } catch (error) {
