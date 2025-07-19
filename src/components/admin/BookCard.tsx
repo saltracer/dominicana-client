@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Book } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Edit, Trash2 } from 'lucide-react';
+import { Book } from '@/lib/types';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import BookCoverGenerator from './BookCoverGenerator';
 
 interface BookCardProps {
   book: Book;
@@ -12,58 +13,81 @@ interface BookCardProps {
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book, onEdit, onDelete }) => {
+  const handleCoverGenerated = (imageUrl: string) => {
+    // Update the book object with the new cover image
+    onEdit({ ...book, coverImage: imageUrl });
+  };
+
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg line-clamp-1" title={book.title}>{book.title}</CardTitle>
-        <CardDescription className="line-clamp-1" title={`${book.author} • ${book.year}`}>
-          {book.author} • {book.year}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="flex-grow pb-2">
-        <AspectRatio ratio={1/1.5} className="bg-dominican-light-gray mb-4 overflow-hidden rounded-md">
-          {book.coverImage ? (
-            <img 
-              src={book.coverImage} 
-              alt={book.title} 
-              className="object-cover h-full w-full"
-              onError={(e) => {
-                // If image fails, show a placeholder with title
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'p-4');
-                const placeholder = document.createElement('div');
-                placeholder.className = 'text-center';
-                placeholder.innerHTML = `
-                  <p class="font-medium text-dominican-burgundy">${book.title}</p>
-                  <p class="text-sm text-gray-600">${book.author}</p>
-                `;
-                e.currentTarget.parentElement!.appendChild(placeholder);
-              }}
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full w-full p-4">
-              <div className="text-center">
-                <p className="font-medium text-dominican-burgundy">{book.title}</p>
-                <p className="text-sm text-gray-600">{book.author}</p>
-              </div>
-            </div>
-          )}
-        </AspectRatio>
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow">
+      <AspectRatio ratio={2/3} className="bg-gray-100 dark:bg-gray-700">
+        {book.coverImage ? (
+          <img 
+            src={book.coverImage} 
+            alt={book.title}
+            className="object-cover w-full h-full"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const placeholder = e.currentTarget.parentElement?.querySelector('.cover-placeholder');
+              if (placeholder) {
+                (placeholder as HTMLElement).style.display = 'flex';
+              }
+            }}
+          />
+        ) : null}
         
-        <p className="text-sm text-gray-600 mb-2">{book.category}</p>
-        <p className="text-sm line-clamp-3">{book.description}</p>
-      </CardContent>
+        <div 
+          className={`cover-placeholder ${book.coverImage ? 'hidden' : 'flex'} items-center justify-center h-full w-full p-4 text-center`}
+        >
+          <div>
+            <p className="font-bold text-sm text-gray-600 dark:text-gray-400 mb-2">{book.title}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mb-3">{book.author}</p>
+            <BookCoverGenerator 
+              book={book}
+              onCoverGenerated={handleCoverGenerated}
+              size="md"
+            />
+          </div>
+        </div>
+      </AspectRatio>
       
-      <CardFooter className="pt-0 flex justify-between">
-        <Button variant="outline" onClick={() => onEdit(book)}>
-          Edit
-        </Button>
-        <Button variant="destructive" onClick={() => onDelete(book.id)}>
-          Delete
-        </Button>
-      </CardFooter>
-    </Card>
+      <div className="p-4">
+        <h3 className="font-bold text-lg mb-1 line-clamp-2">{book.title}</h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{book.author} • {book.year}</p>
+        <p className="text-gray-700 dark:text-gray-300 text-sm mb-3 line-clamp-2">{book.description}</p>
+        
+        <div className="flex justify-between items-center">
+          <span className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded">
+            {book.category}
+          </span>
+          
+          <div className="flex gap-1">
+            {!book.coverImage && (
+              <BookCoverGenerator 
+                book={book}
+                onCoverGenerated={handleCoverGenerated}
+              />
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(book)}
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onDelete(book.id)}
+              className="text-red-600 border-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -8,6 +8,7 @@ import { migrateBooks } from '@/services/migrationService';
 import BookCard from './BookCard';
 import BookFilters from './BookFilters';
 import BookFormDialog from './BookFormDialog';
+import BulkCoverGenerator from './BulkCoverGenerator';
 
 interface BooksManagerProps {
   editBookId?: number;
@@ -397,6 +398,12 @@ const BooksManager: React.FC<BooksManagerProps> = ({ editBookId }) => {
           </Button>
         </div>
       </div>
+
+      {/* AI Cover Generation Section */}
+      <BulkCoverGenerator 
+        books={books}
+        onCoversGenerated={fetchBooks}
+      />
 
       {/* Filters */}
       <BookFilters
