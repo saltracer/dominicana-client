@@ -138,7 +138,7 @@ export const extractCurrentPageText = async (rendition: any): Promise<TextExtrac
           // Get text from first few visible paragraphs
           const visibleParagraphs = paragraphs
             .slice(0, 5) // Take first 5 paragraphs
-            .map(p => p.textContent?.trim())
+            .map((p: Element) => p.textContent?.trim())
             .filter(text => text && text.length > 20);
           
           if (visibleParagraphs.length > 0) {
