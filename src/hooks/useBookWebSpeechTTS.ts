@@ -20,9 +20,9 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
   const isStoppedRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Enhanced text extraction method focusing on current reading content
+  // Enhanced text extraction method for EPUB iframes - fixed to match working ElevenLabs version
   const extractCurrentPageText = useCallback((rendition: any): string => {
-    console.log('🔍 BookWebSpeechTTS: Starting text extraction from current reading position');
+    console.log('🔍 BookWebSpeechTTS: Starting text extraction from rendition');
     
     try {
       if (!rendition) {
@@ -32,7 +32,7 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
 
       let extractedText = '';
 
-      // Method 1: Try to get text from the current location/section
+      // Method 1: Try to access the manager views directly (as property)
       try {
         const manager = rendition.manager;
         console.log('📖 BookWebSpeechTTS: Manager found:', !!manager);
@@ -44,7 +44,6 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
           const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
           console.log('📚 BookWebSpeechTTS: Processing views:', views.length);
           
-          // Focus on displayed views only
           for (const view of views) {
             console.log('🔍 BookWebSpeechTTS: Processing view:', {
               displayed: view?.displayed,
@@ -63,37 +62,17 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
                   // Clone and clean the content
                   const clone = body.cloneNode(true) as HTMLElement;
                   
-                  // Remove unwanted elements more aggressively
-                  const unwantedSelectors = [
-                    'script', 'style', 'nav', 'header', 'footer', 
-                    '.toc', '#toc', '.navigation', '.header', '.footer',
-                    '.title-page', '.copyright', '.dedication',
-                    'h1:first-child', // Often the book title
-                    '.metadata', '.publisher', '.author-info'
-                  ];
+                  // Remove unwanted elements
+                  const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                  unwantedElements.forEach(el => el.remove());
                   
-                  unwantedSelectors.forEach(selector => {
-                    const elements = clone.querySelectorAll(selector);
-                    elements.forEach(el => el.remove());
-                  });
-                  
-                  // Try to find main content area
-                  let contentElement = clone.querySelector('main, article, .content, .chapter, .section') || clone;
-                  
-                  // Get text and filter out very short lines (likely metadata)
-                  const allText = (contentElement as HTMLElement).textContent || (contentElement as HTMLElement).innerText || '';
-                  const lines = allText.split('\n').filter(line => {
-                    const trimmed = line.trim();
-                    return trimmed.length > 20 && !trimmed.match(/^(Chapter|Page|\d+|Title|Author|Publisher)/i);
-                  });
-                  
-                  const viewText = lines.join(' ');
-                  console.log('✅ BookWebSpeechTTS: Extracted content text from view:', {
+                  const viewText = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
+                  console.log('✅ BookWebSpeechTTS: Extracted text from view:', {
                     length: viewText.length,
                     preview: viewText.substring(0, 100) + '...'
                   });
                   
-                  if (viewText.trim() && viewText.length > 100) {
+                  if (viewText.trim()) {
                     extractedText = viewText;
                     break;
                   }
@@ -108,11 +87,12 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
         console.warn('⚠️ BookWebSpeechTTS: Error accessing manager views:', error);
       }
 
-      // Method 2: Fallback - Direct DOM query for current reading content
+      // Method 2: Fallback - Direct DOM query for EPUB iframes
       if (!extractedText.trim()) {
-        console.log('📖 BookWebSpeechTTS: Trying fallback method - direct iframe content access');
+        console.log('📖 BookWebSpeechTTS: Trying fallback method - direct iframe access');
         
         try {
+          // Look for react-reader iframes
           const iframes = document.querySelectorAll('iframe');
           console.log('🔍 BookWebSpeechTTS: Found iframes:', iframes.length);
           
@@ -124,6 +104,7 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
                 
                 const body = iframeDoc.body || iframeDoc.documentElement;
                 if (body) {
+                  // Check if iframe is visible
                   const iframeElement = iframe as HTMLIFrameElement;
                   const rect = iframeElement.getBoundingClientRect();
                   const isVisible = rect.width > 0 && rect.height > 0;
@@ -138,42 +119,16 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
                     const clone = body.cloneNode(true) as HTMLElement;
                     
                     // Remove unwanted elements
-                    const unwantedSelectors = [
-                      'script', 'style', 'nav', 'header', 'footer', 
-                      '.toc', '#toc', '.navigation', '.header', '.footer',
-                      '.title-page', '.copyright', '.dedication',
-                      '.metadata', '.publisher', '.author-info'
-                    ];
+                    const unwantedElements = clone.querySelectorAll('script, style, nav, header, footer, .toc, #toc');
+                    unwantedElements.forEach(el => el.remove());
                     
-                    unwantedSelectors.forEach(selector => {
-                      const elements = clone.querySelectorAll(selector);
-                      elements.forEach(el => el.remove());
+                    const text = (clone as HTMLElement).textContent || (clone as HTMLElement).innerText || '';
+                    console.log('📝 BookWebSpeechTTS: Iframe text extracted:', {
+                      length: text.length,
+                      preview: text.substring(0, 100) + '...'
                     });
                     
-                    // Try to find main content
-                    let contentElement = clone.querySelector('main, article, .content, .chapter, .section') || clone;
-                    const allText = (contentElement as HTMLElement).textContent || (contentElement as HTMLElement).innerText || '';
-                    
-                    // Filter content to focus on main text
-                    const lines = allText.split('\n').filter(line => {
-                      const trimmed = line.trim();
-                      // Skip very short lines, titles, headers, and metadata
-                      return trimmed.length > 30 && 
-                             !trimmed.match(/^(Project Gutenberg|eBook|Title:|Author:|Release Date:|Language:|Chapter \d+|CHAPTER|Contents)/i) &&
-                             !trimmed.match(/^\d+$/) && // Page numbers
-                             !trimmed.match(/^[A-Z\s]+$/) && // All caps titles
-                             trimmed.split(' ').length > 5; // At least 5 words
-                    });
-                    
-                    const text = lines.join(' ');
-                    console.log('📝 BookWebSpeechTTS: Filtered iframe text extracted:', {
-                      totalLength: allText.length,
-                      filteredLength: text.length,
-                      linesKept: lines.length,
-                      preview: text.substring(0, 200) + '...'
-                    });
-                    
-                    if (text.trim() && text.length > 200) {
+                    if (text.trim()) {
                       extractedText = text;
                       break;
                     }
@@ -197,7 +152,7 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
           .replace(/[^\w\s.,!?;:'"()-]/g, '')
           .trim();
         
-        console.log('✅ BookWebSpeechTTS: Successfully extracted and cleaned current reading text:', {
+        console.log('✅ BookWebSpeechTTS: Successfully extracted and cleaned text:', {
           originalLength: extractedText.length,
           cleanedLength: cleanedText.length,
           preview: cleanedText.substring(0, 200) + '...'
@@ -206,11 +161,11 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
         return cleanedText;
       }
 
-      console.warn('⚠️ BookWebSpeechTTS: No meaningful content could be extracted from current page');
+      console.warn('⚠️ BookWebSpeechTTS: No text could be extracted using any method');
       return '';
       
     } catch (error) {
-      console.error('💥 BookWebSpeechTTS: Error extracting text from current page:', error);
+      console.error('💥 BookWebSpeechTTS: Error extracting text from page:', error);
       return '';
     }
   }, []);
