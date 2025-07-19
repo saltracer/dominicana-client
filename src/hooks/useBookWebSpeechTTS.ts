@@ -2,8 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import { useWebSpeechTTS } from './useWebSpeechTTS';
 
 export interface BookTTSOptions {
-  chunkSize?: number; // Characters per TTS chunk
-  pauseBetweenChunks?: number; // Milliseconds to pause between chunks
+  chunkSize?: number;
+  pauseBetweenChunks?: number;
 }
 
 export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
@@ -19,9 +19,9 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
   const isStoppedRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Enhanced text extraction method focusing on currently visible content only
-  const extractCurrentPageText = useCallback((rendition: any): string => {
-    console.log('🔍 BookWebSpeechTTS: Starting text extraction from currently visible page');
+  // Enhanced text extraction using proper ePub.js APIs
+  const extractCurrentPageText = useCallback(async (rendition: any): Promise<string> => {
+    console.log('🔍 BookWebSpeechTTS: Starting proper ePub.js text extraction');
     
     try {
       if (!rendition) {
@@ -29,158 +29,103 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
         return '';
       }
 
-      let extractedText = '';
-
-      // Method 1: Extract from currently displayed view only
+      // Method 1: Use current location and section content
       try {
-        const manager = rendition.manager;
-        console.log('📖 BookWebSpeechTTS: Manager found:', !!manager);
+        const currentLocation = rendition.currentLocation();
         
-        if (manager && manager.views) {
-          console.log('👁️ BookWebSpeechTTS: Views found:', manager.views);
-          
-          // Access views as property, not function
-          const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
-          console.log('📚 BookWebSpeechTTS: Processing views:', views.length);
-          
-          // Focus ONLY on currently displayed/visible views
-          for (const view of views) {
-            console.log('🔍 BookWebSpeechTTS: Processing view:', {
-              displayed: view?.displayed,
-              hasContents: !!view?.contents,
-              hasDocument: !!view?.contents?.document
-            });
+        if (currentLocation && currentLocation.start) {
+          console.log('📍 BookWebSpeechTTS: Current location:', {
+            cfi: currentLocation.start.cfi,
+            href: currentLocation.start.href,
+            index: currentLocation.start.index
+          });
+
+          // Get the current section from the book
+          const book = rendition.book;
+          if (book && book.spine) {
+            const spineItem = book.spine.get(currentLocation.start.href);
             
-            // Only process views that are currently displayed
-            if (view && view.displayed && view.contents && view.contents.document) {
-              try {
-                const doc = view.contents.document;
-                const body = doc.body || doc.documentElement;
+            if (spineItem) {
+              console.log('📖 BookWebSpeechTTS: Found current spine item:', spineItem.href);
+              
+              // Load the section content
+              const section = await book.load(spineItem.href);
+              if (section && section.document) {
+                console.log('📄 BookWebSpeechTTS: Loaded section document');
                 
+                // Extract text from the section
+                const body = section.document.body || section.document.documentElement;
                 if (body) {
-                  console.log('📄 BookWebSpeechTTS: Found body element in displayed view');
+                  const sectionText = body.textContent || body.innerText || '';
                   
-                  // Get visible content from the current view
-                  const viewportContent = body.textContent || body.innerText || '';
-                  
-                  // Clean up the text but keep it focused on current view
-                  const cleanedText = viewportContent
+                  // Try to find the current position within the section
+                  // For now, we'll take a reasonable chunk from the beginning of the section
+                  // In a more advanced implementation, we could use the CFI to find exact position
+                  const cleanedText = sectionText
                     .replace(/\s+/g, ' ')
-                    .replace(/\n+/g, ' ')
+                    .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
                     .trim();
                   
-                  console.log('✅ BookWebSpeechTTS: Extracted visible content:', {
-                    length: cleanedText.length,
-                    preview: cleanedText.substring(0, 200) + '...'
+                  // Take a page-sized chunk (not the entire section)
+                  const pageText = cleanedText.substring(0, 8000);
+                  
+                  console.log('✅ BookWebSpeechTTS: Extracted section text:', {
+                    sectionLength: cleanedText.length,
+                    pageLength: pageText.length,
+                    preview: pageText.substring(0, 200) + '...'
                   });
                   
-                  // Only use content that's reasonably sized for a page
-                  if (cleanedText.length > 100 && cleanedText.length < 50000) {
-                    extractedText = cleanedText;
-                    break; // Take the first displayed view
+                  if (pageText.length > 100) {
+                    return pageText;
                   }
                 }
-              } catch (error) {
-                console.warn('⚠️ BookWebSpeechTTS: Error processing displayed view:', error);
               }
             }
           }
         }
       } catch (error) {
-        console.warn('⚠️ BookWebSpeechTTS: Error accessing manager views:', error);
+        console.warn('⚠️ BookWebSpeechTTS: Error with ePub.js API method:', error);
       }
 
-      // Method 2: Fallback - Get visible content from iframe viewport
-      if (!extractedText.trim()) {
-        console.log('📖 BookWebSpeechTTS: Trying fallback method - iframe viewport content');
+      // Method 2: Fallback - try to get content from current view
+      try {
+        const manager = rendition.manager;
         
-        try {
-          const iframes = document.querySelectorAll('iframe');
-          console.log('🔍 BookWebSpeechTTS: Found iframes:', iframes.length);
+        if (manager && manager.views) {
+          console.log('📚 BookWebSpeechTTS: Trying fallback method with manager views');
           
-          for (const iframe of iframes) {
-            try {
-              const iframeDoc = (iframe as HTMLIFrameElement).contentDocument;
-              if (iframeDoc) {
-                console.log('📄 BookWebSpeechTTS: Accessing iframe document');
+          // Get views from manager
+          const views = Array.isArray(manager.views) ? manager.views : Object.values(manager.views);
+          
+          for (const view of views) {
+            if (view && view.displayed && view.contents && view.contents.document) {
+              const doc = view.contents.document;
+              const body = doc.body || doc.documentElement;
+              
+              if (body) {
+                const viewText = body.textContent || body.innerText || '';
+                const cleanedText = viewText
+                  .replace(/\s+/g, ' ')
+                  .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+                  .trim();
                 
-                const body = iframeDoc.body || iframeDoc.documentElement;
-                if (body) {
-                  const iframeElement = iframe as HTMLIFrameElement;
-                  const rect = iframeElement.getBoundingClientRect();
-                  const isVisible = rect.width > 0 && rect.height > 0;
-                  
-                  console.log('👁️ BookWebSpeechTTS: Iframe visibility:', {
-                    isVisible,
-                    width: rect.width,
-                    height: rect.height
-                  });
-                  
-                  if (isVisible) {
-                    // Try to get content that's actually visible in the viewport
-                    const visibleElements = body.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6');
-                    let visibleText = '';
-                    
-                    for (const element of visibleElements) {
-                      const elementRect = element.getBoundingClientRect();
-                      const iframe = element.ownerDocument?.defaultView?.frameElement as HTMLIFrameElement;
-                      const iframeRect = iframe?.getBoundingClientRect();
-                      
-                      // Check if element is within iframe viewport
-                      if (iframeRect && elementRect.top >= 0 && elementRect.top < iframeRect.height) {
-                        const elementText = (element as HTMLElement).textContent || '';
-                        if (elementText.trim() && elementText.length > 20) {
-                          visibleText += elementText.trim() + ' ';
-                        }
-                      }
-                    }
-                    
-                    // If viewport detection didn't work, get a reasonable amount of content from the start
-                    if (!visibleText.trim()) {
-                      const allText = body.textContent || body.innerText || '';
-                      // Take first portion that's reasonable for a page (not the entire book)
-                      visibleText = allText.substring(0, 5000);
-                    }
-                    
-                    const text = visibleText.trim();
-                    console.log('📝 BookWebSpeechTTS: Extracted viewport text:', {
-                      length: text.length,
-                      preview: text.substring(0, 200) + '...'
-                    });
-                    
-                    if (text.length > 100) {
-                      extractedText = text;
-                      break;
-                    }
-                  }
+                console.log('✅ BookWebSpeechTTS: Fallback method extracted text:', {
+                  length: cleanedText.length,
+                  preview: cleanedText.substring(0, 200) + '...'
+                });
+                
+                if (cleanedText.length > 100 && cleanedText.length < 50000) {
+                  return cleanedText;
                 }
               }
-            } catch (error) {
-              console.warn('⚠️ BookWebSpeechTTS: Cross-origin or other error accessing iframe:', error);
             }
           }
-        } catch (error) {
-          console.warn('⚠️ BookWebSpeechTTS: Error in fallback method:', error);
         }
+      } catch (error) {
+        console.warn('⚠️ BookWebSpeechTTS: Error with fallback method:', error);
       }
 
-      // Final cleanup
-      if (extractedText.trim()) {
-        const finalText = extractedText
-          .replace(/\s+/g, ' ')
-          .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-          .trim();
-        
-        console.log('✅ BookWebSpeechTTS: Successfully extracted current page text:', {
-          originalLength: extractedText.length,
-          cleanedLength: finalText.length,
-          preview: finalText.substring(0, 200) + '...'
-        });
-        
-        return finalText;
-      }
-
-      console.warn('⚠️ BookWebSpeechTTS: No meaningful content could be extracted from current page');
+      console.warn('⚠️ BookWebSpeechTTS: No text could be extracted from current page');
       return '';
       
     } catch (error) {
@@ -213,7 +158,6 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
       const trimmedSentence = sentence.trim();
       if (!trimmedSentence) continue;
       
-      // If adding this sentence would exceed chunk size, save current chunk and start new one
       if (currentChunk.length + trimmedSentence.length > chunkSize && currentChunk.length > 0) {
         chunks.push(currentChunk.trim() + '.');
         currentChunk = trimmedSentence;
@@ -222,7 +166,6 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
       }
     }
     
-    // Add the last chunk if it has content
     if (currentChunk.trim()) {
       chunks.push(currentChunk.trim() + '.');
     }
@@ -325,9 +268,9 @@ export const useBookWebSpeechTTS = (options: BookTTSOptions = {}) => {
       return;
     }
 
-    console.log('📖 BookWebSpeechTTS: Starting to read current page');
+    console.log('📖 BookWebSpeechTTS: Starting to read current page using ePub.js APIs');
     
-    const pageText = extractCurrentPageText(rendition);
+    const pageText = await extractCurrentPageText(rendition);
     if (!pageText.trim()) {
       console.warn('❌ BookWebSpeechTTS: No text found on current page');
       return;
